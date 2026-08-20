@@ -9,7 +9,7 @@ export function AtlasSearch({ indicators, locale }: { indicators: IndicatorDefin
   const [query, setQuery] = useState("");
   const results = useMemo(() => {
     const normalized = query.trim().toLocaleLowerCase();
-    if (!normalized) return indicators.filter((indicator) => indicator.featured).slice(0, 5);
+    if (!normalized) return indicators.filter((indicator) => indicator.featured).slice(0, 4);
     return indicators.filter((indicator) => [indicator.name, indicator.officialName, indicator.id, ...indicator.aliases].join(" ").toLocaleLowerCase().includes(normalized)).slice(0, 6);
   }, [indicators, query]);
   useEffect(() => {
@@ -27,4 +27,3 @@ export function AtlasSearch({ indicators, locale }: { indicators: IndicatorDefin
     </div><small className="atlas-search-hint">{copy.searchHint}</small>
   </div>;
 }
-
