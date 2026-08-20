@@ -1,0 +1,13 @@
+{
+  "version": "7",
+  "dialect": "sqlite",
+  "entries": [
+    {
+      "idx": 0,
+      "version": "6",
+      "when": 1787252898348,
+      "tag": "0000_flippant_dreaming_celestial",
+      "breakpoints": true
+    }
+  ]
+}
