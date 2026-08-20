@@ -6,10 +6,9 @@ export function createOpenApiDocument(origin: string) {
       version: "1.0.0",
       summary: "A consistent interface for authoritative Brazilian economic data.",
       description:
-        "Free, read-only economic time series with explicit units, source identifiers, licenses, and transformations. Data remains attributable to each official publisher.",
+        "Free, read-only economic time series with a shared catalog, normalized time fields, explicit units, and source-level provenance. Data remains attributable to each official publisher.",
       license: {
         name: "API code: MIT. Data: upstream licenses apply.",
-        url: `${origin}/docs/attribution`,
       },
     },
     servers: [{ url: `${origin}/api/v1`, description: "Current deployment" }],
@@ -33,9 +32,9 @@ export function createOpenApiDocument(origin: string) {
           summary: "List and search indicators",
           parameters: [
             { name: "q", in: "query", schema: { type: "string" }, description: "Name, alias, ID, acronym, or upstream code." },
-            { name: "category", in: "query", schema: { type: "string" } },
+            { name: "category", in: "query", schema: { type: "string" }, description: "Canonical category ID. The response lists supported filters." },
             { name: "frequency", in: "query", schema: { enum: ["daily", "monthly", "quarterly", "annual"] } },
-            { name: "source", in: "query", schema: { enum: ["BCB", "IBGE"] } },
+            { name: "source", in: "query", schema: { enum: ["bcb", "ibge"] } },
             { name: "limit", in: "query", schema: { type: "integer", minimum: 1, maximum: 500, default: 100 } },
           ],
           responses: {
@@ -72,7 +71,7 @@ export function createOpenApiDocument(origin: string) {
           ],
           responses: {
             "200": {
-              description: "Observations and complete provenance metadata.",
+              description: "Observations and complete provenance metadata. `date` is the normalized start date of the reference period; `period` is the frequency-aware canonical period identifier.",
               headers: {
                 "X-Request-Id": { schema: { type: "string" } },
                 Warning: { schema: { type: "string" }, description: "Present when a stale snapshot is served." },
@@ -143,8 +142,8 @@ export function createOpenApiDocument(origin: string) {
           required: ["date", "period", "source_date", "value", "status"],
           properties: {
             date: { type: "string", format: "date" },
-            period: { type: "string", examples: ["2026-07", "2026-Q1"] },
-            source_date: { type: "string" },
+            period: { type: "string", examples: ["2026-08-20", "2026-07", "2026-Q1"] },
+            source_date: { type: "string", description: "Original period/date identifier exactly as returned by the official source." },
             value: { type: ["number", "null"] },
             raw_value: { type: "string" },
             status: {
@@ -201,4 +200,3 @@ export function createOpenApiDocument(origin: string) {
     },
   };
 }
-

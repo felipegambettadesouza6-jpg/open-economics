@@ -2,7 +2,7 @@ import { categoryLabels } from "@/lib/catalog/indicators";
 import { getSource } from "@/lib/catalog/sources";
 import type { IndicatorDefinition } from "@/lib/domain/types";
 
-export function publicIndicator(indicator: IndicatorDefinition) {
+export function publicIndicator(indicator: IndicatorDefinition, apiBase: string) {
   return {
     id: indicator.id,
     name: indicator.name,
@@ -32,10 +32,9 @@ export function publicIndicator(indicator: IndicatorDefinition) {
     license: indicator.license,
     license_url: indicator.licenseUrl,
     links: {
-      self: `/api/v1/indicators/${indicator.id}`,
-      observations: `/api/v1/indicators/${indicator.id}/observations`,
-      latest: `/api/v1/indicators/${indicator.id}/latest`,
-      page: `/indicators/${indicator.id}`,
+      self: `${apiBase}/indicators/${indicator.id}`,
+      observations: `${apiBase}/indicators/${indicator.id}/observations`,
+      latest: `${apiBase}/indicators/${indicator.id}/latest`,
     },
   };
 }
@@ -55,4 +54,3 @@ export function publicSource(sourceAgency: "BCB" | "IBGE") {
     attribution: source.attribution,
   };
 }
-

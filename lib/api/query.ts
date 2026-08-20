@@ -1,5 +1,5 @@
 import { ApiError } from "@/lib/errors";
-import type { Frequency } from "@/lib/domain/types";
+import type { Category, Frequency } from "@/lib/domain/types";
 
 const DATE_RE = /^\d{4}-\d{2}-\d{2}$/;
 
@@ -23,6 +23,21 @@ export interface ObservationQuery {
   format: "json" | "csv";
 }
 
+const CATEGORIES: Category[] = [
+  "inflation",
+  "interest-rates",
+  "currencies",
+  "activity",
+  "labor",
+  "credit",
+  "fiscal",
+  "external",
+  "markets",
+];
+
+const FREQUENCIES: Frequency[] = ["daily", "monthly", "quarterly", "annual"];
+const SOURCES = ["bcb", "ibge"] as const;
+
 export function parseObservationQuery(url: URL, frequency: Frequency): ObservationQuery {
   const allowed = new Set(["start", "end", "order", "limit", "format"]);
   for (const key of url.searchParams.keys()) {
@@ -40,6 +55,9 @@ export function parseObservationQuery(url: URL, frequency: Frequency): Observati
   }
   if (start > end) {
     throw new ApiError(400, "INVALID_DATE_RANGE", "start must be on or before end.");
+  }
+  if (end > today) {
+    throw new ApiError(400, "DATE_IN_FUTURE", "end cannot be later than today.");
   }
 
   if (frequency === "daily") {
@@ -85,16 +103,38 @@ export function parseCatalogQuery(url: URL) {
       throw new ApiError(400, "UNKNOWN_QUERY_PARAMETER", `Unknown query parameter: ${key}`);
     }
   }
+  const q = (url.searchParams.get("q") ?? "").trim().toLowerCase();
+  if (q.length > 200) {
+    throw new ApiError(400, "INVALID_SEARCH_QUERY", "q must be 200 characters or fewer.");
+  }
+
+  const categoryValue = url.searchParams.get("category");
+  const category = categoryValue?.trim().toLowerCase() || null;
+  if (category && !CATEGORIES.includes(category as Category)) {
+    throw new ApiError(400, "INVALID_CATEGORY", `category must be one of: ${CATEGORIES.join(", ")}.`);
+  }
+
+  const frequencyValue = url.searchParams.get("frequency");
+  const frequency = frequencyValue?.trim().toLowerCase() || null;
+  if (frequency && !FREQUENCIES.includes(frequency as Frequency)) {
+    throw new ApiError(400, "INVALID_FREQUENCY", `frequency must be one of: ${FREQUENCIES.join(", ")}.`);
+  }
+
+  const sourceValue = url.searchParams.get("source");
+  const source = sourceValue?.trim().toLowerCase() || null;
+  if (source && !SOURCES.includes(source as (typeof SOURCES)[number])) {
+    throw new ApiError(400, "INVALID_SOURCE", `source must be one of: ${SOURCES.join(", ")}.`);
+  }
+
   const limitValue = url.searchParams.get("limit") ?? "100";
   if (!/^\d+$/.test(limitValue)) throw new ApiError(400, "INVALID_LIMIT", "limit must be an integer.");
   const limit = Number(limitValue);
   if (limit < 1 || limit > 500) throw new ApiError(400, "INVALID_LIMIT", "limit must be from 1 to 500.");
   return {
-    q: (url.searchParams.get("q") ?? "").trim().toLowerCase(),
-    category: url.searchParams.get("category"),
-    frequency: url.searchParams.get("frequency"),
-    source: url.searchParams.get("source"),
+    q,
+    category: category as Category | null,
+    frequency: frequency as Frequency | null,
+    source: source as (typeof SOURCES)[number] | null,
     limit,
   };
 }
-

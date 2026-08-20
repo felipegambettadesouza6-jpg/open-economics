@@ -1,5 +1,5 @@
 import { ApiError } from "@/lib/errors";
-import type { Observation } from "@/lib/domain/types";
+import type { Frequency, Observation } from "@/lib/domain/types";
 import type { ProviderAdapter } from "@/lib/providers/provider";
 
 const MAX_RESPONSE_BYTES = 5_000_000;
@@ -20,7 +20,7 @@ function bcbDateToIso(value: string) {
   return `${match[3]}-${match[2]}-${match[1]}`;
 }
 
-export function parseBcbRows(payload: unknown): Observation[] {
+export function parseBcbRows(payload: unknown, frequency: Frequency): Observation[] {
   if (!Array.isArray(payload)) {
     throw new ApiError(502, "UPSTREAM_SCHEMA_ERROR", "BCB returned an unexpected response shape.");
   }
@@ -40,11 +40,13 @@ export function parseBcbRows(payload: unknown): Observation[] {
     }
     return {
       date,
-      period: date.slice(0, 7),
+      period: frequency === "daily" ? date : date.slice(0, 7),
       sourceDate: data,
       value,
       rawValue: valor,
-      status: valor === "0" || valor === "0.0" || valor === "0.00" ? "rounded-zero" : "observed",
+      // SGS publishes numeric values without the distinct missing/suppression
+      // symbols used by IBGE, so every parsed numeric zero is an observation.
+      status: "observed",
     };
   });
 
@@ -96,7 +98,9 @@ export const bcbSgsProvider: ProviderAdapter = {
     }
 
     return {
-      observations: parseBcbRows(payload),
+      observations: parseBcbRows(payload, definition.frequency).filter(
+        (observation) => observation.date >= range.start && observation.date <= range.end,
+      ),
       retrievedAt: new Date().toISOString(),
       upstreamUrl: url.toString(),
       sourceUpdatedAt: null,

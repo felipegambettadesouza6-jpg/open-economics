@@ -1,101 +1,152 @@
 # Open Economics API
 
-A free, open, developer-friendly API for authoritative Brazilian economic data.
+A free, read-only API for authoritative Brazilian economic time series.
 
-Open Economics turns public time series from Brazil's official institutions into one coherent, documented interface. It preserves source identity, original values, units, reference periods, licenses, and transformations rather than hiding them behind a generic schema.
+Open Economics gives data from Banco Central do Brasil (BCB) and IBGE a single
+contract without obscuring where it came from. Every response includes a stable
+indicator ID, unit, frequency, original publisher value, source identifier,
+upstream request URL, license, and cache state.
 
-## What ships in v1
-
-- 32 curated indicators across inflation, rates, FX, activity, labor, credit, fiscal, external-sector, and commodity themes.
-- First-party adapters for IBGE Aggregates/SIDRA and Banco Central do Brasil (BCB) SGS.
-- A public API with JSON, CSV, CORS, strict query validation, OpenAPI 3.1, RFC-style problem responses, and request IDs.
-- A searchable catalog, individual indicator pages with real historical charts, complete source metadata, an interactive API playground, status checks, and developer documentation.
-- D1-backed last-known-good response snapshots. When an upstream refresh fails, the API marks a cached response as stale instead of inventing a number.
-
-## Quickstart
-
-Browse the catalog:
+## Start with the catalog
 
 ```bash
-curl --fail --silent "http://localhost:3000/api/v1/indicators?q=ipca&source=IBGE"
+curl --fail --silent "http://localhost:3000/api/v1"
+curl --fail --silent "http://localhost:3000/api/v1/indicators?q=ipca&source=ibge"
+curl --fail --silent "http://localhost:3000/api/v1/indicators/br-ipca-monthly"
 ```
 
-Request observations:
+`GET /api/v1/indicators` is the discovery endpoint. Its
+`meta.available_filters` field lists every canonical `category`, `frequency`,
+and `source` value. It accepts:
+
+| Parameter | Meaning |
+| --- | --- |
+| `q` | Case-insensitive search across IDs, names, aliases, and official codes |
+| `category` | A canonical category ID such as `inflation` or `interest-rates` |
+| `frequency` | `daily`, `monthly`, `quarterly`, or `annual` |
+| `source` | `bcb` or `ibge` |
+| `limit` | 1–500, default 100 |
+
+Invalid filters are rejected with a structured problem response; they never
+silently become an empty result set.
+
+## Retrieve a series
 
 ```bash
 curl --fail --silent \
   "http://localhost:3000/api/v1/indicators/br-ipca-monthly/observations?start=2024-01-01&end=2024-12-31"
-```
 
-Download the same request as CSV:
-
-```bash
 curl --fail --silent \
-  "http://localhost:3000/api/v1/indicators/br-selic-target/observations?start=2025-01-01&format=csv"
+  "http://localhost:3000/api/v1/indicators/br-selic-target/observations?start=2025-01-01&order=desc&limit=12"
+
+curl --fail --silent \
+  "http://localhost:3000/api/v1/indicators/br-selic-target/latest"
 ```
 
-The interactive version is available at `/playground`.
+Observation requests accept `start`, `end`, `order=asc|desc`, `limit=1..5000`,
+and `format=json|csv`. Dates use `YYYY-MM-DD` and `end` cannot be in the
+future. Daily BCB requests are limited to ten years because SGS applies the
+same upstream limit.
+
+All JSON series responses use the same envelope:
+
+```json
+{
+  "data": [
+    {
+      "date": "2024-01-01",
+      "period": "2024-01",
+      "source_date": "202401",
+      "value": 0.42,
+      "raw_value": "0.42",
+      "status": "observed"
+    }
+  ],
+  "meta": {
+    "indicator": { "id": "br-ipca-monthly", "unit_symbol": "%" },
+    "provenance": { "upstream_url": "…", "retrieved_at": "…" },
+    "returned": 1,
+    "available": 1,
+    "truncated": false
+  }
+}
+```
+
+`date` is the normalized start date for the reference period; `period` is the
+frequency-aware identifier (`YYYY-MM-DD`, `YYYY-MM`, `YYYY-QN`, or `YYYY`).
+`source_date` and `raw_value` are retained exactly from the official publisher.
+Read `meta.indicator.date_semantics` before interpreting stock, flow, or
+moving-quarter series.
+
+Use `format=csv` for a flat download. CSV rows repeat `indicator_id`,
+`source_id`, `source_url`, and `upstream_url`, so exported values retain their
+provenance outside the JSON envelope.
 
 ## API surface
 
 | Endpoint | Purpose |
 | --- | --- |
-| `GET /api/v1` | API discovery |
-| `GET /api/v1/indicators` | Search the catalog |
-| `GET /api/v1/indicators/:id` | Indicator metadata |
-| `GET /api/v1/indicators/:id/observations` | Time-series observations |
-| `GET /api/v1/indicators/:id/latest` | Latest observation |
-| `GET /api/v1/sources` | Publisher and license metadata |
-| `GET /api/v1/openapi.json` | OpenAPI 3.1 document |
-| `GET /api/v1/health` | Router and catalog readiness |
+| `GET /api/v1` | Machine-readable API discovery |
+| `GET /api/v1/indicators` | Search and filter the indicator catalog |
+| `GET /api/v1/indicators/:id` | Full indicator metadata, units, semantics, and links |
+| `GET /api/v1/indicators/:id/observations` | Normalized historical values |
+| `GET /api/v1/indicators/:id/latest` | Latest available observation |
+| `GET /api/v1/sources` | Publisher, attribution, and license metadata |
+| `GET /api/v1/openapi.json` | OpenAPI 3.1 description |
+| `GET /api/v1/health` | Router and catalog readiness (does not call publishers) |
 
-Observation requests accept `start`, `end`, `order`, `limit`, and `format=json|csv`. Unknown query parameters are rejected. Daily BCB requests are capped at ten years, which mirrors the current official SGS constraint.
+All endpoints support CORS and `GET`, `HEAD`, and `OPTIONS`. Successful and
+error responses include `X-Request-Id`; browser clients can also read cache,
+timing, and stale-response headers.
 
-## Data provenance
+## Errors and freshness
 
-The first release uses two official sources:
+Errors use `application/problem+json` with a stable `code`, HTTP `status`,
+human-readable `title`, explanatory `detail`, and `request_id`. Common cases
+include `INVALID_DATE`, `INVALID_CATEGORY`, `INDICATOR_NOT_FOUND`,
+`UPSTREAM_CONNECTION_ERROR`, and `UPSTREAM_TIMEOUT`.
 
-- **IBGE / SIDRA** for IPCA and INPC, GDP, industry, retail, services, unemployment, earnings, and informality.
-- **Banco Central do Brasil** for rates, USD/BRL, IBC-Br, credit, public debt, fiscal balances, balance-of-payments data, direct investment, reserves, and the IC-Br commodity index.
+The API caches successfully normalized source responses in D1 when configured.
+If a refresh fails and a previous matching snapshot exists, it is returned with
+`meta.stale: true`, `meta.cache: "stale"`, and HTTP `Warning: 110`. A cache
+read or write failure is treated as a cache bypass, never as a data failure.
 
-Every response contains:
+## Sources and correctness
 
-- a stable Open Economics indicator ID and the official Portuguese series name;
-- source agency, upstream series/table identifiers, official metadata URL, and license/terms;
-- original publisher value in `raw_value`, normalized `value`, reference `period`, and `source_date`;
-- retrieval timestamp, normalized upstream URL, cache state, and stale flag;
-- named transformations. Version 1's source series use no hidden transformations.
+- **IBGE Aggregates/SIDRA**: prices, GDP, industry, retail, services, labor.
+  The adapter requests the exact official period IDs required for each query;
+  IBGE zero, suppression, availability, and quality symbols keep distinct
+  `status` values.
+- **BCB SGS**: rates, FX, activity, credit, fiscal, external-sector, and
+  commodity series. Rows are normalized, sorted, and de-duplicated because
+  upstream ordering is not guaranteed.
 
-BCB catalog data is published under ODbL; preserve required attribution and share-alike obligations for adapted databases. IBGE data remains attributed to IBGE/SIDRA and links to its official terms. See the in-product [attribution guidance](/docs/attribution).
+There are 32 curated indicators across inflation, interest rates, currencies,
+activity, labor, credit, fiscal, external, and markets. Values are never
+fabricated, forward-filled, or silently sign-inverted. BCB NFSP fiscal series
+retain BCB's financing-requirement sign convention.
 
-## Local development
+BCB catalog data is published under ODbL; preserve its attribution and
+share-alike obligations when distributing adapted databases. Attribute IBGE as
+IBGE/SIDRA and retain its source links and terms. Each indicator response has
+the authoritative URLs and license applicable to that series.
 
-Requirements: Node.js 22.13 or newer.
+## Run locally
+
+Node.js 22.13+ is required.
 
 ```bash
 npm install
 npm run dev
+npm run lint
 npm test
 ```
 
-Generate a D1 migration after modifying the schema:
-
-```bash
-npm run db:generate
-```
-
-The Sites manifest declares a logical `DB` binding. The Worker creates the snapshot table defensively for local development; the generated migration in `drizzle/` is the deployment record.
-
-## Data correctness policy
-
-- Values are never fabricated, forward-filled, or silently transformed.
-- BCB rows are sorted and deduplicated locally because upstream ordering varies.
-- IBGE availability, suppression, and zero symbols retain distinct observation statuses.
-- Quarterly IBGE keys are interpreted as quarters, not months.
-- BCB NFSP fiscal series retain the publisher's financing-requirement sign convention.
-- Historical series may be revised by publishers; snapshots are refreshed rather than treated as append-only.
+Examples are available in [examples/python.py](./examples/python.py) and
+[examples/javascript.mjs](./examples/javascript.mjs). The D1 migration in
+`drizzle/` is the deployment record for cache snapshots.
 
 ## License
 
-The Open Economics API implementation is released under the [MIT License](./LICENSE). Upstream data remains governed by the publisher's own terms and licenses.
-
+The API implementation is released under the [MIT License](./LICENSE).
+Upstream data remains governed by each publisher's own terms and licenses.

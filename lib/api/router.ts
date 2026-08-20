@@ -19,6 +19,7 @@ const CORS_HEADERS = {
   "Access-Control-Allow-Origin": "*",
   "Access-Control-Allow-Methods": "GET, HEAD, OPTIONS",
   "Access-Control-Allow-Headers": "Accept, Content-Type, X-Request-Id",
+  "Access-Control-Expose-Headers": "Cache-Control, Server-Timing, Warning, X-Request-Id",
   "Access-Control-Max-Age": "86400",
 };
 
@@ -108,10 +109,18 @@ function csvEscape(value: string | number | null) {
   return /[",\r\n]/.test(text) ? `"${text.replaceAll('"', '""')}"` : text;
 }
 
-function toCsv(observations: Observation[]) {
+function toCsv(
+  indicator: IndicatorDefinition,
+  upstreamUrl: string,
+  observations: Observation[],
+) {
   const rows = [
-    ["date", "period", "value", "status", "source_date", "raw_value"],
+    ["indicator_id", "source_id", "source_url", "upstream_url", "date", "period", "value", "status", "source_date", "raw_value"],
     ...observations.map((item) => [
+      indicator.id,
+      indicator.sourceAgency.toLowerCase(),
+      indicator.sourceUrl,
+      upstreamUrl,
       item.date,
       item.period,
       item.value,
@@ -145,10 +154,30 @@ function filterCatalog(url: URL) {
       (!query.q || haystack.includes(query.q)) &&
       (!query.category || indicator.category === query.category) &&
       (!query.frequency || indicator.frequency === query.frequency) &&
-      (!query.source || indicator.sourceAgency.toLowerCase() === query.source.toLowerCase())
+      (!query.source || indicator.sourceAgency.toLowerCase() === query.source)
     );
   });
   return { matches: matches.slice(0, query.limit), total: matches.length, query };
+}
+
+function apiBase(url: URL) {
+  return `${url.origin}/api/v1`;
+}
+
+function catalogFilters() {
+  return {
+    categories: Object.entries(categoryLabels).map(([id, name]) => ({ id, name })),
+    frequencies: ["daily", "monthly", "quarterly", "annual"],
+    sources: sources.map((source) => ({ id: source.id, name: source.name, short_name: source.shortName })),
+  };
+}
+
+function decodeIndicatorId(value: string) {
+  try {
+    return decodeURIComponent(value);
+  } catch {
+    throw new ApiError(400, "INVALID_INDICATOR_ID", "Indicator IDs use lowercase letters, numbers, and hyphens.");
+  }
 }
 
 function seriesPayload(
@@ -156,12 +185,15 @@ function seriesPayload(
   indicator: IndicatorDefinition,
   observations: Observation[],
   series: Awaited<ReturnType<typeof getSeries>>,
+  available: number,
+  limit: number,
   truncated: boolean,
 ) {
+  const base = apiBase(requestUrl);
   return {
     data: observations.map(serializeObservation),
     meta: {
-      indicator: publicIndicator(indicator),
+      indicator: publicIndicator(indicator, base),
       source: publicSource(indicator.sourceAgency),
       provenance: {
         provider: indicator.provider,
@@ -175,13 +207,14 @@ function seriesPayload(
       transformations: indicator.transformations,
       cache: series.cache,
       stale: series.stale,
-      count: observations.length,
+      returned: observations.length,
+      available,
+      limit,
       truncated,
     },
     links: {
       self: requestUrl.toString(),
-      indicator: `${requestUrl.origin}/api/v1/indicators/${indicator.id}`,
-      next: null,
+      indicator: `${base}/indicators/${indicator.id}`,
     },
   };
 }
@@ -193,9 +226,7 @@ async function observationsResponse(
   latestOnly = false,
 ) {
   const url = new URL(request.url);
-  const indicatorId = decodeURIComponent(
-    url.pathname.split("/").filter(Boolean).at(latestOnly ? -2 : -2) ?? "",
-  );
+  const indicatorId = decodeIndicatorId(url.pathname.split("/").filter(Boolean).at(-2) ?? "");
   const indicator = findIndicator(indicatorId);
 
   let query;
@@ -220,7 +251,8 @@ async function observationsResponse(
 
   let ordered = [...series.result.observations];
   if (query.order === "desc") ordered.reverse();
-  const truncated = ordered.length > query.limit;
+  const available = ordered.length;
+  const truncated = available > query.limit;
   ordered = ordered.slice(0, query.limit);
 
   const headers = new Headers();
@@ -232,11 +264,11 @@ async function observationsResponse(
       .forEach(([key, value]) => headers.set(key, value));
     headers.set("Content-Type", "text/csv; charset=utf-8");
     headers.set("Content-Disposition", `attachment; filename="${indicator.id}.csv"`);
-    return new Response(toCsv(ordered), { headers });
+    return new Response(toCsv(indicator, series.result.upstreamUrl, ordered), { headers });
   }
 
   return json(
-    seriesPayload(url, indicator, ordered, series, truncated),
+    seriesPayload(url, indicator, ordered, series, available, query.limit, truncated),
     id,
     { headers },
     `public, max-age=60, s-maxage=${indicator.cacheTtlSeconds}, stale-if-error=86400`,
@@ -248,6 +280,7 @@ async function routeGet(request: Request, env: ApiEnv, id: string) {
   const path = url.pathname.replace(/\/+$/, "");
 
   if (path === "/api/v1") {
+    const base = apiBase(url);
     return json(
       {
         name: "Open Economics API",
@@ -256,12 +289,11 @@ async function routeGet(request: Request, env: ApiEnv, id: string) {
         description: "Authoritative Brazilian economic data through one consistent interface.",
         data_policy: "Values are never fabricated. Source licenses and transformations are disclosed per series.",
         links: {
-          indicators: `${url.origin}/api/v1/indicators`,
-          sources: `${url.origin}/api/v1/sources`,
-          openapi: `${url.origin}/api/v1/openapi.json`,
-          health: `${url.origin}/api/v1/health`,
-          documentation: `${url.origin}/docs`,
-          playground: `${url.origin}/playground`,
+          self: base,
+          indicators: `${base}/indicators`,
+          sources: `${base}/sources`,
+          openapi: `${base}/openapi.json`,
+          health: `${base}/health`,
         },
       },
       id,
@@ -312,20 +344,23 @@ async function routeGet(request: Request, env: ApiEnv, id: string) {
 
   if (path === "/api/v1/indicators") {
     const { matches, total, query } = filterCatalog(url);
+    const base = apiBase(url);
     return json(
       {
-        data: matches.map(publicIndicator),
+        data: matches.map((indicator) => publicIndicator(indicator, base)),
         meta: {
-          count: matches.length,
+          returned: matches.length,
           total,
+          limit: query.limit,
           filters: {
             q: query.q || null,
             category: query.category,
             frequency: query.frequency,
             source: query.source,
           },
+          available_filters: catalogFilters(),
         },
-        links: { self: url.toString(), next: null },
+        links: { self: url.toString() },
       },
       id,
     );
@@ -339,9 +374,9 @@ async function routeGet(request: Request, env: ApiEnv, id: string) {
 
   const indicatorMatch = /^\/api\/v1\/indicators\/([^/]+)$/.exec(path);
   if (indicatorMatch) {
-    const indicator = findIndicator(decodeURIComponent(indicatorMatch[1]));
+    const indicator = findIndicator(decodeIndicatorId(indicatorMatch[1]));
     return json(
-      { data: publicIndicator(indicator), links: { self: url.toString() } },
+      { data: publicIndicator(indicator, apiBase(url)), links: { self: url.toString() } },
       id,
     );
   }
@@ -385,6 +420,9 @@ export async function handleApi(
     );
     return output;
   } catch (error) {
-    return problem(error, id, origin);
+    const response = problem(error, id, origin);
+    return request.method === "HEAD"
+      ? new Response(null, { status: response.status, statusText: response.statusText, headers: response.headers })
+      : response;
   }
 }

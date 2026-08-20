@@ -24,7 +24,11 @@ function bcb(input: BcbInput): IndicatorDefinition {
     license: BCB_LICENSE,
     licenseUrl: BCB_LICENSE_URL,
     cacheTtlSeconds: cacheTtlSeconds ?? (rest.frequency === "daily" ? 3600 : 21600),
-    dateSemantics: dateSemantics ?? "Reference period start, as published by BCB SGS.",
+    dateSemantics: dateSemantics ?? (
+      rest.frequency === "daily"
+        ? "Official BCB observation date."
+        : "Normalized to the first calendar day of the BCB reference month; source_date preserves BCB's published date label."
+    ),
     transformations: transformations ?? [],
   };
 }
@@ -50,7 +54,7 @@ function ibge(input: IbgeInput): IndicatorDefinition {
     license: IBGE_LICENSE,
     licenseUrl: IBGE_LICENSE_URL,
     cacheTtlSeconds: cacheTtlSeconds ?? 21600,
-    dateSemantics: dateSemantics ?? "Reference period start, derived from the official IBGE period key.",
+    dateSemantics: dateSemantics ?? "Normalized to the first calendar day of the official IBGE reference period; source_date preserves the original IBGE period key.",
     transformations: transformations ?? [],
   };
 }
@@ -635,4 +639,3 @@ export const catalogSummary = {
 export function frequencies(): Frequency[] {
   return ["daily", "monthly", "quarterly", "annual"];
 }
-
