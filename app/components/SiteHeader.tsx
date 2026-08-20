@@ -1,24 +1,12 @@
-/* eslint-disable @next/next/no-html-link-for-pages */
+import { LanguageSwitch } from "@/app/components/LanguageSwitch";
+import { localized, type Locale, ui } from "@/lib/i18n";
 
-export function SiteHeader() {
-  return (
-    <header className="site-header">
-      <div className="shell nav">
-        <a className="brand" href="/" aria-label="Open Economics API home">
-          <span className="brand-mark" aria-hidden="true">OE</span>
-          <span>Open Economics</span>
-        </a>
-        <nav className="nav-links" aria-label="Primary navigation">
-          <a href="/catalog">Data catalog</a>
-          <a href="/docs">Docs</a>
-          <a href="/playground">Playground</a>
-          <a href="/sources">Sources</a>
-        </nav>
-        <a className="status-link" href="/status">
-          <span className="status-dot" aria-hidden="true" />
-          API status
-        </a>
-      </div>
-    </header>
-  );
+export function SiteHeader({ locale = "en" }: { locale?: Locale }) {
+  const copy = ui[locale];
+  return <header className="atlas-header"><div className="atlas-shell atlas-nav">
+    <a className="atlas-brand" href={localized(locale)} aria-label="Open Economics home"><span className="axis-mark" aria-hidden="true"><i>O</i><b>E</b></span><span>Open Economics</span></a>
+    <nav className="atlas-nav-links" aria-label="Primary navigation">
+      <a href={localized(locale, "/catalog")}>{copy.nav.explore}</a><a href={localized(locale, "/docs")}>{copy.nav.docs}</a><a href={localized(locale, "/playground")}>{copy.nav.playground}</a><a href={localized(locale, "/sources")}>{copy.nav.sources}</a><a className="atlas-status" href={localized(locale, "/status")}><i aria-hidden="true" />{copy.nav.status}</a>
+    </nav><LanguageSwitch locale={locale} />
+  </div></header>;
 }

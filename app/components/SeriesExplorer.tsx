@@ -3,6 +3,7 @@
 import { useEffect, useMemo, useState } from "react";
 import { CopyButton } from "@/app/components/CopyButton";
 import { DataChart } from "@/app/components/DataChart";
+import type { Locale } from "@/lib/i18n";
 
 interface Observation {
   date: string;
@@ -33,9 +34,9 @@ function subtractYears(years: number) {
   return date.toISOString().slice(0, 10);
 }
 
-function formatValue(value: number | null, decimals: number, unit: string) {
+function formatValue(value: number | null, decimals: number, unit: string, locale: Locale) {
   if (value === null) return "—";
-  const formatted = new Intl.NumberFormat("en", {
+  const formatted = new Intl.NumberFormat(locale, {
     minimumFractionDigits: Math.min(decimals, 1),
     maximumFractionDigits: decimals,
   }).format(value);
@@ -49,13 +50,16 @@ export function SeriesExplorer({
   decimals,
   frequency,
   startDate,
+  locale = "en",
 }: {
   indicatorId: string;
   unit: string;
   decimals: number;
   frequency: string;
   startDate: string;
+  locale?: Locale;
 }) {
+  const pt = locale === "pt-br";
   // Daily series are much more responsive at a one-year initial window; broader
   // ranges remain one click away and the API still supports the full ten years.
   const [range, setRange] = useState<RangeKey>(() => frequency === "daily" ? "1Y" : "5Y");
@@ -109,7 +113,7 @@ export function SeriesExplorer({
   return (
     <section className="series-explorer">
       <div className="series-toolbar">
-        <div className="range-control" aria-label="Chart range">
+        <div className="range-control" aria-label={pt ? "Período do gráfico" : "Chart range"}>
           {(["1Y", "5Y", "10Y", "MAX"] as RangeKey[]).map((item) => (
             <button
               className={range === item ? "active" : ""}
@@ -123,53 +127,53 @@ export function SeriesExplorer({
           ))}
         </div>
         <div className="series-actions">
-          <CopyButton value={requestPath} label="Copy API URL" />
-          <a href={`${requestPath}&format=csv`} download>Download CSV</a>
-          <a href={requestPath}>View JSON ↗</a>
+          <CopyButton value={requestPath} label={pt ? "Copiar URL" : "Copy API URL"} />
+          <a href={`${requestPath}&format=csv`} download>{pt ? "Baixar CSV" : "Download CSV"}</a>
+          <a href={requestPath}>{pt ? "Ver JSON" : "View JSON"} ↗</a>
         </div>
       </div>
 
-      {loading && <div className="series-state" role="status">Loading official observations…</div>}
+      {loading && <div className="series-state" role="status">{pt ? "Carregando observações oficiais…" : "Loading official observations…"}</div>}
       {error && (
         <div className="series-state error" role="alert">
-          <strong>Official source unavailable</strong>
+          <strong>{pt ? "Fonte oficial indisponível" : "Official source unavailable"}</strong>
           <p>{error}</p>
-          <span>No values have been estimated or substituted.</span>
+          <span>{pt ? "Nenhum valor foi estimado ou substituído." : "No values have been estimated or substituted."}</span>
         </div>
       )}
       {!loading && !error && response && (
         <>
           {response.meta.stale && (
             <div className="stale-notice">
-              The official source could not be refreshed. This is the last known good snapshot and is marked stale.
+              {pt ? "A fonte oficial não pôde ser atualizada. Este é o último snapshot válido e está marcado como desatualizado." : "The official source could not be refreshed. This is the last known good snapshot and is marked stale."}
             </div>
           )}
           <div className="series-summary">
             <div>
-              <span>Latest value</span>
-              <strong>{formatValue(latest?.value ?? null, decimals, unit)}</strong>
+              <span>{pt ? "Valor mais recente" : "Latest value"}</span>
+              <strong>{formatValue(latest?.value ?? null, decimals, unit, locale)}</strong>
             </div>
             <div>
-              <span>Reference period</span>
+              <span>{pt ? "Período de referência" : "Reference period"}</span>
               <strong>{latest?.period ?? "Unavailable"}</strong>
             </div>
             <div>
-              <span>Previous-period change</span>
+              <span>{pt ? "Variação no período" : "Previous-period change"}</span>
               <strong>{change === null ? "—" : `${change > 0 ? "+" : ""}${change.toFixed(decimals)} ${unit}`}</strong>
             </div>
             <div>
-              <span>Observations shown</span>
-              <strong>{response.data.length.toLocaleString("en")}</strong>
+              <span>{pt ? "Observações exibidas" : "Observations shown"}</span>
+              <strong>{response.data.length.toLocaleString(locale)}</strong>
             </div>
           </div>
           <div className="chart-panel">
             <div className="chart-title-row">
               <div>
-                <strong>History</strong>
+                <strong>{pt ? "Histórico" : "History"}</strong>
                 <span>{unit} · {start} to {end}</span>
               </div>
               <span className="chart-source-state">
-                <i /> {response.meta.cache === "hit" ? "Cached official response" : "Fresh official response"}
+                <i /> {response.meta.cache === "hit" ? (pt ? "Resposta oficial em cache" : "Cached official response") : (pt ? "Resposta oficial atual" : "Fresh official response")}
               </span>
             </div>
             <DataChart data={response.data} unit={unit} decimals={decimals} />
@@ -178,22 +182,22 @@ export function SeriesExplorer({
           <div className="observation-section">
             <div className="section-heading compact-heading">
               <div>
-                <p className="kicker">Observations</p>
-                <h2>Recent data</h2>
+                <p className="kicker">{pt ? "Observações" : "Observations"}</p>
+                <h2>{pt ? "Dados recentes" : "Recent data"}</h2>
               </div>
-              <span>Showing the 24 most recent returned periods</span>
+              <span>{pt ? "24 períodos mais recentes retornados" : "Showing the 24 most recent returned periods"}</span>
             </div>
             <div className="data-table-wrap">
               <table className="data-table">
                 <thead>
-                  <tr><th>Reference period</th><th>Normalized date</th><th>Value</th><th>Status</th><th>Source value</th></tr>
+                  <tr><th>{pt ? "Período" : "Reference period"}</th><th>{pt ? "Data normalizada" : "Normalized date"}</th><th>{pt ? "Valor" : "Value"}</th><th>Status</th><th>{pt ? "Valor da fonte" : "Source value"}</th></tr>
                 </thead>
                 <tbody>
                   {tableRows.map((item) => (
                     <tr key={`${item.date}-${item.source_date}`}>
                       <td><strong>{item.period}</strong></td>
                       <td><code>{item.date}</code></td>
-                      <td>{formatValue(item.value, decimals, unit)}</td>
+                      <td>{formatValue(item.value, decimals, unit, locale)}</td>
                       <td><span className={`observation-status ${item.status}`}>{item.status}</span></td>
                       <td><code>{item.raw_value}</code></td>
                     </tr>
@@ -202,7 +206,7 @@ export function SeriesExplorer({
               </table>
             </div>
             <p className="table-note">
-              Source values are preserved verbatim. IBGE suppression and availability symbols remain distinct from numeric zero.
+              {pt ? "Valores da fonte são preservados literalmente. Símbolos de supressão e disponibilidade do IBGE permanecem distintos do zero numérico." : "Source values are preserved verbatim. IBGE suppression and availability symbols remain distinct from numeric zero."}
             </p>
           </div>
         </>

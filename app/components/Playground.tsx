@@ -2,6 +2,7 @@
 
 import { useEffect, useMemo, useState } from "react";
 import { CopyButton } from "@/app/components/CopyButton";
+import { localized, type Locale } from "@/lib/i18n";
 
 interface PlaygroundIndicator {
   id: string;
@@ -18,7 +19,8 @@ function oneYearAgo() {
   return date.toISOString().slice(0, 10);
 }
 
-export function Playground({ indicators }: { indicators: PlaygroundIndicator[] }) {
+export function Playground({ indicators, locale = "en" }: { indicators: PlaygroundIndicator[]; locale?: Locale }) {
+  const pt = locale === "pt-br";
   // Keep the server and first browser render identical; URL state is applied
   // after hydration so a shared playground link never causes a mismatch.
   const [endpoint, setEndpoint] = useState<Endpoint>("observations");
@@ -38,8 +40,13 @@ export function Playground({ indicators }: { indicators: PlaygroundIndicator[] }
   } | null>(null);
   const [running, setRunning] = useState(false);
   const [snippet, setSnippet] = useState<"curl" | "python" | "javascript">("curl");
+  const [indicatorQuery, setIndicatorQuery] = useState("");
+  const [urlReady, setUrlReady] = useState(false);
+  const [origin, setOrigin] = useState("");
+  const visibleIndicators = indicators.filter((item) => `${item.name} ${item.id} ${item.source}`.toLowerCase().includes(indicatorQuery.toLowerCase()));
 
   useEffect(() => {
+    queueMicrotask(() => setOrigin(window.location.origin));
     const params = new URLSearchParams(window.location.search);
     const selectedEndpoint = params.get("endpoint");
     const selectedIndicator = params.get("indicator");
@@ -55,6 +62,7 @@ export function Playground({ indicators }: { indicators: PlaygroundIndicator[] }
       if (selectedEnd) setEnd(selectedEnd);
       if (selectedOrder === "asc" || selectedOrder === "desc") setOrder(selectedOrder);
       if (selectedLimit && /^\d+$/.test(selectedLimit)) setLimit(selectedLimit);
+      setUrlReady(true);
     });
   }, [indicators]);
 
@@ -66,6 +74,7 @@ export function Playground({ indicators }: { indicators: PlaygroundIndicator[] }
   }, [endpoint, indicator, start, end, order, limit]);
 
   useEffect(() => {
+    if (!urlReady) return;
     const params = new URLSearchParams({ endpoint, indicator });
     if (endpoint === "observations") {
       params.set("start", start);
@@ -73,10 +82,10 @@ export function Playground({ indicators }: { indicators: PlaygroundIndicator[] }
       params.set("order", order);
       params.set("limit", limit);
     }
-    window.history.replaceState({}, "", `/playground?${params}`);
-  }, [endpoint, indicator, start, end, order, limit]);
+    window.history.replaceState({}, "", `${localized(locale, "/playground")}?${params}`);
+  }, [endpoint, indicator, start, end, order, limit, locale, urlReady]);
 
-  const absoluteUrl = typeof window === "undefined" ? requestPath : `${window.location.origin}${requestPath}`;
+  const absoluteUrl = `${origin}${requestPath}`;
 
   const snippets = {
     curl: `curl --fail --silent \\\n  "${absoluteUrl}"`,
@@ -124,11 +133,11 @@ export function Playground({ indicators }: { indicators: PlaygroundIndicator[] }
     <div className="playground">
       <div className="playground-builder">
         <div className="builder-head">
-          <span>Request builder</span>
+          <span>{pt ? "Construtor de requisição" : "Request builder"}</span>
           <b>GET only</b>
         </div>
         <label className="form-field">
-          <span>Endpoint</span>
+          <span>Endpoint <small>{pt ? "Escolha o tipo de resposta" : "Choose the response shape"}</small></span>
           <select value={endpoint} onChange={(event) => setEndpoint(event.target.value as Endpoint)}>
             <option value="observations">Series observations</option>
             <option value="latest">Latest observation</option>
@@ -136,9 +145,10 @@ export function Playground({ indicators }: { indicators: PlaygroundIndicator[] }
           </select>
         </label>
         <label className="form-field">
-          <span>Indicator</span>
+          <span>{pt ? "Indicador" : "Indicator"} <small>{pt ? "ID estável da série" : "Stable series ID"}</small></span>
+          <input className="indicator-search" type="search" value={indicatorQuery} onChange={(event) => setIndicatorQuery(event.target.value)} placeholder={pt ? "Filtrar por nome ou ID…" : "Filter by name or ID…"} />
           <select value={indicator} onChange={(event) => setIndicator(event.target.value)}>
-            {indicators.map((item) => (
+            {visibleIndicators.map((item) => (
               <option key={item.id} value={item.id}>{item.name} · {item.source}</option>
             ))}
           </select>
@@ -147,36 +157,36 @@ export function Playground({ indicators }: { indicators: PlaygroundIndicator[] }
           <>
             <div className="form-grid">
               <label className="form-field">
-                <span>Start date</span>
+                <span>{pt ? "Data inicial" : "Start date"} <small>YYYY-MM-DD · inclusive</small></span>
                 <input type="date" value={start} onChange={(event) => setStart(event.target.value)} />
               </label>
               <label className="form-field">
-                <span>End date</span>
+                <span>{pt ? "Data final" : "End date"} <small>YYYY-MM-DD · inclusive</small></span>
                 <input type="date" value={end} onChange={(event) => setEnd(event.target.value)} />
               </label>
             </div>
             <div className="form-grid">
               <label className="form-field">
-                <span>Order</span>
+                <span>{pt ? "Ordem" : "Order"} <small>{pt ? "ordenação por data" : "sort by date"}</small></span>
                 <select value={order} onChange={(event) => setOrder(event.target.value)}>
                   <option value="asc">Ascending</option>
                   <option value="desc">Descending</option>
                 </select>
               </label>
               <label className="form-field">
-                <span>Limit</span>
+                <span>{pt ? "Limite" : "Limit"} <small>1—5000</small></span>
                 <input min="1" max="5000" type="number" value={limit} onChange={(event) => setLimit(event.target.value)} />
               </label>
             </div>
           </>
         )}
         <div className="generated-url">
-          <span>Generated URL</span>
+          <span>{pt ? "URL gerada" : "Generated URL"}</span>
           <code>{requestPath}</code>
           <CopyButton value={absoluteUrl} />
         </div>
         <button className="run-button" type="button" onClick={execute} disabled={running}>
-          {running ? "Running request…" : "Run request"} <span>→</span>
+          {running ? (pt ? "Executando…" : "Running request…") : (pt ? "Executar requisição" : "Run request")} <span>→</span>
         </button>
 
         <div className="snippet-panel">
@@ -201,7 +211,7 @@ export function Playground({ indicators }: { indicators: PlaygroundIndicator[] }
 
       <div className="playground-response">
         <div className="response-head">
-          <span>Response</span>
+          <span>{pt ? "Resposta" : "Response"}</span>
           {result ? (
             <div>
               <b className={result.status >= 200 && result.status < 300 ? "success" : "failure"}>
@@ -209,7 +219,7 @@ export function Playground({ indicators }: { indicators: PlaygroundIndicator[] }
               </b>
               <span>{result.latency.toFixed(0)} ms</span>
             </div>
-          ) : <span>Not run yet</span>}
+          ) : <span>{pt ? "Ainda não executada" : "Not run yet"}</span>}
         </div>
         {result ? (
           <>
@@ -219,6 +229,7 @@ export function Playground({ indicators }: { indicators: PlaygroundIndicator[] }
               {result.warning && <span className="warning">{result.warning}</span>}
             </div>
             <pre className="response-body"><code>{result.body}</code></pre>
+            <div className="response-legend"><span><code>data</code>{pt ? "observações normalizadas" : "normalized observations"}</span><span><code>meta</code>{pt ? "definição e origem" : "definition and provenance"}</span><span><code>status</code>{pt ? "semântica do valor" : "value semantics"}</span></div>
             <div className="response-actions">
               <CopyButton value={result.body} label="Copy response" />
               <a href={requestPath} target="_blank" rel="noreferrer">Open raw response ↗</a>
@@ -227,8 +238,8 @@ export function Playground({ indicators }: { indicators: PlaygroundIndicator[] }
         ) : (
           <div className="response-empty">
             <span aria-hidden="true">&#123; &#125;</span>
-            <strong>Run the request to inspect the response.</strong>
-            <p>Status, timing, headers, normalized data, and provenance will appear here.</p>
+            <strong>{pt ? "Execute a requisição para inspecionar a resposta." : "Run the request to inspect the response."}</strong>
+            <p>{pt ? "Status, tempo, cabeçalhos, dados normalizados e origem aparecerão aqui." : "Status, timing, headers, normalized data, and provenance will appear here."}</p>
           </div>
         )}
       </div>

@@ -1,3 +1,7 @@
+"use client";
+
+import { useState } from "react";
+
 interface ChartObservation {
   date: string;
   value: number | null;
@@ -21,6 +25,7 @@ export function DataChart({
   decimals: number;
   compact?: boolean;
 }) {
+  const [activeIndex, setActiveIndex] = useState<number | null>(null);
   const valid = data.filter((item): item is ChartObservation & { value: number } => item.value !== null);
   if (valid.length < 2) {
     return <div className="chart-empty">Not enough observations for a chart.</div>;
@@ -60,6 +65,11 @@ export function DataChart({
     return { value, y: padding.top + (height - padding.top - padding.bottom) * fraction };
   });
   const dateTicks = [data[0], data[Math.floor((data.length - 1) / 2)], data.at(-1)!];
+  const active = activeIndex === null ? null : data[activeIndex];
+
+  function moveSelection(delta: number) {
+    setActiveIndex((current) => Math.max(0, Math.min(data.length - 1, (current ?? data.length - 1) + delta)));
+  }
 
   return (
     <svg
@@ -68,6 +78,18 @@ export function DataChart({
       role="img"
       aria-label={`Time-series chart from ${data[0].date} to ${data.at(-1)!.date}, measured in ${unit}`}
       preserveAspectRatio="none"
+      tabIndex={0}
+      onPointerMove={(event) => {
+        const bounds = event.currentTarget.getBoundingClientRect();
+        const ratio = Math.max(0, Math.min(1, (event.clientX - bounds.left) / bounds.width));
+        setActiveIndex(Math.round(ratio * (data.length - 1)));
+      }}
+      onPointerLeave={() => setActiveIndex(null)}
+      onKeyDown={(event) => {
+        if (event.key === "ArrowLeft") { event.preventDefault(); moveSelection(-1); }
+        if (event.key === "ArrowRight") { event.preventDefault(); moveSelection(1); }
+        if (event.key === "Escape") setActiveIndex(null);
+      }}
     >
       {!compact &&
         ticks.map((tick) => (
@@ -81,6 +103,11 @@ export function DataChart({
       {segments.map((path, index) => (
         <path className="chart-line" d={path} fill="none" key={index} vectorEffect="non-scaling-stroke" />
       ))}
+      {active && active.value !== null && <g className="chart-crosshair">
+        <line x1={x(activeIndex!)} x2={x(activeIndex!)} y1={padding.top} y2={height - padding.bottom} vectorEffect="non-scaling-stroke" />
+        <circle cx={x(activeIndex!)} cy={y(active.value)} r={compact ? 4 : 5} vectorEffect="non-scaling-stroke" />
+        <title>{active.date}: {formatValue(active.value, decimals)} {unit}</title>
+      </g>}
       {dateTicks.map((item, index) => (
         <text
           key={`${item.date}-${index}`}
@@ -95,4 +122,3 @@ export function DataChart({
     </svg>
   );
 }
-

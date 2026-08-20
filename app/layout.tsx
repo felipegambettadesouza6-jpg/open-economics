@@ -1,16 +1,17 @@
 import type { Metadata } from "next";
 import { headers } from "next/headers";
-import { Geist, Geist_Mono } from "next/font/google";
+import { IBM_Plex_Mono, Sora } from "next/font/google";
 import "./globals.css";
 
-const geistSans = Geist({
+const geistSans = Sora({
   variable: "--font-geist-sans",
   subsets: ["latin"],
 });
 
-const geistMono = Geist_Mono({
+const geistMono = IBM_Plex_Mono({
   variable: "--font-geist-mono",
   subsets: ["latin"],
+  weight: ["400", "500", "600"],
 });
 
 export async function generateMetadata(): Promise<Metadata> {
@@ -18,7 +19,7 @@ export async function generateMetadata(): Promise<Metadata> {
   const host = requestHeaders.get("x-forwarded-host") ?? requestHeaders.get("host") ?? "localhost:3000";
   const protocol = requestHeaders.get("x-forwarded-proto") ?? (host.startsWith("localhost") ? "http" : "https");
   const origin = `${protocol}://${host}`;
-  const title = "Open Economics API — Brazil's economy, one clean API";
+  const title = "Open Economics — Brazil's economy, made readable";
   const description =
     "A free, open, developer-friendly API for authoritative Brazilian economic data.";
 
@@ -30,7 +31,7 @@ export async function generateMetadata(): Promise<Metadata> {
       title,
       description,
       type: "website",
-      images: [{ url: `${origin}/og.png`, width: 1788, height: 894, alt: "Open Economics API" }],
+      images: [{ url: `${origin}/og.png`, width: 1774, height: 887, alt: "Open Economics API — Brazil's economy, made readable" }],
     },
     twitter: {
       card: "summary_large_image",

@@ -29,15 +29,20 @@ async function request(path) {
   );
 }
 
-test("server-renders the Open Economics homepage", async () => {
-  const response = await request("/");
+test("redirects legacy links and server-renders the bilingual Open Economics homepage", async () => {
+  const redirectResponse = await request("/");
+  assert.equal(redirectResponse.status, 307);
+  assert.equal(redirectResponse.headers.get("location"), "/en");
+
+  const response = await request("/en");
   assert.equal(response.status, 200);
   assert.match(response.headers.get("content-type") ?? "", /^text\/html\b/i);
 
   const html = await response.text();
-  assert.match(html, /Open Economics API/i);
-  assert.match(html, /Brazilian economic data/i);
-  assert.match(html, /Explore the data/i);
+  assert.match(html, /Open Economics/i);
+  assert.match(html, /Brazil’s economy, made readable/i);
+  assert.match(html, /Explore data/i);
+  assert.match(html, /Search the economic atlas/i);
   assert.doesNotMatch(html, /Your site is taking shape|Building your site|react-loading-skeleton|codex-preview/i);
 });
 
