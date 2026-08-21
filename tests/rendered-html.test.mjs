@@ -40,9 +40,9 @@ test("redirects legacy links and server-renders the bilingual Open Economics hom
 
   const html = await response.text();
   assert.match(html, /Open Economics/i);
-  assert.match(html, /Brazil’s economy, made readable/i);
-  assert.match(html, /Explore data/i);
-  assert.match(html, /Search the economic atlas/i);
+  assert.match(html, /The economy, in focus/i);
+  assert.match(html, /Explore all data/i);
+  assert.match(html, /Search indicators/i);
   assert.doesNotMatch(html, /Your site is taking shape|Building your site|react-loading-skeleton|codex-preview/i);
 });
 

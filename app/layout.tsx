@@ -1,17 +1,18 @@
 import type { Metadata } from "next";
 import { headers } from "next/headers";
-import { IBM_Plex_Mono, Sora } from "next/font/google";
+import { DM_Mono, Manrope } from "next/font/google";
 import "./globals.css";
+import "./signal.css";
 
-const geistSans = Sora({
-  variable: "--font-geist-sans",
+const interfaceSans = Manrope({
+  variable: "--font-interface",
   subsets: ["latin"],
 });
 
-const geistMono = IBM_Plex_Mono({
-  variable: "--font-geist-mono",
+const dataMono = DM_Mono({
+  variable: "--font-data",
   subsets: ["latin"],
-  weight: ["400", "500", "600"],
+  weight: ["400", "500"],
 });
 
 export async function generateMetadata(): Promise<Metadata> {
@@ -19,7 +20,7 @@ export async function generateMetadata(): Promise<Metadata> {
   const host = requestHeaders.get("x-forwarded-host") ?? requestHeaders.get("host") ?? "localhost:3000";
   const protocol = requestHeaders.get("x-forwarded-proto") ?? (host.startsWith("localhost") ? "http" : "https");
   const origin = `${protocol}://${host}`;
-  const title = "Open Economics — Brazil's economy, made readable";
+  const title = "Open Economics — The economy, in focus";
   const description =
     "A free, open, developer-friendly API for authoritative Brazilian economic data.";
 
@@ -31,7 +32,7 @@ export async function generateMetadata(): Promise<Metadata> {
       title,
       description,
       type: "website",
-      images: [{ url: `${origin}/og.png`, width: 1774, height: 887, alt: "Open Economics API — Brazil's economy, made readable" }],
+      images: [{ url: `${origin}/og.png`, width: 1774, height: 887, alt: "Open Economics — The economy, in focus" }],
     },
     twitter: {
       card: "summary_large_image",
@@ -45,7 +46,7 @@ export async function generateMetadata(): Promise<Metadata> {
 export default function RootLayout({ children }: Readonly<{ children: React.ReactNode }>) {
   return (
     <html lang="en">
-      <body className={`${geistSans.variable} ${geistMono.variable}`}>{children}</body>
+      <body className={`${interfaceSans.variable} ${dataMono.variable}`}>{children}</body>
     </html>
   );
 }
