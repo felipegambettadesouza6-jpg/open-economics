@@ -21,7 +21,7 @@ export function DataAtlas({ locale }: { locale: Locale }) {
   useEffect(() => {
     const controller = new AbortController();
     chapters.forEach((item) => {
-      fetch(`/api/v1/indicators/${item.id}/observations?start=2019-01-01&order=asc`, { signal: controller.signal })
+      fetch(`/api/v1/indicators/${item.id}/observations?start=2023-01-01&order=asc`, { signal: controller.signal })
         .then(async (response) => response.ok ? response.json() as Promise<{ data: Point[] }> : Promise.reject(new Error()))
         .then((result) => setData((current) => ({ ...current, [item.id]: result.data })))
         .catch((error: Error) => { if (error.name !== "AbortError") setData((current) => ({ ...current, [item.id]: [] })); });
