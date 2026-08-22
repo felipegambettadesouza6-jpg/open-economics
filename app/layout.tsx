@@ -20,9 +20,9 @@ export async function generateMetadata(): Promise<Metadata> {
   const host = requestHeaders.get("x-forwarded-host") ?? requestHeaders.get("host") ?? "localhost:3000";
   const protocol = requestHeaders.get("x-forwarded-proto") ?? (host.startsWith("localhost") ? "http" : "https");
   const origin = `${protocol}://${host}`;
-  const title = "Open Economics — The economy, in focus";
+  const title = "Open Economics — Official data, made to flow";
   const description =
-    "A free, open, developer-friendly API for authoritative Brazilian economic data.";
+    "Discover, understand, and use official economic and financial data through one consistent API.";
 
   return {
     metadataBase: new URL(origin),
@@ -32,7 +32,7 @@ export async function generateMetadata(): Promise<Metadata> {
       title,
       description,
       type: "website",
-      images: [{ url: `${origin}/og.png`, width: 1774, height: 887, alt: "Open Economics — The economy, in focus" }],
+      images: [{ url: `${origin}/og.png`, width: 1774, height: 887, alt: "Open Economics — Official data, made to flow" }],
     },
     twitter: {
       card: "summary_large_image",

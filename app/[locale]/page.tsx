@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
+import { DataAtlas } from "@/app/components/DataAtlas";
 import { SignalHero } from "@/app/components/SignalHero";
-import { HomeSeriesStudio } from "@/app/components/HomeSeriesStudio";
 import { SiteFooter } from "@/app/components/SiteFooter";
 import { SiteHeader } from "@/app/components/SiteHeader";
 import { indicators } from "@/lib/catalog/indicators";
@@ -10,7 +10,7 @@ import { isLocale, localized, ui } from "@/lib/i18n";
 export async function generateMetadata({ params }: { params: Promise<{ locale: string }> }): Promise<Metadata> {
   const { locale } = await params;
   if (!isLocale(locale)) return {};
-  const title = locale === "pt-br" ? "Open Economics — A economia, em foco" : "Open Economics — The economy, in focus";
+  const title = locale === "pt-br" ? "Open Economics — Dados oficiais, feitos para fluir" : "Open Economics — Official data, made to flow";
   return { title, description: ui[locale].intro, alternates: { canonical: localized(locale), languages: { en: "/en", "pt-BR": "/pt-br" } } };
 }
 
@@ -18,15 +18,87 @@ export default async function LocalizedHome({ params }: { params: Promise<{ loca
   const { locale: value } = await params;
   if (!isLocale(value)) notFound();
   const locale = value;
+  const pt = locale === "pt-br";
+  const catalogHighlights = indicators.slice(0, 6);
+
   return <main className="signal-page">
     <SiteHeader locale={locale} />
     <SignalHero indicators={indicators} locale={locale} />
-    <section className="signal-partners"><span>{locale === "pt-br" ? "Uma camada aberta sobre dados oficiais de" : "An open layer over official data from"}</span><div><b>Banco Central do Brasil</b><i /> <b>IBGE</b><i /> <b>SIDRA</b><i /> <b>SGS</b></div></section>
-    <section className="signal-manifesto"><div><p>{locale === "pt-br" ? "ECONOMIA, SEM OPACIDADE" : "ECONOMICS, WITHOUT THE OPACITY"}</p><h2>{locale === "pt-br" ? <>Os dados públicos já existem.<br />Nós fazemos com que eles<br /><em>funcionem para você.</em></> : <>Public data already exists.<br />We make it actually<br /><em>work for you.</em></>}</h2><p>{locale === "pt-br" ? "Uma interface coerente para séries de diferentes órgãos, metodologias e frequências — mantendo a origem e o significado de cada observação." : "One coherent interface across agencies, methods, and frequencies—while preserving the source and meaning of every observation."}</p></div></section>
-    <section className="signal-story signal-story-analysis"><div className="signal-story-copy"><span>01</span><p className="signal-eyebrow">{locale === "pt-br" ? "PARA ENTENDER" : "FOR UNDERSTANDING"}</p><h2>{locale === "pt-br" ? "Do contexto ao código, sem trocar de ferramenta." : "From context to code, without switching tools."}</h2><p>{locale === "pt-br" ? "Cada indicador reúne o histórico, a unidade, o período de referência, a metodologia e uma requisição pronta. Análise e implementação começam no mesmo lugar." : "Every indicator brings together history, units, reference periods, methodology, and a ready-to-use request. Analysis and implementation start in the same place."}</p><a href={localized(locale, "/indicators/br-ipca-12m")}>{locale === "pt-br" ? "Conhecer a ficha do IPCA" : "See the IPCA data sheet"}<span>→</span></a></div><HomeSeriesStudio locale={locale} /></section>
-    <section className="signal-story signal-story-discovery"><div className="discovery-visual"><div className="discovery-search"><span>⌕</span><b>selic</b><kbd>/</kbd></div>{indicators.filter((item) => item.id.includes("selic")).slice(0, 3).map((item) => <a href={localized(locale, `/indicators/${item.id}`)} key={item.id}><span><b>{item.name}</b><small>{item.officialName}</small></span><strong>{item.unitSymbol}</strong></a>)}</div><div className="signal-story-copy"><span>02</span><p className="signal-eyebrow">{locale === "pt-br" ? "PARA DESCOBRIR" : "FOR DISCOVERY"}</p><h2>{locale === "pt-br" ? "Encontre a série certa, mesmo sem saber o nome certo." : "Find the right series, even without the exact name."}</h2><p>{locale === "pt-br" ? "Busque em português, inglês, por sigla, tema, ID estável ou código oficial. Compare frequência e unidade antes de abrir a série." : "Search in Portuguese, English, by acronym, topic, stable ID, or official code. Compare frequency and units before opening a series."}</p><a href={localized(locale, "/catalog")}>{locale === "pt-br" ? "Explorar o catálogo" : "Explore the catalog"}<span>→</span></a></div></section>
-    <section className="signal-proof"><div><p className="signal-eyebrow">{locale === "pt-br" ? "DESENHADO PARA CONFIANÇA" : "DESIGNED FOR TRUST"}</p><h2>{locale === "pt-br" ? "Legível na superfície. Rigoroso por baixo." : "Readable on the surface. Rigorous underneath."}</h2></div><div className="signal-proof-stats"><span><b>{indicators.length}</b><small>{locale === "pt-br" ? "séries conectadas" : "connected series"}</small></span><span><b>2</b><small>{locale === "pt-br" ? "fontes oficiais" : "official publishers"}</small></span><span><b>0</b><small>{locale === "pt-br" ? "valores inventados" : "invented values"}</small></span></div><div className="proof-list"><p><i>01</i><span><b>{locale === "pt-br" ? "Origem preservada" : "Provenance preserved"}</b><small>{locale === "pt-br" ? "URL, código, licença e instante de recuperação acompanham a resposta." : "Source URL, code, license, and retrieval time travel with the response."}</small></span></p><p><i>02</i><span><b>{locale === "pt-br" ? "Ausência explícita" : "Missing means missing"}</b><small>{locale === "pt-br" ? "Supressão, indisponibilidade e zero nunca viram a mesma coisa." : "Suppressed, unavailable, and numeric zero never collapse into one state."}</small></span></p><p><i>03</i><span><b>{locale === "pt-br" ? "Histórico revisável" : "Revision-aware history"}</b><small>{locale === "pt-br" ? "Séries revisadas pelo publicador são atualizadas, não congeladas." : "Publisher revisions are refreshed rather than frozen."}</small></span></p></div></section>
-    <section className="signal-final"><div className="final-orbit" aria-hidden="true"><i /><i /><i /><b>OE</b></div><p className="signal-eyebrow">OPEN ECONOMICS API</p><h2>{locale === "pt-br" ? <>A economia brasileira,<br /><em>pronta para usar.</em></> : <>Brazilian economics,<br /><em>ready to use.</em></>}</h2><div><a className="signal-button light" href={localized(locale, "/catalog")}>{locale === "pt-br" ? "Explorar dados" : "Explore data"}<span>↗</span></a><a href={localized(locale, "/docs")}>{locale === "pt-br" ? "Ler a documentação" : "Read the documentation"}<span>→</span></a></div></section>
+
+    <section className="oe-sources" aria-label={pt ? "Fontes de dados" : "Data sources"}>
+      <p>{pt ? "UMA INTERFACE ABERTA SOBRE" : "ONE OPEN INTERFACE OVER"}</p>
+      <div><span>Banco Central do Brasil</span><i /> <span>IBGE</span><i /> <span>SIDRA</span><i /> <span>SGS</span></div>
+      <small>{pt ? "Com origem, unidade e metodologia preservadas" : "With provenance, units, and methodology preserved"}</small>
+    </section>
+
+    <section className="oe-manifesto">
+      <p className="oe-label">{pt ? "DADOS PÚBLICOS, SEM A FRICÇÃO" : "PUBLIC DATA, WITHOUT THE FRICTION"}</p>
+      <h2>{pt ? <>A economia já fala.<br />Nós tornamos a linguagem <span>clara.</span></> : <>The economy already speaks.<br />We make its language <span>clear.</span></>}</h2>
+      <div className="oe-manifesto-copy"><span>01 — 03</span><p>{pt ? "Diferentes órgãos, formatos, frequências e convenções se tornam uma experiência coerente — sem apagar o contexto de origem." : "Different agencies, formats, frequencies, and conventions become one coherent experience—without erasing their original context."}</p></div>
+    </section>
+
+    <section className="oe-confluence">
+      <div className="oe-confluence-copy">
+        <p className="oe-label">{pt ? "UMA CAMADA CONSISTENTE" : "ONE CONSISTENT LAYER"}</p>
+        <h2>{pt ? "Muitas fontes. Uma forma de trabalhar." : "Many sources. One way to work."}</h2>
+        <p>{pt ? "Pesquise por conceito, compare séries e use a mesma estrutura de resposta em todos os indicadores." : "Search by concept, compare series, and work with the same response structure across every indicator."}</p>
+        <a href={localized(locale, "/sources")}>{pt ? "Ver fontes e licenças" : "See sources and licenses"}<span>→</span></a>
+      </div>
+      <div className="oe-stream" aria-hidden="true">
+        <div className="stream-source stream-a"><b>BCB</b><span>SGS · 432</span></div>
+        <div className="stream-source stream-b"><b>IBGE</b><span>SIDRA · 7060</span></div>
+        <div className="stream-source stream-c"><b>BCB</b><span>SGS · 1178</span></div>
+        <i className="stream-line line-a" /><i className="stream-line line-b" /><i className="stream-line line-c" />
+        <div className="stream-pulse pulse-a" /><div className="stream-pulse pulse-b" /><div className="stream-pulse pulse-c" />
+        <div className="stream-output"><span>GET</span><b>/api/v1/indicators/:id</b><small>JSON · normalized · provenance included</small></div>
+      </div>
+    </section>
+
+    <section className="oe-data-section">
+      <header><p className="oe-label">{pt ? "DADOS PARA VER E USAR" : "DATA TO SEE AND USE"}</p><h2>{pt ? "Cada série é uma história — e um endpoint." : "Every series is a story—and an endpoint."}</h2><p>{pt ? "Leia a tendência, verifique a metodologia e passe ao código sem perder o contexto." : "Read the trend, verify the methodology, and move to code without losing context."}</p></header>
+      <DataAtlas locale={locale} />
+    </section>
+
+    <section className="oe-discover">
+      <div className="oe-discover-head">
+        <p className="oe-label">{pt ? "DESCOBERTA NATURAL" : "NATURAL DISCOVERY"}</p>
+        <h2>{pt ? <>Encontre a série certa,<br />mesmo sem o nome certo.</> : <>Find the right series,<br />even without the right name.</>}</h2>
+      </div>
+      <div className="oe-index">
+        <div className="oe-index-aside"><p>{pt ? "Busque em português ou inglês, por sigla, tema, ID estável ou código oficial." : "Search in Portuguese or English, by acronym, topic, stable ID, or official code."}</p><a className="signal-button dark" href={localized(locale, "/catalog")}>{pt ? "Explorar catálogo" : "Explore catalog"}<span>↗</span></a></div>
+        <div className="oe-index-list">
+          {catalogHighlights.map((indicator, index) => <a href={localized(locale, `/indicators/${indicator.id}`)} key={indicator.id}><span>0{index + 1}</span><b>{indicator.name}</b><small>{indicator.sourceAgency} · {indicator.frequency}</small><i>↗</i></a>)}
+        </div>
+      </div>
+    </section>
+
+    <section className="oe-api">
+      <div className="oe-api-grid" aria-hidden="true" />
+      <div className="oe-api-heading"><p className="oe-label">OPEN ECONOMICS API</p><h2>{pt ? <>Do dado oficial<br />ao seu produto,<br /><span>em uma chamada.</span></> : <>From official data<br />to your product,<br /><span>in one call.</span></>}</h2></div>
+      <div className="oe-code-window">
+        <div><span>REQUEST</span><span>JSON</span></div>
+        <pre><code><i>GET</i> /api/v1/indicators/br-ipca-12m/observations<br /><br /><em>{`{`}</em><br />  <b>&quot;indicator&quot;</b>: <q>br-ipca-12m</q>,<br />  <b>&quot;unit&quot;</b>: <q>percent</q>,<br />  <b>&quot;source&quot;</b>: <q>IBGE</q>,<br />  <b>&quot;data&quot;</b>: [<br />    {`{`} <b>&quot;period&quot;</b>: <q>2026-07</q>, <b>&quot;value&quot;</b>: 4.44 {`}`}<br />  ]<br /><em>{`}`}</em></code></pre>
+        <footer><span>200 OK</span><span>182 ms</span><span>PROVENANCE INCLUDED</span></footer>
+      </div>
+      <div className="oe-code-tape" aria-hidden="true"><span>REST / JSON / OPENAPI 3.1 / NO AUTHENTICATION / STABLE IDS / SOURCE LINKS / REVISION AWARE /</span><span>REST / JSON / OPENAPI 3.1 / NO AUTHENTICATION / STABLE IDS / SOURCE LINKS / REVISION AWARE /</span></div>
+      <div className="oe-api-actions"><p>{pt ? "Sem chave. Sem cadastro. Comece no navegador e leve para produção quando quiser." : "No key. No signup. Start in the browser and take it to production when you’re ready."}</p><div><a className="signal-button light" href={localized(locale, "/playground")}>{pt ? "Testar a API" : "Try the API"}<span>↗</span></a><a href={localized(locale, "/docs")}>{pt ? "Ler documentação" : "Read documentation"}<span>→</span></a></div></div>
+    </section>
+
+    <section className="oe-trust">
+      <div className="oe-trust-head"><p className="oe-label">{pt ? "CONFIANÇA POR CONSTRUÇÃO" : "TRUST BY CONSTRUCTION"}</p><h2>{pt ? "Clara na superfície. Rigorosa por baixo." : "Clear on the surface. Rigorous underneath."}</h2></div>
+      <div className="oe-trust-list">
+        <article><span>01</span><h3>{pt ? "Origem preservada" : "Provenance preserved"}</h3><p>{pt ? "URL, código oficial, licença e instante de recuperação acompanham cada resposta." : "Source URL, official code, license, and retrieval time travel with every response."}</p></article>
+        <article><span>02</span><h3>{pt ? "Ausência explícita" : "Missing means missing"}</h3><p>{pt ? "Supressão, indisponibilidade e zero nunca viram a mesma coisa." : "Suppressed, unavailable, and numeric zero never collapse into one state."}</p></article>
+        <article><span>03</span><h3>{pt ? "Histórico revisável" : "Revision-aware history"}</h3><p>{pt ? "Revisões do publicador são atualizadas e permanecem rastreáveis." : "Publisher revisions are refreshed and remain traceable."}</p></article>
+      </div>
+    </section>
+
+    <section className="oe-final">
+      <div className="oe-final-orbit" aria-hidden="true"><i /><i /><i /><b>OE</b></div>
+      <p className="oe-label">OPEN ECONOMICS</p>
+      <h2>{pt ? <>A economia,<br />pronta para <span>ser usada.</span></> : <>The economy,<br />ready to <span>be used.</span></>}</h2>
+      <div><a className="signal-button light" href={localized(locale, "/catalog")}>{pt ? "Explorar dados" : "Explore data"}<span>↗</span></a><a href={localized(locale, "/docs")}>{pt ? "Começar com a API" : "Start with the API"}<span>→</span></a></div>
+    </section>
     <SiteFooter locale={locale} />
   </main>;
 }
