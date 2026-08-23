@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 import { DataAtlas } from "@/app/components/DataAtlas";
+import { HomeDiscovery } from "@/app/components/HomeDiscovery";
 import { SignalHero } from "@/app/components/SignalHero";
 import { SiteFooter } from "@/app/components/SiteFooter";
 import { SiteHeader } from "@/app/components/SiteHeader";
@@ -19,7 +20,6 @@ export default async function LocalizedHome({ params }: { params: Promise<{ loca
   if (!isLocale(value)) notFound();
   const locale = value;
   const pt = locale === "pt-br";
-  const catalogHighlights = indicators.slice(0, 6);
 
   return <main className="signal-page">
     <SiteHeader locale={locale} />
@@ -45,12 +45,14 @@ export default async function LocalizedHome({ params }: { params: Promise<{ loca
         <a href={localized(locale, "/sources")}>{pt ? "Ver fontes e licenças" : "See sources and licenses"}<span>→</span></a>
       </div>
       <div className="oe-stream" aria-hidden="true">
-        <div className="stream-source stream-a"><b>BCB</b><span>SGS · 432</span></div>
-        <div className="stream-source stream-b"><b>IBGE</b><span>SIDRA · 7060</span></div>
-        <div className="stream-source stream-c"><b>BCB</b><span>SGS · 1178</span></div>
+        <div className="source-document bcb-document"><span>BANCO CENTRAL DO BRASIL · SGS</span><b>432 · Meta Selic</b><code>23/08/2026&nbsp;&nbsp;15.00</code><i /><i /><i /></div>
+        <div className="source-document ibge-document"><span>IBGE · SIDRA · TABELA 7060</span><b>IPCA · Variação mensal</b><code>202607&nbsp;&nbsp;0.07</code><i /><i /></div>
+        <div className="stream-source stream-a"><b>BCB</b><span>SGS · 432 · DAILY</span></div>
+        <div className="stream-source stream-b"><b>IBGE</b><span>SIDRA · 7060 · MONTHLY</span></div>
+        <div className="stream-source stream-c"><b>BCB</b><span>SGS · 1178 · DAILY</span></div>
         <i className="stream-line line-a" /><i className="stream-line line-b" /><i className="stream-line line-c" />
         <div className="stream-pulse pulse-a" /><div className="stream-pulse pulse-b" /><div className="stream-pulse pulse-c" />
-        <div className="stream-output"><span>GET</span><b>/api/v1/indicators/:id</b><small>JSON · normalized · provenance included</small></div>
+        <div className="stream-output"><span>NORMALIZED OBSERVATION</span><b>/api/v1/indicators/:id</b><code>{`{ "period": "2026-07", "value": 0.07 }`}</code><small>JSON · stable ID · provenance included</small></div>
       </div>
     </section>
 
@@ -64,17 +66,13 @@ export default async function LocalizedHome({ params }: { params: Promise<{ loca
         <p className="oe-label">{pt ? "DESCOBERTA NATURAL" : "NATURAL DISCOVERY"}</p>
         <h2>{pt ? <>Encontre a série certa,<br />mesmo sem o nome certo.</> : <>Find the right series,<br />even without the right name.</>}</h2>
       </div>
-      <div className="oe-index">
-        <div className="oe-index-aside"><p>{pt ? "Busque em português ou inglês, por sigla, tema, ID estável ou código oficial." : "Search in Portuguese or English, by acronym, topic, stable ID, or official code."}</p><a className="signal-button dark" href={localized(locale, "/catalog")}>{pt ? "Explorar catálogo" : "Explore catalog"}<span>↗</span></a></div>
-        <div className="oe-index-list">
-          {catalogHighlights.map((indicator, index) => <a href={localized(locale, `/indicators/${indicator.id}`)} key={indicator.id}><span>0{index + 1}</span><b>{indicator.name}</b><small>{indicator.sourceAgency} · {indicator.frequency}</small><i>↗</i></a>)}
-        </div>
-      </div>
+      <HomeDiscovery items={indicators} locale={locale} />
     </section>
 
     <section className="oe-api">
       <div className="oe-api-grid" aria-hidden="true" />
       <div className="oe-api-heading"><p className="oe-label">OPEN ECONOMICS API</p><h2>{pt ? <>Do dado oficial<br />ao seu produto,<br /><span>em uma chamada.</span></> : <>From official data<br />to your product,<br /><span>in one call.</span></>}</h2></div>
+      <div className="oe-transform" aria-hidden="true"><span><i>01</i> Official observation<b>IBGE · 2026-07 · 0.07</b></span><em>→</em><span><i>02</i> Normalized series<b>br-ipca-monthly</b></span><em>→</em><span><i>03</i> Product-ready JSON<b>value · period · provenance</b></span></div>
       <div className="oe-code-window">
         <div><span>REQUEST</span><span>JSON</span></div>
         <pre><code><i>GET</i> /api/v1/indicators/br-ipca-12m/observations<br /><br /><em>{`{`}</em><br />  <b>&quot;indicator&quot;</b>: <q>br-ipca-12m</q>,<br />  <b>&quot;unit&quot;</b>: <q>percent</q>,<br />  <b>&quot;source&quot;</b>: <q>IBGE</q>,<br />  <b>&quot;data&quot;</b>: [<br />    {`{`} <b>&quot;period&quot;</b>: <q>2026-07</q>, <b>&quot;value&quot;</b>: 4.44 {`}`}<br />  ]<br /><em>{`}`}</em></code></pre>

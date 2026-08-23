@@ -66,6 +66,7 @@ export function SeriesExplorer({
   const [response, setResponse] = useState<SeriesResponse | null>(null);
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(true);
+  const [showAllRows, setShowAllRows] = useState(false);
 
   const end = new Date().toISOString().slice(0, 10);
   const start = range === "1Y"
@@ -108,7 +109,8 @@ export function SeriesExplorer({
   const latest = valid.at(-1);
   const previous = valid.at(-2);
   const change = latest && previous ? latest.value - previous.value : null;
-  const tableRows = [...(response?.data ?? [])].reverse().slice(0, 24);
+  const recentRows = [...(response?.data ?? [])].reverse().slice(0, 24);
+  const tableRows = showAllRows ? recentRows : recentRows.slice(0, 10);
 
   return (
     <section className="series-explorer">
@@ -208,6 +210,7 @@ export function SeriesExplorer({
             <p className="table-note">
               {pt ? "Valores da fonte são preservados literalmente. Símbolos de supressão e disponibilidade do IBGE permanecem distintos do zero numérico." : "Source values are preserved verbatim. IBGE suppression and availability symbols remain distinct from numeric zero."}
             </p>
+            {recentRows.length > 10 && <button className="table-more" type="button" onClick={() => setShowAllRows((current) => !current)}>{showAllRows ? (pt ? "Mostrar menos" : "Show less") : (pt ? "Mostrar mais observações" : "Show more observations")} <span>{showAllRows ? "↑" : "↓"}</span></button>}
           </div>
         </>
       )}

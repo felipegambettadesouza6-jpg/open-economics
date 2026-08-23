@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useMemo, useState } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { CopyButton } from "@/app/components/CopyButton";
 import { localized, type Locale } from "@/lib/i18n";
 
@@ -43,6 +43,7 @@ export function Playground({ indicators, locale = "en" }: { indicators: Playgrou
   const [indicatorQuery, setIndicatorQuery] = useState("");
   const [urlReady, setUrlReady] = useState(false);
   const [origin, setOrigin] = useState("");
+  const initialRun = useRef(false);
   const visibleIndicators = indicators.filter((item) => `${item.name} ${item.id} ${item.source}`.toLowerCase().includes(indicatorQuery.toLowerCase()));
 
   useEffect(() => {
@@ -93,7 +94,7 @@ export function Playground({ indicators, locale = "en" }: { indicators: Playgrou
     javascript: `const response = await fetch("${absoluteUrl}");\nif (!response.ok) throw new Error(\`HTTP \${response.status}\`);\nconst { data, meta } = await response.json();\nconsole.log(data, meta.provenance);`,
   };
 
-  async function execute() {
+  const execute = useCallback(async () => {
     setRunning(true);
     const started = performance.now();
     try {
@@ -127,7 +128,13 @@ export function Playground({ indicators, locale = "en" }: { indicators: Playgrou
     } finally {
       setRunning(false);
     }
-  }
+  }, [requestPath]);
+
+  useEffect(() => {
+    if (!urlReady || initialRun.current) return;
+    initialRun.current = true;
+    void execute();
+  }, [execute, urlReady]);
 
   return (
     <div className="playground">

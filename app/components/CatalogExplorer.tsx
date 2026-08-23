@@ -41,7 +41,7 @@ export function CatalogExplorer({ items, locale = "en" }: { items: CatalogItem[]
   const [adjustment, setAdjustment] = useState("");
   const [urlReady, setUrlReady] = useState(false);
   const [preview, setPreview] = useState<CatalogItem | null>(null);
-  const [previewData, setPreviewData] = useState<{ date: string; value: number | null }[] | null>(null);
+  const [previewData, setPreviewData] = useState<{ date: string; period?: string; value: number | null }[] | null>(null);
 
   useEffect(() => {
     const params = new URLSearchParams(window.location.search);
@@ -64,8 +64,8 @@ export function CatalogExplorer({ items, locale = "en" }: { items: CatalogItem[]
   }, [query, category, source, frequency, adjustment, locale, urlReady]);
 
   const results = useMemo(() => {
-    const needle = query.trim().toLowerCase();
-    return items.filter((item) => {
+    const tokens = query.trim().toLowerCase().split(/\s+/).filter(Boolean);
+    return items.map((item) => {
       const searchText = [
         item.id,
         item.name,
@@ -76,28 +76,32 @@ export function CatalogExplorer({ items, locale = "en" }: { items: CatalogItem[]
         item.upstreamCode,
         ...item.aliases,
       ].join(" ").toLowerCase();
-      return (
-        (!needle || searchText.includes(needle)) &&
+      const tokenMatches = tokens.filter((token) => searchText.includes(token)).length;
+      const nameText = `${item.name} ${item.officialName} ${item.aliases.join(" ")}`.toLowerCase();
+      const score = tokens.reduce((total, token) => total + (nameText.includes(token) ? 5 : searchText.includes(token) ? 1 : 0), 0);
+      return { item, tokenMatches, score, matches: (
+        (!tokens.length || tokenMatches === tokens.length) &&
         (!category || item.category === category) &&
         (!source || item.sourceAgency === source) &&
         (!frequency || item.frequency === frequency) &&
         (!adjustment || (adjustment === "adjusted") === item.seasonalAdjustment)
-      );
-    });
+      ) };
+    }).filter((result) => result.matches).sort((a, b) => b.score - a.score).map((result) => result.item);
   }, [items, query, category, source, frequency, adjustment]);
 
   const hasFilters = Boolean(query || category || source || frequency || adjustment);
+  const shownPreview = preview ?? (query.trim() ? results[0] ?? null : null);
 
   useEffect(() => {
-    if (!preview) { queueMicrotask(() => setPreviewData(null)); return; }
+    if (!shownPreview) { queueMicrotask(() => setPreviewData(null)); return; }
     const controller = new AbortController();
     queueMicrotask(() => setPreviewData(null));
-    fetch(`/api/v1/indicators/${preview.id}/observations?order=desc&limit=24`, { signal: controller.signal })
-      .then(async (response) => { if (!response.ok) throw new Error(); return response.json() as Promise<{ data: { date: string; value: number | null }[] }>; })
+    fetch(`/api/v1/indicators/${shownPreview.id}/observations?order=desc&limit=24`, { signal: controller.signal })
+      .then(async (response) => { if (!response.ok) throw new Error(); return response.json() as Promise<{ data: { date: string; period?: string; value: number | null }[] }>; })
       .then(({ data }) => setPreviewData([...data].reverse()))
       .catch(() => setPreviewData([]));
     return () => controller.abort();
-  }, [preview]);
+  }, [shownPreview]);
 
   return (
     <div className="catalog-explorer">
@@ -107,7 +111,7 @@ export function CatalogExplorer({ items, locale = "en" }: { items: CatalogItem[]
           <span aria-hidden="true">⌕</span>
           <input
             value={query}
-            onChange={(event) => setQuery(event.target.value)}
+            onChange={(event) => { setQuery(event.target.value); setPreview(null); }}
             placeholder="IPCA, Selic, unemployment, 433…"
             type="search"
           />
@@ -168,7 +172,7 @@ export function CatalogExplorer({ items, locale = "en" }: { items: CatalogItem[]
           <span>Indicator</span><span>Area</span><span>Frequency</span><span>Source</span>
         </div>
         {results.map((item) => (
-          <div className="catalog-result" key={item.id}>
+          <div className={`catalog-result ${shownPreview?.id === item.id ? "is-previewing" : ""}`} key={item.id}>
             <a className="result-hit" href={localized(locale, `/indicators/${item.id}`)}>
             <span className="result-main">
               <strong>{item.name}</strong>
@@ -184,8 +188,8 @@ export function CatalogExplorer({ items, locale = "en" }: { items: CatalogItem[]
               <b>{item.sourceAgency}</b>
               <i aria-hidden="true">↗</i>
             </span>
-            </a><button className="preview-trigger" type="button" aria-label={`Preview ${item.name}`} onClick={() => setPreview(preview?.id === item.id ? null : item)}>{preview?.id === item.id ? "×" : "⌁"}</button>
-            {preview?.id === item.id && <div className="catalog-preview"><div><span>{pt ? "Prévia da série" : "Series preview"}</span><strong>{item.officialName}</strong><small>{item.id} · {item.unitSymbol} · {item.sourceAgency}</small></div><div>{previewData === null ? <span className="preview-state">{pt ? "Buscando observações…" : "Fetching observations…"}</span> : previewData.length > 1 ? <DataChart data={previewData} unit={item.unitSymbol} decimals={2} compact /> : <span className="preview-state">{pt ? "Fonte indisponível — nenhum valor substituído" : "Source unavailable — no value substituted"}</span>}</div><div><a href={localized(locale, `/indicators/${item.id}`)}>{pt ? "Abrir ficha" : "Open data sheet"} →</a><a href={localized(locale, `/playground?indicator=${item.id}`)}>API ↗</a></div></div>}
+            </a><button className="preview-trigger" type="button" aria-label={`Preview ${item.name}`} onClick={() => setPreview(shownPreview?.id === item.id ? null : item)}>{shownPreview?.id === item.id ? "×" : "⌁"}</button>
+            {shownPreview?.id === item.id && <div className="catalog-preview"><div><span>{pt ? "Prévia da série" : "Series preview"}</span><strong>{previewData?.filter((point) => point.value !== null).at(-1)?.value?.toLocaleString(locale, { maximumFractionDigits: 2 }) ?? "—"}<i>{item.unitSymbol}</i></strong><small>{previewData?.at(-1)?.period ?? item.officialName}</small><code>{item.id} · {item.sourceAgency}</code></div><div>{previewData === null ? <span className="preview-state">{pt ? "Buscando observações…" : "Fetching observations…"}</span> : previewData.length > 1 ? <DataChart data={previewData} unit={item.unitSymbol} decimals={2} compact /> : <span className="preview-state">{pt ? "Fonte indisponível — nenhum valor substituído" : "Source unavailable — no value substituted"}</span>}</div><div><a href={localized(locale, `/indicators/${item.id}`)}>{pt ? "Abrir ficha" : "Open data sheet"} →</a><a href={localized(locale, `/playground?indicator=${item.id}`)}>API ↗</a></div></div>}
           </div>
         ))}
         {results.length === 0 && (
