@@ -1,10 +1,10 @@
 import type { Metadata } from "next";
 import { headers } from "next/headers";
-import { DM_Mono, Manrope } from "next/font/google";
+import { DM_Mono, Inter } from "next/font/google";
 import "./globals.css";
 import "./signal.css";
 
-const interfaceSans = Manrope({
+const interfaceSans = Inter({
   variable: "--font-interface",
   subsets: ["latin"],
 });

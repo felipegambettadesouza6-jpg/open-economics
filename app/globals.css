@@ -2,11 +2,11 @@
 
 :root {
   --ink: #151515;
-  --paper: #f6f4ef;
-  --white: #fffefa;
-  --forest: #143d31;
-  --forest-2: #0c2d24;
-  --acid: #c9ff65;
+  --paper: #ffffff;
+  --white: #ffffff;
+  --forest: #151515;
+  --forest-2: #0c0c0c;
+  --acid: #d8ff4f;
   --sky: #b9dcf6;
   --rose: #f2b4a9;
   --lavender: #c8b7ec;
@@ -17,7 +17,7 @@
 
 * { box-sizing: border-box; }
 html { scroll-behavior: smooth; }
-body { margin: 0; background: var(--paper); color: var(--ink); font-family: var(--font-interface), Arial, sans-serif; text-rendering: optimizeLegibility; }
+body { margin: 0; background: var(--paper); color: var(--ink); font-family: var(--font-interface), "Helvetica Neue", Arial, sans-serif; text-rendering: optimizeLegibility; }
 button, input, select, textarea { font: inherit; }
 button, a { -webkit-tap-highlight-color: transparent; }
 a { color: inherit; }
@@ -483,4 +483,103 @@ pre, code { font-family: var(--font-data), monospace; }
 @media (prefers-reduced-motion: reduce) {
   html { scroll-behavior: auto; }
   *, *::before, *::after { animation-duration: .01ms !important; animation-iteration-count: 1 !important; transition-duration: .01ms !important; }
+}
+
+/* 2026 visual system — the interface recedes and the data takes the foreground. */
+.atlas-page { background: #fff; }
+.atlas-shell { width: min(1360px, calc(100% - 72px)); }
+.atlas-kicker,
+.kicker { color: #777; font-size: 9px; letter-spacing: .14em; }
+.atlas-page-hero { padding-top: 112px; padding-bottom: 100px; }
+.atlas-page-hero > div { grid-template-columns: minmax(0, 1.35fr) minmax(250px, .5fr); gap: 12vw; }
+.atlas-page-hero h1 { max-width: 940px; font-size: clamp(54px, 6.4vw, 98px); font-weight: 480; letter-spacing: -.072em; line-height: .93; }
+.atlas-page-hero > div > p { max-width: 430px; color: #5f5f5b; font-size: 13px; line-height: 1.72; }
+.atlas-page-hero.compact { padding-top: 82px; padding-bottom: 52px; border-bottom: 1px solid var(--line); }
+.atlas-page-hero.compact h1 { font-size: clamp(48px, 5vw, 76px); }
+
+/* Catalog — a fast library, with no card grid. */
+.atlas-catalog { padding-bottom: 170px; }
+.catalog-search-row { top: 0; padding: 0; border: 0; border-top: 1px solid #111; border-bottom: 1px solid #111; border-radius: 0; background: rgba(255,255,255,.93); box-shadow: none; }
+.search-box { height: 82px; padding: 0 4px; border-radius: 0; background: transparent; }
+.search-box input { font-size: 18px; font-weight: 500; letter-spacing: -.02em; }
+.catalog-search-row > .button { margin: 15px 0; }
+.filter-bar { margin-top: 8px; padding: 20px 0; }
+.filter-bar select { border-radius: 0; background: #fff; }
+.catalog-list-head { border-bottom: 1px solid #111; }
+.catalog-result { border-top: 0; border-bottom: 1px solid var(--line); }
+.result-hit { min-height: 126px; }
+.catalog-result:hover .result-hit { padding-left: 13px; background: #f7f7f5; }
+.preview-trigger { border-radius: 0; }
+.catalog-preview { margin: 0; padding: 32px 0; border-radius: 0; border-bottom: 1px solid #111; box-shadow: none; }
+
+/* Indicator — one data sheet, not a stack of panels. */
+.atlas-indicator-hero { padding-top: 20px; }
+.atlas-breadcrumb { padding: 28px 0 82px; border-bottom: 1px solid var(--line); }
+.indicator-atlas-title { padding-top: 72px; }
+.indicator-atlas-title h1 { font-size: clamp(64px, 8.6vw, 132px); font-weight: 460; }
+.official-series-name { color: #60605c; font-family: var(--font-interface), sans-serif; font-style: normal; font-weight: 450; }
+.indicator-coordinate { padding: 0; border-radius: 0; background: transparent; }
+.atlas-facts { margin-top: 70px; padding: 24px 0; }
+.atlas-indicator-body { gap: 84px; }
+.series-card { border-radius: 0; background: #fff; box-shadow: none; }
+.series-toolbar { border-top: 1px solid #111; }
+.use-series-panel { border-radius: 0; background: #f5f5f2; }
+.use-series-panel pre,
+.snippet-panel { border-radius: 0; background: #111; }
+.atlas-methodology { border-top: 1px solid #111; }
+.publisher-strip { border-radius: 0; background: #f5f5f2; }
+
+/* Playground — an instrument with request and response as the protagonists. */
+.atlas-playground { width: min(1450px, calc(100% - 36px)); padding-bottom: 130px; }
+.playground { border: 1px solid #111; border-radius: 0; box-shadow: none; }
+.playground-builder { padding: 38px; background: #fff; }
+.playground-response { padding: 38px; background: #101010; }
+.builder-head { padding-bottom: 22px; border-bottom: 1px solid #111; }
+.builder-head b { border-radius: 0; background: #efefec; color: #111; }
+.form-field input,
+.form-field select { border-radius: 0; background: #fff; }
+.generated-url { border: 1px solid var(--line); border-radius: 0; background: #fafaf8; }
+.run-button { border-radius: 0; }
+.response-body { border-radius: 0; background: #070707; }
+
+/* Documentation — quiet, compact and typographic. */
+.atlas-docs-head { padding: 70px 0 62px; border-radius: 0; background: #fff; color: #111; }
+.atlas-docs-head .atlas-kicker { color: #777; }
+.atlas-docs-head h1 { max-width: 800px; margin: 22px 0 14px; font-size: clamp(42px, 5vw, 72px); font-weight: 480; letter-spacing: -.065em; }
+.atlas-docs-head > div > p:not(.atlas-kicker) { color: #61615d; }
+.docs-search { max-width: 720px; border: 1px solid #111; border-radius: 0; background: #fff; color: #111; box-shadow: none; }
+.docs-search input { color: #111; }
+.atlas-docs-layout { padding-top: 58px; }
+.atlas-docs-nav { top: 28px; }
+.atlas-docs-content section { padding-bottom: 96px; }
+.atlas-docs-content h2 { font-size: clamp(36px, 4vw, 58px); font-weight: 480; }
+.atlas-docs-content pre { border-radius: 0; background: #111; }
+.atlas-schema { border-radius: 0; background: #f5f5f2; }
+.docs-callout { border-radius: 0; background: #f5f5f2; }
+
+/* Sources — institutional records separated by rules. */
+.atlas-sources > article,
+.atlas-sources > article:nth-child(2) { overflow: visible; margin: 0; grid-template-columns: 64px .8fr 1.2fr; border-radius: 0; border-top: 1px solid #111; background: #fff; }
+.atlas-sources > article:last-child { border-bottom: 1px solid #111; }
+.source-map { background: #f7f7f5; }
+.atlas-sources article footer { background: #fff; }
+
+/* Status — purely operational. */
+.status-panel { border-top: 1px solid #111; border-bottom: 1px solid #111; border-radius: 0; background: #fff; box-shadow: none; }
+.overall-status { padding-inline: 0; background: #fff; }
+.status-orb { width: 12px; height: 12px; box-shadow: 0 0 0 6px rgba(83,201,130,.11); }
+.status-checks > div { padding-inline: 0; }
+.check-mark { width: 10px; height: 10px; overflow: hidden; background: #44b56e; color: transparent; line-height: 10px; }
+.status-panel > p { padding-inline: 0; }
+.status-principles { border-top: 1px solid #111; }
+.status-principles div { padding: 28px 28px 28px 0; border-radius: 0; background: #fff; }
+
+@media (max-width: 720px) {
+  .atlas-shell { width: calc(100% - 32px); }
+  .atlas-page-hero { padding-top: 72px; padding-bottom: 72px; }
+  .atlas-page-hero h1 { font-size: 52px; }
+  .atlas-playground { width: 100%; }
+  .playground { border-right: 0; border-left: 0; }
+  .atlas-sources > article,
+  .atlas-sources > article:nth-child(2) { grid-template-columns: 1fr; }
 }

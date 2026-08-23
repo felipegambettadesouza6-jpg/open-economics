@@ -27,7 +27,7 @@ a { color: inherit; }
 .signal-status i { width: 5px; height: 5px; border-radius: 50%; background: #43b86b; box-shadow: 0 0 0 4px rgba(67,184,107,.1); }
 .signal-nav-actions { justify-self: end; display: flex; align-items: center; gap: 12px; }
 .signal-nav-actions .language-switch { border: 0; background: transparent; }
-.signal-nav-cta { padding: 11px 16px; border: 1px solid var(--signal-ink); border-radius: 999px; background: var(--signal-ink); color: #fff; font-size: 11px; font-weight: 700; text-decoration: none; transition: background .25s, color .25s; }
+.signal-nav-cta { padding: 11px 16px; border: 1px solid var(--signal-ink); border-radius: 2px; background: var(--signal-ink); color: #fff; font-size: 11px; font-weight: 700; text-decoration: none; transition: background .25s, color .25s; }
 .signal-nav-cta:hover { background: #fff; color: var(--signal-ink); }
 .signal-nav-cta span { margin-left: 13px; }
 .signal-mobile-menu { display: none; }
@@ -40,7 +40,7 @@ a { color: inherit; }
 .signal-hero-intro { max-width: 490px; margin-top: 46px; padding-left: 22%; }
 .signal-hero-intro > p { margin: 0; color: #585854; font-size: 16px; line-height: 1.6; letter-spacing: -.02em; }
 .signal-hero-actions { margin-top: 28px; display: flex; align-items: center; gap: 26px; }
-.signal-button { display: inline-flex; align-items: center; justify-content: space-between; gap: 30px; padding: 15px 18px; border-radius: 999px; font-size: 11px; font-weight: 700; text-decoration: none; }
+.signal-button { display: inline-flex; align-items: center; justify-content: space-between; gap: 30px; padding: 15px 18px; border-radius: 2px; font-size: 11px; font-weight: 700; text-decoration: none; }
 .signal-button.dark { background: var(--signal-ink); color: white; }
 .signal-button span { transition: transform .25s ease; }
 .signal-button:hover span { transform: translate(2px,-2px); }
