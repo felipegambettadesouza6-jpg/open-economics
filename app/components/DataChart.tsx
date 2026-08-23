@@ -101,12 +101,12 @@ export function DataChart({
           </g>
         ))}
       {segments.map((path, index) => (
-        <path className="chart-line" d={path} fill="none" key={index} vectorEffect="non-scaling-stroke" />
+        <path className="chart-line" d={path} fill="none" pathLength="1" key={index} vectorEffect="non-scaling-stroke" />
       ))}
       {active && active.value !== null && <g className="chart-crosshair">
         <line x1={x(activeIndex!)} x2={x(activeIndex!)} y1={padding.top} y2={height - padding.bottom} vectorEffect="non-scaling-stroke" />
         <circle cx={x(activeIndex!)} cy={y(active.value)} r={compact ? 4 : 5} vectorEffect="non-scaling-stroke" />
-        <title>{active.date}: {formatValue(active.value, decimals)} {unit}</title>
+        {!compact && <g className="chart-tooltip" transform={`translate(${Math.min(width - 150, Math.max(66, x(activeIndex!) - 70))},${Math.max(8, y(active.value) - 62)})`}><rect width="140" height="48" /><text x="10" y="18">{active.date}</text><text className="chart-tooltip-value" x="10" y="36">{formatValue(active.value, decimals)} {unit}</text></g>}
       </g>}
       {dateTicks.map((item, index) => (
         <text

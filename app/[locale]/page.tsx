@@ -37,7 +37,7 @@ export default async function LocalizedHome({ params }: { params: Promise<{ loca
       <div className="oe-manifesto-copy"><span>01 — 03</span><p>{pt ? "Diferentes órgãos, formatos, frequências e convenções se tornam uma experiência coerente — sem apagar o contexto de origem." : "Different agencies, formats, frequencies, and conventions become one coherent experience—without erasing their original context."}</p></div>
     </section>
 
-    <section className="oe-confluence">
+    <section className="oe-confluence" data-nav-theme="dark">
       <div className="oe-confluence-copy">
         <p className="oe-label">{pt ? "UMA CAMADA CONSISTENTE" : "ONE CONSISTENT LAYER"}</p>
         <h2>{pt ? "Muitas fontes. Uma forma de trabalhar." : "Many sources. One way to work."}</h2>
@@ -69,7 +69,7 @@ export default async function LocalizedHome({ params }: { params: Promise<{ loca
       <HomeDiscovery items={indicators} locale={locale} />
     </section>
 
-    <section className="oe-api">
+    <section className="oe-api" data-nav-theme="dark">
       <div className="oe-api-grid" aria-hidden="true" />
       <div className="oe-api-heading"><p className="oe-label">OPEN ECONOMICS API</p><h2>{pt ? <>Do dado oficial<br />ao seu produto,<br /><span>em uma chamada.</span></> : <>From official data<br />to your product,<br /><span>in one call.</span></>}</h2></div>
       <div className="oe-transform" aria-hidden="true"><span><i>01</i> Official observation<b>IBGE · 2026-07 · 0.07</b></span><em>→</em><span><i>02</i> Normalized series<b>br-ipca-monthly</b></span><em>→</em><span><i>03</i> Product-ready JSON<b>value · period · provenance</b></span></div>
@@ -91,12 +91,6 @@ export default async function LocalizedHome({ params }: { params: Promise<{ loca
       </div>
     </section>
 
-    <section className="oe-final">
-      <div className="oe-final-orbit" aria-hidden="true"><i /><i /><i /><b>OE</b></div>
-      <p className="oe-label">OPEN ECONOMICS</p>
-      <h2>{pt ? <>A economia,<br />pronta para <span>ser usada.</span></> : <>The economy,<br />ready to <span>be used.</span></>}</h2>
-      <div><a className="signal-button light" href={localized(locale, "/catalog")}>{pt ? "Explorar dados" : "Explore data"}<span>↗</span></a><a href={localized(locale, "/docs")}>{pt ? "Começar com a API" : "Start with the API"}<span>→</span></a></div>
-    </section>
-    <SiteFooter locale={locale} />
+    <SiteFooter locale={locale} dramatic />
   </main>;
 }

@@ -391,3 +391,53 @@ a { color: inherit; }
 @media (prefers-reduced-motion: reduce) {
   .oe-atlas::before { animation: none; }
 }
+
+/* Final composition — an adaptive frame and one disciplined visual language. */
+.signal-header { position: sticky; top: 0; z-index: 100; background: rgba(255,255,255,0); transition: background .35s ease, color .35s ease, box-shadow .35s ease; }
+.signal-nav { transition: height .35s cubic-bezier(.16,1,.3,1), border-color .35s ease; }
+.signal-header.is-scrolled { background: rgba(255,255,255,.84); box-shadow: 0 1px 0 rgba(17,17,17,.08); backdrop-filter: blur(18px) saturate(1.15); }
+.signal-header.is-scrolled .signal-nav { height: 64px; border-color: transparent; }
+.signal-header.is-dark { color: #fff; background: rgba(12,12,12,.82); box-shadow: 0 1px 0 rgba(255,255,255,.1); }
+.signal-header.is-dark .signal-nav { border-color: transparent; }
+.signal-header.is-dark .signal-brand,
+.signal-header.is-dark .signal-nav-links a,
+.signal-header.is-dark .signal-status,
+.signal-header.is-dark .language-switch { color: #fff; }
+.signal-header.is-dark .status-dot { box-shadow: 0 0 0 4px rgba(95,212,137,.12); }
+.signal-header.is-dark .signal-nav-cta { border-color: #fff; background: #fff; color: #111; }
+.signal-header.is-dark .signal-nav-cta:hover { background: transparent; color: #fff; }
+.signal-header.is-dark .signal-mobile-menu summary i { background: #fff; }
+
+.field-color { background: radial-gradient(circle at 72% 24%,#ffdfaf 0 8%,transparent 29%),radial-gradient(circle at 20% 23%,#f39886 0 16%,transparent 41%),linear-gradient(138deg,#f6c4a7 0%,#df7f72 48%,#9b4a51 100%); }
+.field-color::after { opacity: .18; background-image: repeating-linear-gradient(162deg,transparent 0 28px,rgba(255,255,255,.18) 29px 30px); }
+.field-color i:nth-child(1) { background: rgba(255,231,181,.55); }
+.field-color i:nth-child(2) { background: rgba(169,67,78,.28); }
+.field-color i:nth-child(3) { background: rgba(255,129,105,.42); }
+.economic-field::before { background: rgba(234,146,117,.32) !important; }
+.oe-stream::before { opacity: .86; background: radial-gradient(circle at 77% 20%,rgba(140,177,201,.38),transparent 30%),linear-gradient(140deg,#f4f5f4,#e8eef1 64%,#f4f3ef); filter: none; }
+.oe-atlas::after { display: none; }
+.oe-atlas.tone-blue::before { background: #7fa1bc; }
+.oe-atlas.tone-lime::before { background: #c7ba77; }
+
+.signal-footer-dramatic { position: relative; min-height: 920px; padding: 72px 48px 22px; overflow: hidden; background: #111; }
+.footer-build { width: min(1450px,100%); min-height: 150px; margin: 0 auto 68px; display: flex; align-items: flex-start; justify-content: space-between; border-bottom: 1px solid rgba(255,255,255,.2); color: #fff; font-size: clamp(42px,5.2vw,78px); font-weight: 470; letter-spacing: -.065em; line-height: .95; text-decoration: none; }
+.footer-build span { font-weight: 300; transition: transform .35s cubic-bezier(.16,1,.3,1); }
+.footer-build:hover span { transform: translate(10px,-3px); }
+.footer-directory { position: relative; z-index: 2; width: min(1450px,100%); min-height: 330px; margin: 0 auto; display: grid; grid-template-columns: repeat(4,1fr); border-left: 1px solid rgba(255,255,255,.12); }
+.footer-directory > div { padding: 4px 34px; display: flex; flex-direction: column; gap: 13px; border-right: 1px solid rgba(255,255,255,.12); }
+.footer-directory span { margin-bottom: 54px; color: rgba(255,255,255,.32); font: 500 8px var(--font-data),monospace; text-transform: uppercase; letter-spacing: .08em; }
+.footer-directory a { width: max-content; max-width: 100%; color: rgba(255,255,255,.82); font-size: 11px; line-height: 1.35; text-decoration: none; transition: color .2s, transform .2s; }
+.footer-directory a:hover { color: #fff; transform: translateX(4px); }
+.footer-wordmark { width: min(1450px,100%); margin: 42px auto -2vw; color: #1c1c1c; font-size: clamp(94px,14.8vw,232px); font-weight: 560; letter-spacing: -.085em; line-height: .76; white-space: nowrap; }
+.signal-footer-dramatic .signal-footer-bottom { position: relative; z-index: 3; margin-top: 32px; }
+
+@media (max-width: 720px) {
+  .signal-header.is-scrolled .signal-nav { height: 58px; }
+  .signal-header.is-dark .signal-mobile-menu > div { background: #111; border-color: rgba(255,255,255,.16); }
+  .signal-footer-dramatic { min-height: 790px; padding: 55px 20px 22px; }
+  .footer-build { min-height: 120px; margin-bottom: 48px; font-size: 43px; }
+  .footer-directory { min-height: 390px; grid-template-columns: repeat(2,1fr); }
+  .footer-directory > div { padding: 4px 16px 34px; }
+  .footer-directory span { margin-bottom: 28px; }
+  .footer-wordmark { margin-top: 38px; font-size: 24vw; line-height: .82; }
+}
