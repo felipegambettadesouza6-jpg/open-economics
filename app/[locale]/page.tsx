@@ -45,14 +45,11 @@ export default async function LocalizedHome({ params }: { params: Promise<{ loca
         <a href={localized(locale, "/sources")}>{pt ? "Ver fontes e licenças" : "See sources and licenses"}<span>→</span></a>
       </div>
       <div className="oe-stream" aria-hidden="true">
-        <div className="source-document bcb-document"><span>BANCO CENTRAL DO BRASIL · SGS</span><b>432 · Meta Selic</b><code>23/08/2026&nbsp;&nbsp;15.00</code><i /><i /><i /></div>
-        <div className="source-document ibge-document"><span>IBGE · SIDRA · TABELA 7060</span><b>IPCA · Variação mensal</b><code>202607&nbsp;&nbsp;0.07</code><i /><i /></div>
-        <div className="stream-source stream-a"><b>BCB</b><span>SGS · 432 · DAILY</span></div>
-        <div className="stream-source stream-b"><b>IBGE</b><span>SIDRA · 7060 · MONTHLY</span></div>
-        <div className="stream-source stream-c"><b>BCB</b><span>SGS · 1178 · DAILY</span></div>
-        <i className="stream-line line-a" /><i className="stream-line line-b" /><i className="stream-line line-c" />
-        <div className="stream-pulse pulse-a" /><div className="stream-pulse pulse-b" /><div className="stream-pulse pulse-c" />
-        <div className="stream-output"><span>NORMALIZED OBSERVATION</span><b>/api/v1/indicators/:id</b><code>{`{ "period": "2026-07", "value": 0.07 }`}</code><small>JSON · stable ID · provenance included</small></div>
+        <div className="normalization-head"><span>UPSTREAM RECORDS</span><span>OPEN ECONOMICS SCHEMA</span></div>
+        <div className="normalization-row row-bcb"><div><b>BCB · SGS 432</b><code>23/08/2026&nbsp;&nbsp;15.00</code><small>daily · % p.a.</small></div><i /><div><code>br-selic-target</code><b>2026-08-23&nbsp;&nbsp;15.00</b><small>BCB · observed</small></div></div>
+        <div className="normalization-row row-ibge"><div><b>IBGE · SIDRA 7060</b><code>202607&nbsp;&nbsp;0.07</code><small>monthly · %</small></div><i /><div><code>br-ipca-monthly</code><b>2026-07&nbsp;&nbsp;0.07</b><small>IBGE · observed</small></div></div>
+        <div className="normalization-row row-activity"><div><b>BCB · SGS 24364</b><code>202606&nbsp;&nbsp;148.70</code><small>monthly · index</small></div><i /><div><code>br-ibc-br</code><b>2026-06&nbsp;&nbsp;148.70</b><small>BCB · observed</small></div></div>
+        <div className="normalization-schema"><span>date</span><span>period</span><span>value</span><span>raw_value</span><span>status</span><span>provenance</span></div>
       </div>
     </section>
 
@@ -80,15 +77,6 @@ export default async function LocalizedHome({ params }: { params: Promise<{ loca
       </div>
       <div className="oe-code-tape" aria-hidden="true"><span>REST / JSON / OPENAPI 3.1 / NO AUTHENTICATION / STABLE IDS / SOURCE LINKS / REVISION AWARE /</span><span>REST / JSON / OPENAPI 3.1 / NO AUTHENTICATION / STABLE IDS / SOURCE LINKS / REVISION AWARE /</span></div>
       <div className="oe-api-actions"><p>{pt ? "Sem chave. Sem cadastro. Comece no navegador e leve para produção quando quiser." : "No key. No signup. Start in the browser and take it to production when you’re ready."}</p><div><a className="signal-button light" href={localized(locale, "/playground")}>{pt ? "Testar a API" : "Try the API"}<span>↗</span></a><a href={localized(locale, "/docs")}>{pt ? "Ler documentação" : "Read documentation"}<span>→</span></a></div></div>
-    </section>
-
-    <section className="oe-trust">
-      <div className="oe-trust-head"><p className="oe-label">{pt ? "CONFIANÇA POR CONSTRUÇÃO" : "TRUST BY CONSTRUCTION"}</p><h2>{pt ? "Clara na superfície. Rigorosa por baixo." : "Clear on the surface. Rigorous underneath."}</h2></div>
-      <div className="oe-trust-list">
-        <article><span>01</span><h3>{pt ? "Origem preservada" : "Provenance preserved"}</h3><p>{pt ? "URL, código oficial, licença e instante de recuperação acompanham cada resposta." : "Source URL, official code, license, and retrieval time travel with every response."}</p></article>
-        <article><span>02</span><h3>{pt ? "Ausência explícita" : "Missing means missing"}</h3><p>{pt ? "Supressão, indisponibilidade e zero nunca viram a mesma coisa." : "Suppressed, unavailable, and numeric zero never collapse into one state."}</p></article>
-        <article><span>03</span><h3>{pt ? "Histórico revisável" : "Revision-aware history"}</h3><p>{pt ? "Revisões do publicador são atualizadas e permanecem rastreáveis." : "Publisher revisions are refreshed and remain traceable."}</p></article>
-      </div>
     </section>
 
     <SiteFooter locale={locale} dramatic />

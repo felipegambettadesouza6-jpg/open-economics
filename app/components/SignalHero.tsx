@@ -9,10 +9,10 @@ type Point = { date: string; period: string; value: number | null };
 type SeriesState = Record<string, { status: "loading" | "ready" | "error"; data?: Point[] }>;
 
 const featured = [
-  { id: "br-ipca-12m", short: "IPCA", source: "IBGE", fallback: 4.44, unit: "%" },
-  { id: "br-selic-target", short: "Selic", source: "BCB", fallback: 10.5, unit: "%" },
-  { id: "br-unemployment-rate", short: "Unemployment", source: "IBGE", fallback: 6.2, unit: "%" },
-  { id: "br-ibc-br", short: "IBC-Br", source: "BCB", fallback: 148.7, unit: "" },
+  { id: "br-ipca-12m", short: "IPCA", source: "IBGE", fallback: 4.44, unit: "%", tone: "coral" },
+  { id: "br-selic-target", short: "Selic", source: "BCB", fallback: 10.5, unit: "%", tone: "blue" },
+  { id: "br-unemployment-rate", short: "Unemployment", source: "IBGE", fallback: 6.2, unit: "%", tone: "sand" },
+  { id: "br-ibc-br", short: "IBC-Br", source: "BCB", fallback: 148.7, unit: "", tone: "clay" },
 ] as const;
 
 function startDate(years: number) {
@@ -22,7 +22,7 @@ function startDate(years: number) {
 }
 
 function numericValues(data: Point[] | undefined) {
-  return (data ?? []).filter((point): point is Point & { value: number } => point.value !== null).slice(-42);
+  return (data ?? []).filter((point): point is Point & { value: number } => point.value !== null).slice(-56);
 }
 
 export function SignalHero({ indicators, locale }: { indicators: IndicatorDefinition[]; locale: Locale }) {
@@ -50,19 +50,34 @@ export function SignalHero({ indicators, locale }: { indicators: IndicatorDefini
   }, []);
 
   useEffect(() => {
-    const interval = window.setInterval(() => setActive((current) => (current + 1) % featured.length), 4800);
+    if (query) return;
+    const interval = window.setInterval(() => setActive((current) => (current + 1) % featured.length), 6200);
     return () => window.clearInterval(interval);
-  }, []);
+  }, [query]);
 
   useEffect(() => {
     const focusSearch = (event: KeyboardEvent) => {
       if (event.key === "/" && !["INPUT", "TEXTAREA"].includes(document.activeElement?.tagName ?? "")) {
-        event.preventDefault(); inputRef.current?.focus();
+        event.preventDefault();
+        inputRef.current?.focus();
       }
     };
     window.addEventListener("keydown", focusSearch);
     return () => window.removeEventListener("keydown", focusSearch);
   }, []);
+
+  const current = featured[active];
+  const currentPoints = numericValues(series[current.id]?.data);
+  const fallbackPoints = Array.from({ length: 42 }, (_, index) => ({
+    date: `${2023 + Math.floor(index / 12)}-${String((index % 12) + 1).padStart(2, "0")}-01`,
+    period: `${2023 + Math.floor(index / 12)}-${String((index % 12) + 1).padStart(2, "0")}`,
+    value: current.fallback + Math.sin(index * .46 + active) * (active === 3 ? 2.8 : .55) + index * .012,
+  }));
+  const plotted = currentPoints.length > 1 ? currentPoints : fallbackPoints;
+  const values = plotted.map((point) => point.value);
+  const low = Math.min(...values);
+  const high = Math.max(...values);
+  const span = high - low || 1;
 
   useEffect(() => {
     const canvas = canvasRef.current;
@@ -83,46 +98,47 @@ export function SignalHero({ indicators, locale }: { indicators: IndicatorDefini
       const height = bounds.height;
       context.setTransform(ratio, 0, 0, ratio, 0, 0);
       context.clearRect(0, 0, width, height);
-      context.strokeStyle = "rgba(255,255,255,.22)";
-      context.lineWidth = 1;
-      for (let row = 1; row < 6; row += 1) {
-        context.beginPath();
-        context.moveTo(0, (height / 6) * row + .5);
-        context.lineTo(width, (height / 6) * row + .5);
-        context.stroke();
-      }
-      featured.slice(0, 3).forEach((item, index) => {
-        const points = numericValues(series[item.id]?.data);
-        const values = points.length > 1 ? points.map((point) => point.value) : Array.from({ length: 24 }, (_, point) => Math.sin(point * .45 + index) * 3 + point * .08);
-        const low = Math.min(...values);
-        const high = Math.max(...values);
-        const span = high - low || 1;
-        const reveal = Math.min(1, frame / (50 + index * 16));
-        const count = Math.max(2, Math.floor(values.length * reveal));
-        context.beginPath();
-        values.slice(0, count).forEach((value, pointIndex) => {
-          const x = (pointIndex / (values.length - 1)) * (width + 80) - 40;
-          const normalized = (value - low) / span;
-          const y = height * (.3 + index * .18) - normalized * height * .2 + Math.sin(frame * .012 + index) * 2;
-          if (pointIndex === 0) context.moveTo(x, y); else context.lineTo(x, y);
-        });
-        context.strokeStyle = index === active % 3 ? "rgba(255,255,255,.98)" : "rgba(255,255,255,.38)";
-        context.lineWidth = index === active % 3 ? 2.2 : 1;
-        context.stroke();
+      context.lineCap = "round";
+      context.lineJoin = "round";
+      const reveal = Math.min(1, frame / 62);
+      const count = Math.max(2, Math.floor(plotted.length * reveal));
+      context.beginPath();
+      plotted.slice(0, count).forEach((point, index) => {
+        const x = (index / Math.max(plotted.length - 1, 1)) * width;
+        const normalized = (point.value - low) / span;
+        const y = height * .14 + (1 - normalized) * height * .69;
+        if (index === 0) context.moveTo(x, y); else context.lineTo(x, y);
       });
+      context.strokeStyle = "#111";
+      context.lineWidth = 2.15;
+      context.stroke();
+      const lastIndex = count - 1;
+      const lastPoint = plotted[lastIndex];
+      if (lastPoint) {
+        const x = (lastIndex / Math.max(plotted.length - 1, 1)) * width;
+        const y = height * .14 + (1 - (lastPoint.value - low) / span) * height * .69;
+        context.beginPath();
+        context.arc(x, y, 3.5, 0, Math.PI * 2);
+        context.fillStyle = "#111";
+        context.fill();
+      }
       frame += 1;
-      animation = window.requestAnimationFrame(draw);
+      if (reveal < 1) animation = window.requestAnimationFrame(draw);
     };
     draw();
     return () => window.cancelAnimationFrame(animation);
-  }, [active, series]);
+  }, [active, high, low, plotted, span]);
 
-  const current = featured[active];
-  const currentPoints = numericValues(series[current.id]?.data);
   const latest = currentPoints.at(-1);
   const previous = currentPoints.at(-2);
   const value = latest?.value ?? current.fallback;
   const movement = latest && previous ? latest.value - previous.value : 0;
+  const tickTop = high.toLocaleString(locale, { maximumFractionDigits: 2 });
+  const tickMiddle = ((high + low) / 2).toLocaleString(locale, { maximumFractionDigits: 2 });
+  const tickBottom = low.toLocaleString(locale, { maximumFractionDigits: 2 });
+  const firstPeriod = plotted[0]?.period ?? "2023-01";
+  const middlePeriod = plotted[Math.floor(plotted.length / 2)]?.period ?? "2024-07";
+  const lastPeriod = plotted.at(-1)?.period ?? "2026-07";
 
   const moveField = (event: ReactPointerEvent<HTMLDivElement>) => {
     const bounds = event.currentTarget.getBoundingClientRect();
@@ -132,7 +148,7 @@ export function SignalHero({ indicators, locale }: { indicators: IndicatorDefini
     event.currentTarget.style.setProperty("--field-y", y.toFixed(3));
   };
 
-  return <section className="signal-hero">
+  return <section className={`signal-hero hero-tone-${current.tone}`}>
     <div className="signal-hero-copy">
       <p className="signal-eyebrow">{pt ? "A CAMADA ABERTA PARA DADOS OFICIAIS" : "THE OPEN LAYER FOR OFFICIAL DATA"}</p>
       <h1>{pt ? <>Dados oficiais,<br />feitos para <span>fluir.</span></> : <>Official data,<br />made to <span>flow.</span></>}</h1>
@@ -143,19 +159,21 @@ export function SignalHero({ indicators, locale }: { indicators: IndicatorDefini
     </div>
 
     <div className="economic-field" onPointerMove={moveField} style={{ "--field-x": "0", "--field-y": "0" } as CSSProperties}>
-      <div className="field-color" aria-hidden="true"><i /><i /><i /></div>
-      <canvas ref={canvasRef} aria-hidden="true" />
-      <div className="field-coordinate" aria-hidden="true">23°33′S<br />46°38′W</div>
+      <div className="field-raster" aria-hidden="true" />
+      <div className="field-grid" aria-hidden="true" />
+      <canvas ref={canvasRef} aria-label={`${current.short} historical series`} />
+      <div className="field-axis-y" aria-hidden="true"><span>{tickTop}</span><span>{tickMiddle}</span><span>{tickBottom}</span></div>
+      <div className="field-axis-x" aria-hidden="true"><span>{firstPeriod}</span><span>{middlePeriod}</span><span>{lastPeriod}</span></div>
       <div className="field-value" key={current.id}>
-        <span>{current.short}</span>
-        <strong>{value.toLocaleString(locale, { maximumFractionDigits: 2 })}{current.unit}</strong>
+        <span>{current.short} · {current.source}</span>
+        <strong>{value.toLocaleString(locale, { maximumFractionDigits: 2 })}<i>{current.unit}</i></strong>
         <small>{latest?.period ?? (pt ? "última observação" : "latest observation")} · {movement > 0 ? "+" : ""}{movement.toFixed(2)}</small>
       </div>
-      <div className="field-source">{pt ? "FONTE OFICIAL" : "OFFICIAL SOURCE"}<b>{current.source}</b></div>
+      <div className="field-series-id"><span>{pt ? "ID ESTÁVEL" : "STABLE SERIES ID"}</span><code>{current.id}</code></div>
+      <div className="field-provenance"><span>{pt ? "FONTE OFICIAL" : "OFFICIAL SOURCE"}</span><b>{current.source}</b><small>{pt ? "unidade e período preservados" : "unit and period preserved"}</small></div>
       <div className="field-index" aria-label={pt ? "Escolher série em destaque" : "Choose featured series"}>
-        {featured.map((item, index) => <button className={active === index ? "active" : ""} key={item.id} onClick={() => setActive(index)} aria-label={item.short}><i />{item.short}</button>)}
+        {featured.map((item, index) => <button className={active === index ? "active" : ""} key={item.id} onClick={() => setActive(index)} aria-label={item.short}><span>0{index + 1}</span>{item.short}<i>{item.source}</i></button>)}
       </div>
-      <div className="field-document" aria-hidden="true"><span>OPEN ECONOMICS / SERIES 001</span><b>{current.id}</b><i /><i /><small>Observation stream<br />Normalized · Traceable · Open</small></div>
     </div>
 
     <div className={`signal-search ${query ? "is-open" : ""}`}>

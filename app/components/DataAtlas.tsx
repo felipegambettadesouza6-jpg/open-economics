@@ -88,13 +88,17 @@ export function DataAtlas({ locale }: { locale: Locale }) {
   const observations = (data[chapter.id] ?? []).filter((point): point is Point & { value: number } => point.value !== null);
   const latest = observations.at(-1);
 
+  const first = observations.at(0);
+
   return <div className={`oe-atlas tone-${chapter.tone}`}>
+    <div className="oe-atlas-field" aria-hidden="true" />
     <div className="oe-atlas-top">
       <div><span>{pt ? "SÉRIE EM FOCO" : "SERIES IN FOCUS"}</span><b>{chapter.code}</b></div>
-      <strong>{(latest?.value ?? chapter.fallback).toLocaleString(locale, { maximumFractionDigits: 2 })}<small>{chapter.unit}</small></strong>
+      <strong key={chapter.id}>{(latest?.value ?? chapter.fallback).toLocaleString(locale, { maximumFractionDigits: 2 })}<small>{chapter.unit}</small></strong>
       <div><span>{pt ? "OBSERVAÇÃO" : "OBSERVATION"}</span><b>{latest?.period ?? (pt ? "Mais recente" : "Latest")}</b></div>
     </div>
     <div className="oe-atlas-canvas"><canvas ref={canvasRef} aria-label={pt ? `Histórico da série ${chapter.code}` : `${chapter.code} series history`} /></div>
+    <div className="oe-atlas-axis" aria-hidden="true"><span>{first?.period ?? "2023-01"}</span><span>{chapter.source} · {chapter.id}</span><span>{latest?.period ?? "2026-07"}</span></div>
     <div className="oe-atlas-bottom">
       <div className="oe-atlas-tabs">{chapters.map((item, index) => <button className={index === active ? "active" : ""} onClick={() => setActive(index)} key={item.id}><span>0{index + 1}</span>{item.code}<i>{item.source}</i></button>)}</div>
       <a href={localized(locale, `/indicators/${chapter.id}`)}>{pt ? "Abrir série e metodologia" : "Open series and methodology"}<span>↗</span></a>

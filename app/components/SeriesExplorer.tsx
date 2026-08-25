@@ -135,7 +135,7 @@ export function SeriesExplorer({
         </div>
       </div>
 
-      {loading && <div className="series-state" role="status">{pt ? "Carregando observações oficiais…" : "Loading official observations…"}</div>}
+      {loading && !response && <div className="series-state" role="status">{pt ? "Carregando observações oficiais…" : "Loading official observations…"}</div>}
       {error && (
         <div className="series-state error" role="alert">
           <strong>{pt ? "Fonte oficial indisponível" : "Official source unavailable"}</strong>
@@ -143,7 +143,7 @@ export function SeriesExplorer({
           <span>{pt ? "Nenhum valor foi estimado ou substituído." : "No values have been estimated or substituted."}</span>
         </div>
       )}
-      {!loading && !error && response && (
+      {!error && response && (
         <>
           {response.meta.stale && (
             <div className="stale-notice">
@@ -168,14 +168,14 @@ export function SeriesExplorer({
               <strong>{response.data.length.toLocaleString(locale)}</strong>
             </div>
           </div>
-          <div className="chart-panel">
+          <div className={`chart-panel ${loading ? "is-updating" : ""}`} aria-busy={loading}>
             <div className="chart-title-row">
               <div>
                 <strong>{pt ? "Histórico" : "History"}</strong>
                 <span>{unit} · {start} to {end}</span>
               </div>
               <span className="chart-source-state">
-                <i /> {response.meta.cache === "hit" ? (pt ? "Resposta oficial em cache" : "Cached official response") : (pt ? "Resposta oficial atual" : "Fresh official response")}
+                <i /> {loading ? (pt ? "Atualizando período" : "Updating range") : response.meta.cache === "hit" ? (pt ? "Resposta oficial em cache" : "Cached official response") : (pt ? "Resposta oficial atual" : "Fresh official response")}
               </span>
             </div>
             <DataChart data={response.data} unit={unit} decimals={decimals} />

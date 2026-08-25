@@ -1,5 +1,4 @@
 import type { Metadata } from "next";
-import { headers } from "next/headers";
 import { DM_Mono, Inter } from "next/font/google";
 import "./globals.css";
 import "./signal.css";
@@ -16,10 +15,7 @@ const dataMono = DM_Mono({
 });
 
 export async function generateMetadata(): Promise<Metadata> {
-  const requestHeaders = await headers();
-  const host = requestHeaders.get("x-forwarded-host") ?? requestHeaders.get("host") ?? "localhost:3000";
-  const protocol = requestHeaders.get("x-forwarded-proto") ?? (host.startsWith("localhost") ? "http" : "https");
-  const origin = `${protocol}://${host}`;
+  const origin = "https://open-economics-data.knbf982hkn.chatgpt.site";
   const title = "Open Economics — Official data, made to flow";
   const description =
     "Discover, understand, and use official economic and financial data through one consistent API.";
