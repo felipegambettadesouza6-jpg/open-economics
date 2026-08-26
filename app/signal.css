@@ -402,7 +402,8 @@ a { color: inherit; }
 .signal-header.is-dark .signal-brand,
 .signal-header.is-dark .signal-nav-links a,
 .signal-header.is-dark .signal-status,
-.signal-header.is-dark .language-switch { color: #fff; }
+.signal-header.is-dark .language-switch,
+.signal-header.is-dark .atlas-language { color: #fff; }
 .signal-header.is-dark .status-dot { box-shadow: 0 0 0 4px rgba(95,212,137,.12); }
 .signal-header.is-dark .signal-nav-cta { border-color: #fff; background: #fff; color: #111; }
 .signal-header.is-dark .signal-nav-cta:hover { background: transparent; color: #fff; }
@@ -586,3 +587,68 @@ a { color: inherit; }
 .home-discovery-preview .chart-raster rect { fill: #cf594b; }
 .home-discovery-preview .chart-line { stroke: #111; }
 .economic-field canvas,.oe-atlas-canvas canvas { image-rendering: auto; }
+
+/* Release polish: keep every hero annotation inside the composition. */
+@media (min-width: 901px) {
+  .economic-field { margin-right: 0; }
+  .field-value { right: 0; }
+  .field-provenance { top: 35%; right: 0; }
+  .field-axis-x { right: 2%; }
+}
+
+@media (max-width: 720px) {
+  .economic-field {
+    min-height: 650px;
+    margin-bottom: 28px;
+  }
+
+  .economic-field canvas {
+    inset: 28% -4% 27% 0;
+    width: 104%;
+    height: 45%;
+  }
+
+  .field-value {
+    top: 8px;
+    right: 0;
+  }
+
+  .field-value strong {
+    font-size: 62px;
+    line-height: .9;
+  }
+
+  .field-provenance {
+    top: 112px;
+    right: 0;
+    max-width: 190px;
+  }
+
+  .field-series-id {
+    bottom: 24%;
+    left: 0;
+  }
+
+  .field-axis-x {
+    right: 0;
+    bottom: 18%;
+    left: 0;
+  }
+
+  .field-index {
+    right: 0;
+    bottom: 0;
+    left: 0;
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    overflow: visible;
+  }
+
+  .field-index button {
+    min-width: 0;
+    padding: 10px 8px 8px 0;
+    border-bottom: 1px solid rgba(17,17,17,.16);
+  }
+
+  .field-index button.active { transform: none; }
+}
