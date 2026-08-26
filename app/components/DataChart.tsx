@@ -66,6 +66,24 @@ export function DataChart({
   });
   const dateTicks = [data[0], data[Math.floor((data.length - 1) / 2)], data.at(-1)!];
   const active = activeIndex === null ? null : data[activeIndex];
+  const rasterCells = compact ? Array.from({ length: 34 * 10 }, (_, cellIndex) => {
+    const column = cellIndex % 34;
+    const row = Math.floor(cellIndex / 34);
+    const plotWidth = width - padding.left - padding.right;
+    const plotHeight = height - padding.top - padding.bottom;
+    const cellWidth = plotWidth / 34;
+    const cellHeight = plotHeight / 10;
+    const ratio = column / 33;
+    const point = data[Math.round(ratio * (data.length - 1))];
+    if (point?.value === null || point?.value === undefined) return null;
+    const centerY = padding.top + (row + .5) * cellHeight;
+    const distance = Math.abs(centerY - y(point.value));
+    const edgeFade = Math.pow(Math.sin(Math.PI * ratio), .7);
+    const density = Math.max(0, 1 - distance / (plotHeight * .56)) * edgeFade;
+    const stepped = Math.floor(density * 6) / 6;
+    if (stepped < .04) return null;
+    return { x: padding.left + column * cellWidth, y: padding.top + row * cellHeight, width: Math.max(1, cellWidth - 2), height: Math.max(1, cellHeight - 2), opacity: .05 + stepped * .34 };
+  }).filter((cell): cell is { x: number; y: number; width: number; height: number; opacity: number } => cell !== null) : [];
 
   function moveSelection(delta: number) {
     setActiveIndex((current) => Math.max(0, Math.min(data.length - 1, (current ?? data.length - 1) + delta)));
@@ -100,6 +118,7 @@ export function DataChart({
             </text>
           </g>
         ))}
+      {compact && <g className="chart-raster" aria-hidden="true">{rasterCells.map((cell, index) => <rect key={index} x={cell.x} y={cell.y} width={cell.width} height={cell.height} fillOpacity={cell.opacity} />)}</g>}
       {segments.map((path, index) => (
         <path className="chart-line" d={path} fill="none" pathLength="1" key={index} vectorEffect="non-scaling-stroke" />
       ))}

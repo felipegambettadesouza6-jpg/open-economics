@@ -11,12 +11,33 @@ const chapters = [
   { id: "br-unemployment-rate", code: "PNAD", source: "IBGE", unit: "%", fallback: 6.2, tone: "lime" },
 ] as const;
 
+const rasterColors = {
+  coral: [204, 83, 69],
+  blue: [72, 116, 137],
+  lime: [147, 118, 62],
+} as const;
+
 export function DataAtlas({ locale }: { locale: Locale }) {
   const pt = locale === "pt-br";
+  const rootRef = useRef<HTMLDivElement>(null);
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const [active, setActive] = useState(0);
   const [data, setData] = useState<Record<string, Point[]>>({});
+  const [visible, setVisible] = useState(false);
   const chapter = chapters[active];
+
+  useEffect(() => {
+    const root = rootRef.current;
+    if (!root) return;
+    const observer = new IntersectionObserver(([entry]) => {
+      if (entry.isIntersecting) {
+        setVisible(true);
+        observer.disconnect();
+      }
+    }, { threshold: .24 });
+    observer.observe(root);
+    return () => observer.disconnect();
+  }, []);
 
   useEffect(() => {
     const controller = new AbortController();
@@ -30,6 +51,7 @@ export function DataAtlas({ locale }: { locale: Locale }) {
   }, []);
 
   useEffect(() => {
+    if (!visible) return;
     const canvas = canvasRef.current;
     if (!canvas) return;
     const context = canvas.getContext("2d");
@@ -50,6 +72,28 @@ export function DataAtlas({ locale }: { locale: Locale }) {
       const height = bounds.height;
       context.setTransform(ratio, 0, 0, ratio, 0, 0);
       context.clearRect(0, 0, width, height);
+      const low = Math.min(...values);
+      const high = Math.max(...values);
+      const span = high - low || 1;
+      const [red, green, blue] = rasterColors[chapter.tone];
+      const cell = width < 700 ? 9 : 11;
+      for (let cellX = 0; cellX < width; cellX += cell) {
+        const xRatio = cellX / Math.max(width, 1);
+        const sourcePosition = xRatio * (values.length - 1);
+        const sourceIndex = Math.min(values.length - 2, Math.max(0, Math.floor(sourcePosition)));
+        const mix = sourcePosition - sourceIndex;
+        const interpolated = values[sourceIndex] * (1 - mix) + values[sourceIndex + 1] * mix;
+        const lineY = height * .12 + ((high - interpolated) / span) * height * .72;
+        const edgeFade = Math.pow(Math.sin(Math.PI * Math.min(1, Math.max(0, xRatio))), .68);
+        for (let cellY = 0; cellY < height; cellY += cell) {
+          const distance = Math.abs(cellY + cell / 2 - lineY);
+          const density = Math.max(0, 1 - distance / (height * .31)) * edgeFade;
+          const stepped = Math.floor(density * 6) / 6;
+          if (stepped < .04) continue;
+          context.fillStyle = `rgba(${red},${green},${blue},${(.05 + stepped * .42).toFixed(3)})`;
+          context.fillRect(cellX + 1, cellY + 1, cell - 2, cell - 2);
+        }
+      }
       context.strokeStyle = "rgba(15,15,15,.12)";
       context.lineWidth = 1;
       for (let column = 0; column <= 8; column += 1) {
@@ -60,9 +104,6 @@ export function DataAtlas({ locale }: { locale: Locale }) {
         const y = height * row / 4;
         context.beginPath(); context.moveTo(0, y); context.lineTo(width, y); context.stroke();
       }
-      const low = Math.min(...values);
-      const high = Math.max(...values);
-      const span = high - low || 1;
       const count = Math.max(2, Math.floor(values.length * Math.min(1, progress)));
       const mapped = values.slice(0, count).map((value, index) => ({
         x: (index / (values.length - 1)) * width,
@@ -83,15 +124,14 @@ export function DataAtlas({ locale }: { locale: Locale }) {
     };
     draw();
     return () => window.cancelAnimationFrame(frame);
-  }, [active, chapter.id, data]);
+  }, [active, chapter.id, chapter.tone, data, visible]);
 
   const observations = (data[chapter.id] ?? []).filter((point): point is Point & { value: number } => point.value !== null);
   const latest = observations.at(-1);
 
   const first = observations.at(0);
 
-  return <div className={`oe-atlas tone-${chapter.tone}`}>
-    <div className="oe-atlas-field" aria-hidden="true" />
+  return <div className={`oe-atlas tone-${chapter.tone}`} ref={rootRef}>
     <div className="oe-atlas-top">
       <div><span>{pt ? "SÉRIE EM FOCO" : "SERIES IN FOCUS"}</span><b>{chapter.code}</b></div>
       <strong key={chapter.id}>{(latest?.value ?? chapter.fallback).toLocaleString(locale, { maximumFractionDigits: 2 })}<small>{chapter.unit}</small></strong>

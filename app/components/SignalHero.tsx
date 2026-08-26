@@ -15,6 +15,13 @@ const featured = [
   { id: "br-ibc-br", short: "IBC-Br", source: "BCB", fallback: 148.7, unit: "", tone: "clay" },
 ] as const;
 
+const rasterColors = {
+  coral: [205, 78, 65],
+  blue: [72, 116, 137],
+  sand: [151, 119, 62],
+  clay: [122, 74, 66],
+} as const;
+
 function startDate(years: number) {
   const date = new Date();
   date.setUTCFullYear(date.getUTCFullYear() - years);
@@ -98,6 +105,37 @@ export function SignalHero({ indicators, locale }: { indicators: IndicatorDefini
       const height = bounds.height;
       context.setTransform(ratio, 0, 0, ratio, 0, 0);
       context.clearRect(0, 0, width, height);
+      const [red, green, blue] = rasterColors[current.tone];
+      const cell = width < 620 ? 8 : 10;
+      const chartTop = height * .14;
+      const chartHeight = height * .69;
+      for (let cellX = 0; cellX < width; cellX += cell) {
+        const xRatio = cellX / Math.max(width, 1);
+        const sourcePosition = xRatio * (plotted.length - 1);
+        const sourceIndex = Math.min(plotted.length - 2, Math.max(0, Math.floor(sourcePosition)));
+        const mix = sourcePosition - sourceIndex;
+        const interpolated = plotted[sourceIndex].value * (1 - mix) + plotted[sourceIndex + 1].value * mix;
+        const lineY = chartTop + (1 - (interpolated - low) / span) * chartHeight;
+        const edgeFade = Math.pow(Math.sin(Math.PI * Math.min(1, Math.max(0, xRatio))), .72);
+        for (let cellY = 0; cellY < height; cellY += cell) {
+          const distance = Math.abs(cellY + cell / 2 - lineY);
+          const density = Math.max(0, 1 - distance / (height * .34)) * edgeFade;
+          const stepped = Math.floor(density * 7) / 7;
+          if (stepped < .04) continue;
+          context.fillStyle = `rgba(${red},${green},${blue},${(.08 + stepped * .58).toFixed(3)})`;
+          context.fillRect(cellX + 1, cellY + 1, cell - 2, cell - 2);
+        }
+      }
+      context.strokeStyle = "rgba(17,17,17,.1)";
+      context.lineWidth = 1;
+      for (let row = 0; row <= 4; row += 1) {
+        const gridY = chartTop + chartHeight * row / 4;
+        context.beginPath(); context.moveTo(0, gridY + .5); context.lineTo(width, gridY + .5); context.stroke();
+      }
+      for (let column = 0; column <= 6; column += 1) {
+        const gridX = width * column / 6;
+        context.beginPath(); context.moveTo(gridX + .5, chartTop); context.lineTo(gridX + .5, chartTop + chartHeight); context.stroke();
+      }
       context.lineCap = "round";
       context.lineJoin = "round";
       const reveal = Math.min(1, frame / 62);
@@ -127,7 +165,7 @@ export function SignalHero({ indicators, locale }: { indicators: IndicatorDefini
     };
     draw();
     return () => window.cancelAnimationFrame(animation);
-  }, [active, high, low, plotted, span]);
+  }, [active, current.tone, high, low, plotted, span]);
 
   const latest = currentPoints.at(-1);
   const previous = currentPoints.at(-2);
@@ -159,8 +197,6 @@ export function SignalHero({ indicators, locale }: { indicators: IndicatorDefini
     </div>
 
     <div className="economic-field" onPointerMove={moveField} style={{ "--field-x": "0", "--field-y": "0" } as CSSProperties}>
-      <div className="field-raster" aria-hidden="true" />
-      <div className="field-grid" aria-hidden="true" />
       <canvas ref={canvasRef} aria-label={`${current.short} historical series`} />
       <div className="field-axis-y" aria-hidden="true"><span>{tickTop}</span><span>{tickMiddle}</span><span>{tickBottom}</span></div>
       <div className="field-axis-x" aria-hidden="true"><span>{firstPeriod}</span><span>{middlePeriod}</span><span>{lastPeriod}</span></div>
