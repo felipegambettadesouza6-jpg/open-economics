@@ -9,7 +9,6 @@ const selectors = [
   ".oe-data-section",
   ".oe-discover",
   ".oe-api",
-  ".signal-footer-dramatic",
 ];
 
 export function HomeMotion() {

@@ -57,9 +57,9 @@ export function SignalHero({ indicators, locale }: { indicators: IndicatorDefini
       activeRef.current = next;
       setActive(next);
       setFieldPhase("arriving");
-    }, 280);
-    const settleTimer = window.setTimeout(() => setFieldPhase("settled"), 350);
-    const unlockTimer = window.setTimeout(() => { transitionRef.current = false; }, 1120);
+    }, 300);
+    const settleTimer = window.setTimeout(() => setFieldPhase("settled"), 860);
+    const unlockTimer = window.setTimeout(() => { transitionRef.current = false; }, 940);
     transitionTimersRef.current.push(swapTimer, settleTimer, unlockTimer);
   }, []);
 
@@ -129,6 +129,8 @@ export function SignalHero({ indicators, locale }: { indicators: IndicatorDefini
       const cell = width < 620 ? 7 : 8;
       const chartTop = height * .17;
       const chartHeight = height * .64;
+      const reveal = Math.min(1, (timestamp - started) / 880);
+      const easedReveal = 1 - Math.pow(1 - reveal, 3);
       for (let cellX = 0; cellX < width; cellX += cell) {
         const xRatio = cellX / Math.max(width, 1);
         const sourcePosition = xRatio * (plotted.length - 1);
@@ -144,7 +146,8 @@ export function SignalHero({ indicators, locale }: { indicators: IndicatorDefini
           const density = ribbon * edgeFade * material;
           const stepped = Math.floor(density * 6) / 6;
           if (stepped < .12) continue;
-          context.fillStyle = `rgba(${red},${green},${blue},${(.025 + stepped * .31).toFixed(3)})`;
+          const arrival = .18 + easedReveal * .82;
+          context.fillStyle = `rgba(${red},${green},${blue},${((.025 + stepped * .31) * arrival).toFixed(3)})`;
           context.fillRect(cellX + 1, cellY + 1, cell - 2, cell - 2);
         }
       }
@@ -160,9 +163,7 @@ export function SignalHero({ indicators, locale }: { indicators: IndicatorDefini
       }
       context.lineCap = "round";
       context.lineJoin = "round";
-      const reveal = Math.min(1, (timestamp - started) / 940);
-      const easedReveal = 1 - Math.pow(1 - reveal, 3);
-      const count = Math.max(2, Math.floor(plotted.length * easedReveal));
+      const count = plotted.length;
       context.beginPath();
       plotted.slice(0, count).forEach((point, index) => {
         const x = (index / Math.max(plotted.length - 1, 1)) * width;
@@ -172,6 +173,7 @@ export function SignalHero({ indicators, locale }: { indicators: IndicatorDefini
       });
       context.strokeStyle = "#111";
       context.lineWidth = 2.15;
+      context.globalAlpha = .18 + easedReveal * .82;
       context.stroke();
       const lastIndex = count - 1;
       const lastPoint = plotted[lastIndex];
@@ -183,6 +185,7 @@ export function SignalHero({ indicators, locale }: { indicators: IndicatorDefini
         context.fillStyle = "#111";
         context.fill();
       }
+      context.globalAlpha = 1;
       if (reveal < 1) animation = window.requestAnimationFrame(draw);
     };
     draw();

@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useRef, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import { localized, type Locale } from "@/lib/i18n";
 
 type Point = { date: string; period: string; value: number | null };
@@ -21,10 +21,27 @@ export function DataAtlas({ locale }: { locale: Locale }) {
   const pt = locale === "pt-br";
   const rootRef = useRef<HTMLDivElement>(null);
   const canvasRef = useRef<HTMLCanvasElement>(null);
+  const activeRef = useRef(0);
+  const timersRef = useRef<number[]>([]);
   const [active, setActive] = useState(0);
+  const [phase, setPhase] = useState<"settled" | "leaving" | "arriving">("settled");
   const [data, setData] = useState<Record<string, Point[]>>({});
   const [visible, setVisible] = useState(false);
   const chapter = chapters[active];
+
+  const changeChapter = useCallback((next: number) => {
+    if (next === activeRef.current || phase !== "settled") return;
+    setPhase("leaving");
+    const swap = window.setTimeout(() => {
+      activeRef.current = next;
+      setActive(next);
+      setPhase("arriving");
+    }, 280);
+    const settle = window.setTimeout(() => setPhase("settled"), 820);
+    timersRef.current.push(swap, settle);
+  }, [phase]);
+
+  useEffect(() => () => timersRef.current.forEach((timer) => window.clearTimeout(timer)), []);
 
   useEffect(() => {
     const root = rootRef.current;
@@ -104,8 +121,8 @@ export function DataAtlas({ locale }: { locale: Locale }) {
         const y = height * row / 4;
         context.beginPath(); context.moveTo(0, y); context.lineTo(width, y); context.stroke();
       }
-      const count = Math.max(2, Math.floor(values.length * Math.min(1, progress)));
-      const mapped = values.slice(0, count).map((value, index) => ({
+      const reveal = Math.min(1, progress);
+      const mapped = values.map((value, index) => ({
         x: (index / (values.length - 1)) * width,
         y: height * .12 + ((high - value) / span) * height * .72,
       }));
@@ -113,12 +130,14 @@ export function DataAtlas({ locale }: { locale: Locale }) {
       mapped.forEach((point, index) => index ? context.lineTo(point.x, point.y) : context.moveTo(point.x, point.y));
       context.strokeStyle = "#101010";
       context.lineWidth = 2.4;
+      context.globalAlpha = .18 + reveal * .82;
       context.stroke();
       const last = mapped.at(-1);
       if (last) {
         context.beginPath(); context.arc(last.x, last.y, 5, 0, Math.PI * 2); context.fillStyle = "#101010"; context.fill();
         context.beginPath(); context.arc(last.x, last.y, 10, 0, Math.PI * 2); context.strokeStyle = "rgba(15,15,15,.28)"; context.stroke();
       }
+      context.globalAlpha = 1;
       progress += .022;
       if (progress < 1.05) frame = window.requestAnimationFrame(draw);
     };
@@ -131,7 +150,7 @@ export function DataAtlas({ locale }: { locale: Locale }) {
 
   const first = observations.at(0);
 
-  return <div className={`oe-atlas tone-${chapter.tone}`} ref={rootRef}>
+  return <div className={`oe-atlas tone-${chapter.tone} atlas-phase-${phase}`} ref={rootRef}>
     <div className="oe-atlas-top">
       <div><span>{pt ? "SÉRIE EM FOCO" : "SERIES IN FOCUS"}</span><b>{chapter.code}</b></div>
       <strong key={chapter.id}>{(latest?.value ?? chapter.fallback).toLocaleString(locale, { maximumFractionDigits: 2 })}<small>{chapter.unit}</small></strong>
@@ -140,7 +159,7 @@ export function DataAtlas({ locale }: { locale: Locale }) {
     <div className="oe-atlas-canvas"><canvas ref={canvasRef} aria-label={pt ? `Histórico da série ${chapter.code}` : `${chapter.code} series history`} /></div>
     <div className="oe-atlas-axis" aria-hidden="true"><span>{first?.period ?? "2023-01"}</span><span>{chapter.source} · {chapter.id}</span><span>{latest?.period ?? "2026-07"}</span></div>
     <div className="oe-atlas-bottom">
-      <div className="oe-atlas-tabs">{chapters.map((item, index) => <button className={index === active ? "active" : ""} onClick={() => setActive(index)} key={item.id}><span>0{index + 1}</span>{item.code}<i>{item.source}</i></button>)}</div>
+      <div className="oe-atlas-tabs">{chapters.map((item, index) => <button className={index === active ? "active" : ""} onClick={() => changeChapter(index)} key={item.id}><span>0{index + 1}</span>{item.code}<i>{item.source}</i></button>)}</div>
       <a href={localized(locale, `/indicators/${chapter.id}`)}>{pt ? "Abrir série e metodologia" : "Open series and methodology"}<span>↗</span></a>
     </div>
   </div>;
