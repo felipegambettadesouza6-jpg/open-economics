@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 import { DataAtlas } from "@/app/components/DataAtlas";
 import { HomeDiscovery } from "@/app/components/HomeDiscovery";
+import { HomeMotion } from "@/app/components/HomeMotion";
 import { NormalizationScene } from "@/app/components/NormalizationScene";
 import { SignalHero } from "@/app/components/SignalHero";
 import { SiteFooter } from "@/app/components/SiteFooter";
@@ -23,6 +24,7 @@ export default async function LocalizedHome({ params }: { params: Promise<{ loca
   const pt = locale === "pt-br";
 
   return <main className="signal-page">
+    <HomeMotion />
     <SiteHeader locale={locale} />
     <SignalHero indicators={indicators} locale={locale} />
 

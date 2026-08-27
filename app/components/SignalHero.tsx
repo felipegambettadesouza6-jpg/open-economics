@@ -1,7 +1,7 @@
 "use client";
 
 import type { CSSProperties, PointerEvent as ReactPointerEvent } from "react";
-import { useEffect, useMemo, useRef, useState } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import type { IndicatorDefinition } from "@/lib/domain/types";
 import { localized, type Locale } from "@/lib/i18n";
 
@@ -36,14 +36,32 @@ export function SignalHero({ indicators, locale }: { indicators: IndicatorDefini
   const pt = locale === "pt-br";
   const inputRef = useRef<HTMLInputElement>(null);
   const canvasRef = useRef<HTMLCanvasElement>(null);
+  const activeRef = useRef(0);
+  const transitionRef = useRef(false);
+  const transitionTimersRef = useRef<number[]>([]);
   const [query, setQuery] = useState("");
   const [active, setActive] = useState(0);
+  const [fieldPhase, setFieldPhase] = useState<"settled" | "leaving" | "arriving">("settled");
   const [series, setSeries] = useState<SeriesState>(() => Object.fromEntries(featured.map((item) => [item.id, { status: "loading" }])));
   const results = useMemo(() => {
     const needle = query.trim().toLocaleLowerCase();
     if (!needle) return [];
     return indicators.filter((indicator) => [indicator.name, indicator.officialName, indicator.id, ...indicator.aliases].join(" ").toLocaleLowerCase().includes(needle)).slice(0, 5);
   }, [indicators, query]);
+
+  const changeSeries = useCallback((next: number) => {
+    if (next === activeRef.current || transitionRef.current) return;
+    transitionRef.current = true;
+    setFieldPhase("leaving");
+    const swapTimer = window.setTimeout(() => {
+      activeRef.current = next;
+      setActive(next);
+      setFieldPhase("arriving");
+    }, 280);
+    const settleTimer = window.setTimeout(() => setFieldPhase("settled"), 350);
+    const unlockTimer = window.setTimeout(() => { transitionRef.current = false; }, 1120);
+    transitionTimersRef.current.push(swapTimer, settleTimer, unlockTimer);
+  }, []);
 
   useEffect(() => {
     const controller = new AbortController();
@@ -58,9 +76,11 @@ export function SignalHero({ indicators, locale }: { indicators: IndicatorDefini
 
   useEffect(() => {
     if (query) return;
-    const interval = window.setInterval(() => setActive((current) => (current + 1) % featured.length), 6200);
+    const interval = window.setInterval(() => changeSeries((activeRef.current + 1) % featured.length), 7200);
     return () => window.clearInterval(interval);
-  }, [query]);
+  }, [changeSeries, query]);
+
+  useEffect(() => () => transitionTimersRef.current.forEach((timer) => window.clearTimeout(timer)), []);
 
   useEffect(() => {
     const focusSearch = (event: KeyboardEvent) => {
@@ -74,13 +94,13 @@ export function SignalHero({ indicators, locale }: { indicators: IndicatorDefini
   }, []);
 
   const current = featured[active];
-  const currentPoints = numericValues(series[current.id]?.data);
-  const fallbackPoints = Array.from({ length: 42 }, (_, index) => ({
+  const currentPoints = useMemo(() => numericValues(series[current.id]?.data), [current.id, series]);
+  const fallbackPoints = useMemo(() => Array.from({ length: 42 }, (_, index) => ({
     date: `${2023 + Math.floor(index / 12)}-${String((index % 12) + 1).padStart(2, "0")}-01`,
     period: `${2023 + Math.floor(index / 12)}-${String((index % 12) + 1).padStart(2, "0")}`,
     value: current.fallback + Math.sin(index * .46 + active) * (active === 3 ? 2.8 : .55) + index * .012,
-  }));
-  const plotted = currentPoints.length > 1 ? currentPoints : fallbackPoints;
+  })), [active, current.fallback]);
+  const plotted = useMemo(() => currentPoints.length > 1 ? currentPoints : fallbackPoints, [currentPoints, fallbackPoints]);
   const values = plotted.map((point) => point.value);
   const low = Math.min(...values);
   const high = Math.max(...values);
@@ -91,10 +111,10 @@ export function SignalHero({ indicators, locale }: { indicators: IndicatorDefini
     if (!canvas) return;
     const context = canvas.getContext("2d");
     if (!context) return;
-    let frame = 0;
     let animation = 0;
+    const started = performance.now();
 
-    const draw = () => {
+    const draw = (timestamp = performance.now()) => {
       const bounds = canvas.getBoundingClientRect();
       const ratio = Math.min(window.devicePixelRatio || 1, 2);
       if (canvas.width !== Math.round(bounds.width * ratio) || canvas.height !== Math.round(bounds.height * ratio)) {
@@ -107,8 +127,8 @@ export function SignalHero({ indicators, locale }: { indicators: IndicatorDefini
       context.clearRect(0, 0, width, height);
       const [red, green, blue] = rasterColors[current.tone];
       const cell = width < 620 ? 7 : 8;
-      const chartTop = height * .14;
-      const chartHeight = height * .69;
+      const chartTop = height * .17;
+      const chartHeight = height * .64;
       for (let cellX = 0; cellX < width; cellX += cell) {
         const xRatio = cellX / Math.max(width, 1);
         const sourcePosition = xRatio * (plotted.length - 1);
@@ -119,14 +139,16 @@ export function SignalHero({ indicators, locale }: { indicators: IndicatorDefini
         const edgeFade = Math.pow(Math.sin(Math.PI * Math.min(1, Math.max(0, xRatio))), .72);
         for (let cellY = 0; cellY < height; cellY += cell) {
           const distance = Math.abs(cellY + cell / 2 - lineY);
-          const density = Math.max(0, 1 - distance / (height * .34)) * edgeFade;
-          const stepped = Math.floor(density * 7) / 7;
-          if (stepped < .04) continue;
-          context.fillStyle = `rgba(${red},${green},${blue},${(.055 + stepped * .52).toFixed(3)})`;
+          const ribbon = Math.exp(-Math.pow(distance / (height * .115), 2) * 1.7);
+          const material = .72 + Math.sin(cellX * .047 + cellY * .021 + active * 1.9) * .18;
+          const density = ribbon * edgeFade * material;
+          const stepped = Math.floor(density * 6) / 6;
+          if (stepped < .12) continue;
+          context.fillStyle = `rgba(${red},${green},${blue},${(.025 + stepped * .31).toFixed(3)})`;
           context.fillRect(cellX + 1, cellY + 1, cell - 2, cell - 2);
         }
       }
-      context.strokeStyle = "rgba(17,17,17,.1)";
+      context.strokeStyle = "rgba(17,17,17,.075)";
       context.lineWidth = 1;
       for (let row = 0; row <= 4; row += 1) {
         const gridY = chartTop + chartHeight * row / 4;
@@ -138,13 +160,14 @@ export function SignalHero({ indicators, locale }: { indicators: IndicatorDefini
       }
       context.lineCap = "round";
       context.lineJoin = "round";
-      const reveal = Math.min(1, frame / 62);
-      const count = Math.max(2, Math.floor(plotted.length * reveal));
+      const reveal = Math.min(1, (timestamp - started) / 940);
+      const easedReveal = 1 - Math.pow(1 - reveal, 3);
+      const count = Math.max(2, Math.floor(plotted.length * easedReveal));
       context.beginPath();
       plotted.slice(0, count).forEach((point, index) => {
         const x = (index / Math.max(plotted.length - 1, 1)) * width;
         const normalized = (point.value - low) / span;
-        const y = height * .14 + (1 - normalized) * height * .69;
+        const y = chartTop + (1 - normalized) * chartHeight;
         if (index === 0) context.moveTo(x, y); else context.lineTo(x, y);
       });
       context.strokeStyle = "#111";
@@ -154,13 +177,12 @@ export function SignalHero({ indicators, locale }: { indicators: IndicatorDefini
       const lastPoint = plotted[lastIndex];
       if (lastPoint) {
         const x = (lastIndex / Math.max(plotted.length - 1, 1)) * width;
-        const y = height * .14 + (1 - (lastPoint.value - low) / span) * height * .69;
+        const y = chartTop + (1 - (lastPoint.value - low) / span) * chartHeight;
         context.beginPath();
         context.arc(x, y, 3.5, 0, Math.PI * 2);
         context.fillStyle = "#111";
         context.fill();
       }
-      frame += 1;
       if (reveal < 1) animation = window.requestAnimationFrame(draw);
     };
     draw();
@@ -196,7 +218,7 @@ export function SignalHero({ indicators, locale }: { indicators: IndicatorDefini
       </div>
     </div>
 
-    <div className="economic-field" onPointerMove={moveField} style={{ "--field-x": "0", "--field-y": "0" } as CSSProperties}>
+    <div className={`economic-field field-phase-${fieldPhase}`} onPointerMove={moveField} style={{ "--field-x": "0", "--field-y": "0" } as CSSProperties}>
       <canvas ref={canvasRef} aria-label={`${current.short} historical series`} />
       <div className="field-axis-y" aria-hidden="true"><span>{tickTop}</span><span>{tickMiddle}</span><span>{tickBottom}</span></div>
       <div className="field-axis-x" aria-hidden="true"><span>{firstPeriod}</span><span>{middlePeriod}</span><span>{lastPeriod}</span></div>
@@ -208,7 +230,7 @@ export function SignalHero({ indicators, locale }: { indicators: IndicatorDefini
       <div className="field-series-id"><span>{pt ? "ID ESTÁVEL" : "STABLE SERIES ID"}</span><code>{current.id}</code></div>
       <div className="field-provenance"><span>{pt ? "FONTE OFICIAL" : "OFFICIAL SOURCE"}</span><b>{current.source}</b><small>{pt ? "unidade e período preservados" : "unit and period preserved"}</small></div>
       <div className="field-index" aria-label={pt ? "Escolher série em destaque" : "Choose featured series"}>
-        {featured.map((item, index) => <button className={active === index ? "active" : ""} key={item.id} onClick={() => setActive(index)} aria-label={item.short}><span>0{index + 1}</span>{item.short}<i>{item.source}</i></button>)}
+        {featured.map((item, index) => <button className={active === index ? "active" : ""} key={item.id} onClick={() => changeSeries(index)} aria-label={item.short}><span>0{index + 1}</span>{item.short}<i>{item.source}</i></button>)}
       </div>
     </div>
 
