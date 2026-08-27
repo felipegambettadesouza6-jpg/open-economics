@@ -40,7 +40,7 @@ export function CatalogExplorer({ items, locale = "en" }: { items: CatalogItem[]
   const [frequency, setFrequency] = useState("");
   const [adjustment, setAdjustment] = useState("");
   const [urlReady, setUrlReady] = useState(false);
-  const [preview, setPreview] = useState<CatalogItem | null>(null);
+  const [preview, setPreview] = useState<CatalogItem | null>(items[0] ?? null);
   const [previewData, setPreviewData] = useState<{ date: string; period?: string; value: number | null }[] | null>(null);
 
   useEffect(() => {
@@ -90,7 +90,7 @@ export function CatalogExplorer({ items, locale = "en" }: { items: CatalogItem[]
   }, [items, query, category, source, frequency, adjustment]);
 
   const hasFilters = Boolean(query || category || source || frequency || adjustment);
-  const shownPreview = preview ?? (query.trim() ? results[0] ?? null : null);
+  const shownPreview = (preview && results.some((item) => item.id === preview.id) ? preview : results[0]) ?? null;
 
   useEffect(() => {
     if (!shownPreview) { queueMicrotask(() => setPreviewData(null)); return; }
@@ -102,6 +102,8 @@ export function CatalogExplorer({ items, locale = "en" }: { items: CatalogItem[]
       .catch(() => setPreviewData([]));
     return () => controller.abort();
   }, [shownPreview]);
+
+  const latestPreview = previewData?.filter((point) => point.value !== null).at(-1);
 
   return (
     <div className="catalog-explorer">
@@ -162,6 +164,27 @@ export function CatalogExplorer({ items, locale = "en" }: { items: CatalogItem[]
         )}
       </div>
 
+      {shownPreview && <section className="catalog-focus" aria-live="polite">
+        <div className="catalog-focus-head">
+          <p>{pt ? "SÉRIE EM FOCO" : "SERIES IN FOCUS"}</p>
+          <div><span>{shownPreview.categoryName}</span><span>{shownPreview.frequency}</span><span>{shownPreview.sourceAgency}</span></div>
+        </div>
+        <div className="catalog-focus-body">
+          <div className="catalog-focus-copy">
+            <h2>{shownPreview.name}</h2>
+            <p>{shownPreview.description}</p>
+            <code>{shownPreview.id}</code>
+            <dl>
+              <div><dt>{pt ? "Valor atual" : "Current value"}</dt><dd>{latestPreview?.value?.toLocaleString(locale, { maximumFractionDigits: 2 }) ?? "—"}<i>{shownPreview.unitSymbol}</i></dd></div>
+              <div><dt>{pt ? "Período" : "Period"}</dt><dd>{latestPreview?.period ?? latestPreview?.date?.slice(0, 10) ?? "—"}</dd></div>
+              <div><dt>{pt ? "Fonte" : "Source"}</dt><dd>{shownPreview.sourceAgency}</dd></div>
+            </dl>
+          </div>
+          <div className="catalog-focus-chart">{previewData === null ? <span className="preview-state">{pt ? "Buscando observações…" : "Fetching observations…"}</span> : previewData.length > 1 ? <DataChart data={previewData} unit={shownPreview.unitSymbol} decimals={2} compact /> : <span className="preview-state">{pt ? "Fonte indisponível — nenhum valor substituído" : "Source unavailable — no value substituted"}</span>}</div>
+          <div className="catalog-focus-actions"><a href={localized(locale, `/indicators/${shownPreview.id}`)}>{pt ? "Entender esta série" : "Understand this series"}<span>→</span></a><a href={localized(locale, `/playground?indicator=${shownPreview.id}`)}>API <span>↗</span></a></div>
+        </div>
+      </section>}
+
       <div className="results-summary">
         <strong>{results.length}</strong> {pt ? (results.length === 1 ? "indicador" : "indicadores") : (results.length === 1 ? "indicator" : "indicators")}
         <span>{pt ? "A busca fica salva na URL" : "Search state is saved in the URL"}</span>
@@ -188,8 +211,7 @@ export function CatalogExplorer({ items, locale = "en" }: { items: CatalogItem[]
               <b>{item.sourceAgency}</b>
               <i aria-hidden="true">↗</i>
             </span>
-            </a><button className="preview-trigger" type="button" aria-label={`Preview ${item.name}`} onClick={() => setPreview(shownPreview?.id === item.id ? null : item)}>{shownPreview?.id === item.id ? "×" : "⌁"}</button>
-            {shownPreview?.id === item.id && <div className="catalog-preview"><div><span>{pt ? "Prévia da série" : "Series preview"}</span><strong>{previewData?.filter((point) => point.value !== null).at(-1)?.value?.toLocaleString(locale, { maximumFractionDigits: 2 }) ?? "—"}<i>{item.unitSymbol}</i></strong><small>{previewData?.at(-1)?.period ?? item.officialName}</small><code>{item.id} · {item.sourceAgency}</code></div><div>{previewData === null ? <span className="preview-state">{pt ? "Buscando observações…" : "Fetching observations…"}</span> : previewData.length > 1 ? <DataChart data={previewData} unit={item.unitSymbol} decimals={2} compact /> : <span className="preview-state">{pt ? "Fonte indisponível — nenhum valor substituído" : "Source unavailable — no value substituted"}</span>}</div><div><a href={localized(locale, `/indicators/${item.id}`)}>{pt ? "Abrir ficha" : "Open data sheet"} →</a><a href={localized(locale, `/playground?indicator=${item.id}`)}>API ↗</a></div></div>}
+            </a><button className="preview-trigger" type="button" aria-label={`Focus ${item.name}`} onClick={() => setPreview(item)}>{shownPreview?.id === item.id ? "●" : "⌁"}</button>
           </div>
         ))}
         {results.length === 0 && (

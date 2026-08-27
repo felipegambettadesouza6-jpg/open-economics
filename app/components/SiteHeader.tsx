@@ -7,6 +7,7 @@ import { localized, type Locale, ui } from "@/lib/i18n";
 export function SiteHeader({ locale = "en" }: { locale?: Locale }) {
   const copy = ui[locale];
   const [scrolled, setScrolled] = useState(false);
+  const [compact, setCompact] = useState(false);
   const [dark, setDark] = useState(false);
 
   useEffect(() => {
@@ -14,6 +15,7 @@ export function SiteHeader({ locale = "en" }: { locale?: Locale }) {
     const update = () => {
       frame = 0;
       setScrolled(window.scrollY > 24);
+      setCompact(window.scrollY > 320);
       const navLine = 42;
       setDark([...document.querySelectorAll<HTMLElement>("[data-nav-theme='dark']")].some((section) => {
         const bounds = section.getBoundingClientRect();
@@ -27,7 +29,7 @@ export function SiteHeader({ locale = "en" }: { locale?: Locale }) {
     return () => { window.removeEventListener("scroll", schedule); window.removeEventListener("resize", schedule); if (frame) window.cancelAnimationFrame(frame); };
   }, []);
 
-  return <header className={`signal-header ${scrolled ? "is-scrolled" : ""} ${dark ? "is-dark" : ""}`}><div className="signal-nav">
+  return <header className={`signal-header ${scrolled ? "is-scrolled" : ""} ${compact ? "is-compact" : ""} ${dark ? "is-dark" : ""}`}><div className="signal-nav">
     <a className="signal-brand" href={localized(locale)} aria-label="Open Economics home"><span className="signal-mark" aria-hidden="true"><i /><i /><i /></span><span>Open Economics</span></a>
     <nav className="signal-nav-links" aria-label="Primary navigation">
       <a href={localized(locale, "/catalog")}>{copy.nav.explore}</a><a href={localized(locale, "/docs")}>{copy.nav.docs}</a><a href={localized(locale, "/sources")}>{copy.nav.sources}</a><a className="signal-status" href={localized(locale, "/status")}><i aria-hidden="true" />{copy.nav.status}</a>

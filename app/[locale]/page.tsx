@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 import { DataAtlas } from "@/app/components/DataAtlas";
 import { HomeDiscovery } from "@/app/components/HomeDiscovery";
+import { NormalizationScene } from "@/app/components/NormalizationScene";
 import { SignalHero } from "@/app/components/SignalHero";
 import { SiteFooter } from "@/app/components/SiteFooter";
 import { SiteHeader } from "@/app/components/SiteHeader";
@@ -44,13 +45,7 @@ export default async function LocalizedHome({ params }: { params: Promise<{ loca
         <p>{pt ? "Pesquise por conceito, compare séries e use a mesma estrutura de resposta em todos os indicadores." : "Search by concept, compare series, and work with the same response structure across every indicator."}</p>
         <a href={localized(locale, "/sources")}>{pt ? "Ver fontes e licenças" : "See sources and licenses"}<span>→</span></a>
       </div>
-      <div className="oe-stream" aria-hidden="true">
-        <div className="normalization-head"><span>UPSTREAM RECORDS</span><span>OPEN ECONOMICS SCHEMA</span></div>
-        <div className="normalization-row row-bcb"><div><b>BCB · SGS 432</b><code>23/08/2026&nbsp;&nbsp;15.00</code><small>daily · % p.a.</small></div><i /><div><code>br-selic-target</code><b>2026-08-23&nbsp;&nbsp;15.00</b><small>BCB · observed</small></div></div>
-        <div className="normalization-row row-ibge"><div><b>IBGE · SIDRA 7060</b><code>202607&nbsp;&nbsp;0.07</code><small>monthly · %</small></div><i /><div><code>br-ipca-monthly</code><b>2026-07&nbsp;&nbsp;0.07</b><small>IBGE · observed</small></div></div>
-        <div className="normalization-row row-activity"><div><b>BCB · SGS 24364</b><code>202606&nbsp;&nbsp;148.70</code><small>monthly · index</small></div><i /><div><code>br-ibc-br</code><b>2026-06&nbsp;&nbsp;148.70</b><small>BCB · observed</small></div></div>
-        <div className="normalization-schema"><span>date</span><span>period</span><span>value</span><span>raw_value</span><span>status</span><span>provenance</span></div>
-      </div>
+      <div className="oe-stream"><NormalizationScene locale={locale} /></div>
     </section>
 
     <section className="oe-data-section">

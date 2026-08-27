@@ -106,7 +106,7 @@ export function SignalHero({ indicators, locale }: { indicators: IndicatorDefini
       context.setTransform(ratio, 0, 0, ratio, 0, 0);
       context.clearRect(0, 0, width, height);
       const [red, green, blue] = rasterColors[current.tone];
-      const cell = width < 620 ? 8 : 10;
+      const cell = width < 620 ? 7 : 8;
       const chartTop = height * .14;
       const chartHeight = height * .69;
       for (let cellX = 0; cellX < width; cellX += cell) {
@@ -122,7 +122,7 @@ export function SignalHero({ indicators, locale }: { indicators: IndicatorDefini
           const density = Math.max(0, 1 - distance / (height * .34)) * edgeFade;
           const stepped = Math.floor(density * 7) / 7;
           if (stepped < .04) continue;
-          context.fillStyle = `rgba(${red},${green},${blue},${(.08 + stepped * .58).toFixed(3)})`;
+          context.fillStyle = `rgba(${red},${green},${blue},${(.055 + stepped * .52).toFixed(3)})`;
           context.fillRect(cellX + 1, cellY + 1, cell - 2, cell - 2);
         }
       }

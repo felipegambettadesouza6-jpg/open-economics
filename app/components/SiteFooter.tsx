@@ -6,7 +6,7 @@ export function SiteFooter({ locale = "en", dramatic = false }: { locale?: Local
   if (dramatic) return (
     <footer className="signal-footer signal-footer-dramatic" data-nav-theme="dark">
       <a className="footer-build" href={localized(locale, "/playground")}>
-        {pt ? "Construa com Open Economics" : "Build with Open Economics"}<span>→</span>
+        <span className="footer-build-copy"><small>{pt ? "PRONTO PARA USAR" : "READY TO USE"}</small><b>{pt ? "Construa com Open Economics" : "Build with Open Economics"}</b></span><span className="footer-build-arrow">→</span>
       </a>
       <div className="footer-directory">
         <div>
@@ -15,6 +15,13 @@ export function SiteFooter({ locale = "en", dramatic = false }: { locale?: Local
           <a href={localized(locale, "/indicators/br-ipca-monthly")}>IPCA</a>
           <a href={localized(locale, "/indicators/br-selic-target")}>Selic</a>
           <a href={localized(locale, "/sources")}>{pt ? "Fontes oficiais" : "Official sources"}</a>
+        </div>
+        <div>
+          <span>{pt ? "Indicadores" : "Indicators"}</span>
+          <a href={localized(locale, "/indicators/br-ipca-monthly")}>IPCA monthly</a>
+          <a href={localized(locale, "/indicators/br-ipca-12m")}>IPCA 12 months</a>
+          <a href={localized(locale, "/indicators/br-unemployment-rate")}>{pt ? "Desemprego" : "Unemployment"}</a>
+          <a href={localized(locale, "/indicators/br-ibc-br")}>IBC-Br</a>
         </div>
         <div>
           <span>{pt ? "Construa" : "Build"}</span>
@@ -34,6 +41,13 @@ export function SiteFooter({ locale = "en", dramatic = false }: { locale?: Local
           <a href={localized(locale, "/docs")}>Documentation</a>
           <a href={localized(locale, "/docs/attribution")}>{pt ? "Atribuição" : "Attribution"}</a>
           <a href={localized("pt-br")}>Português</a>
+        </div>
+        <div>
+          <span>{pt ? "Acesso" : "Access"}</span>
+          <a href={localized(locale, "/catalog")}>{pt ? "Pesquisar dados" : "Search data"}</a>
+          <a href={localized(locale, "/playground")}>{pt ? "Testar uma chamada" : "Run a request"}</a>
+          <a href={localized(locale, "/status")}>API health</a>
+          <a href={localized("en")}>English</a>
         </div>
       </div>
       <div className="footer-wordmark" aria-hidden="true">Open Economics</div>
