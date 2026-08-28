@@ -1,16 +1,17 @@
 "use client";
 
 import { useState } from "react";
+import type { Locale } from "@/lib/i18n";
 
 interface ChartObservation {
   date: string;
   value: number | null;
 }
 
-function formatValue(value: number, decimals: number) {
-  return new Intl.NumberFormat("en", {
+function formatValue(value: number, decimals: number, locale: Locale, exact = false) {
+  return new Intl.NumberFormat(locale, {
     maximumFractionDigits: decimals,
-    minimumFractionDigits: Math.min(decimals, 1),
+    minimumFractionDigits: exact ? decimals : Math.min(decimals, 1),
   }).format(value);
 }
 
@@ -19,16 +20,18 @@ export function DataChart({
   unit,
   decimals,
   compact = false,
+  locale = "en",
 }: {
   data: ChartObservation[];
   unit: string;
   decimals: number;
   compact?: boolean;
+  locale?: Locale;
 }) {
   const [activeIndex, setActiveIndex] = useState<number | null>(null);
   const valid = data.filter((item): item is ChartObservation & { value: number } => item.value !== null);
   if (valid.length < 2) {
-    return <div className="chart-empty">Not enough observations for a chart.</div>;
+    return <div className="chart-empty">{locale === "pt-br" ? "Observações insuficientes para o gráfico." : "Not enough observations for a chart."}</div>;
   }
 
   const width = 760;
@@ -66,6 +69,12 @@ export function DataChart({
   });
   const dateTicks = [data[0], data[Math.floor((data.length - 1) / 2)], data.at(-1)!];
   const active = activeIndex === null ? null : data[activeIndex];
+  const latestValidIndex = data.reduce((latest, item, index) => item.value === null ? latest : index, 0);
+  const chartLabel = active?.value !== null && active?.value !== undefined
+    ? `${active.date}: ${formatValue(active.value, decimals, locale, true)} ${unit}`
+    : locale === "pt-br"
+      ? `Gráfico de série temporal de ${data[0].date} a ${data.at(-1)!.date}, medido em ${unit}`
+      : `Time-series chart from ${data[0].date} to ${data.at(-1)!.date}, measured in ${unit}`;
   const rasterCells = compact ? Array.from({ length: 34 * 10 }, (_, cellIndex) => {
     const column = cellIndex % 34;
     const row = Math.floor(cellIndex / 34);
@@ -94,9 +103,11 @@ export function DataChart({
       className={compact ? "data-chart compact" : "data-chart"}
       viewBox={`0 0 ${width} ${height}`}
       role="img"
-      aria-label={`Time-series chart from ${data[0].date} to ${data.at(-1)!.date}, measured in ${unit}`}
+      aria-label={chartLabel}
       preserveAspectRatio="none"
       tabIndex={0}
+      onFocus={() => setActiveIndex((current) => current ?? latestValidIndex)}
+      onBlur={() => setActiveIndex(null)}
       onPointerMove={(event) => {
         const bounds = event.currentTarget.getBoundingClientRect();
         const ratio = Math.max(0, Math.min(1, (event.clientX - bounds.left) / bounds.width));
@@ -114,7 +125,7 @@ export function DataChart({
           <g key={tick.y}>
             <line x1={padding.left} x2={width - padding.right} y1={tick.y} y2={tick.y} className="chart-gridline" />
             <text x={padding.left - 10} y={tick.y + 4} textAnchor="end" className="chart-axis-label">
-              {formatValue(tick.value, decimals)}
+              {formatValue(tick.value, decimals, locale)}
             </text>
           </g>
         ))}
@@ -125,7 +136,7 @@ export function DataChart({
       {active && active.value !== null && <g className="chart-crosshair">
         <line x1={x(activeIndex!)} x2={x(activeIndex!)} y1={padding.top} y2={height - padding.bottom} vectorEffect="non-scaling-stroke" />
         <circle cx={x(activeIndex!)} cy={y(active.value)} r={compact ? 4 : 5} vectorEffect="non-scaling-stroke" />
-        {!compact && <g className="chart-tooltip" transform={`translate(${Math.min(width - 150, Math.max(66, x(activeIndex!) - 70))},${Math.max(8, y(active.value) - 62)})`}><rect width="140" height="48" /><text x="10" y="18">{active.date}</text><text className="chart-tooltip-value" x="10" y="36">{formatValue(active.value, decimals)} {unit}</text></g>}
+        {!compact && <g className="chart-tooltip" transform={`translate(${Math.min(width - 150, Math.max(66, x(activeIndex!) - 70))},${Math.max(8, y(active.value) - 62)})`}><rect width="140" height="48" /><text x="10" y="18">{active.date}</text><text className="chart-tooltip-value" x="10" y="36">{formatValue(active.value, decimals, locale, true)} {unit}</text></g>}
       </g>}
       {dateTicks.map((item, index) => (
         <text

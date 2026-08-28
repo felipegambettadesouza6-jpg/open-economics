@@ -191,7 +191,7 @@ export function CatalogExplorer({ items, locale = "en" }: { items: CatalogItem[]
               <div><dt>{pt ? "Fonte" : "Source"}</dt><dd>{shownPreview.sourceAgency}</dd></div>
             </dl>
           </div>
-          <div className="catalog-focus-chart">{previewData === null ? <span className="preview-state">{pt ? "Buscando observações…" : "Fetching observations…"}</span> : previewData.length > 1 ? <DataChart data={previewData} unit={shownPreview.unitSymbol} decimals={2} compact /> : <span className="preview-state">{pt ? "Fonte indisponível — nenhum valor substituído" : "Source unavailable — no value substituted"}</span>}</div>
+          <div className="catalog-focus-chart">{previewData === null ? <span className="preview-state">{pt ? "Buscando observações…" : "Fetching observations…"}</span> : previewData.length > 1 ? <DataChart data={previewData} unit={shownPreview.unitSymbol} decimals={2} compact locale={locale} /> : <span className="preview-state">{pt ? "Fonte indisponível — nenhum valor substituído" : "Source unavailable — no value substituted"}</span>}</div>
           <div className="catalog-focus-actions"><a href={localized(locale, `/indicators/${shownPreview.id}`)}>{pt ? "Entender esta série" : "Understand this series"}<span>→</span></a><a href={localized(locale, `/playground?indicator=${shownPreview.id}`)}>API <span>↗</span></a></div>
         </div>
       </section>}
