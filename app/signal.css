@@ -1329,11 +1329,11 @@ a { color: inherit; }
   .signal-header.is-compact .signal-nav,
   .signal-header.is-deep .signal-nav { height: 58px; padding: 0; }
   .signal-header.is-deep .signal-brand > span:last-child { width: auto; opacity: 1; transform: none; }
-  .oe-manifesto { min-height: 650px; margin-bottom: 160px; }
-  .oe-confluence { margin-bottom: 160px; }
+  .oe-manifesto { min-height: 650px; margin-bottom: 120px; }
+  .oe-confluence { margin-bottom: 130px; }
   .oe-confluence-copy { min-height: 540px; padding: 86px 20px; }
   .oe-stream { min-height: 650px; margin: 0; padding: 50px 20px; }
-  .oe-data-section,.oe-discover { margin-bottom: 160px; }
+  .oe-data-section,.oe-discover { margin-bottom: 130px; }
   .oe-atlas { min-height: 680px; padding-inline: 0; }
   .oe-atlas-canvas { inset: 150px 0 170px; }
   .oe-atlas-bottom { right: 0; left: 0; }
@@ -1522,6 +1522,13 @@ a { color: inherit; }
   .signal-header .signal-brand { font-size: 15px; }
   .signal-header .signal-brand > span:last-child { opacity: 1; transform: none; }
   .signal-header .signal-mark { transform: none; }
+  .signal-header .signal-brand { min-height: 44px; }
+  .signal-header .signal-mobile-menu summary { width: 44px; height: 44px; }
+  .signal-header .signal-mobile-menu a {
+    min-height: 44px;
+    display: flex;
+    align-items: center;
+  }
 }
 
 /* Identity refinement — an open source ring resolving into two data paths. */

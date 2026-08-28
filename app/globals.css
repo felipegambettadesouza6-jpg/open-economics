@@ -933,4 +933,10 @@ pre, code { font-family: var(--font-data), monospace; }
   .atlas-page-hero:has(+ .atlas-catalog),
   .atlas-docs-head,
   .atlas-docs-head.compact { padding-top: 88px; }
+  .indicator-atlas-title h1 { font-size: clamp(44px,13vw,54px); overflow-wrap: anywhere; }
+  .catalog-focus-copy dl { grid-template-columns: repeat(2,minmax(0,1fr)); }
+  .catalog-focus-copy dl div:last-child { grid-column: 1/-1; }
+  .preview-trigger { top: 30px; width: 44px; height: 44px; }
+  .range-control button { min-height: 44px; }
+  .publisher-row footer > div { flex-wrap: wrap; gap: 14px 22px; }
 }
