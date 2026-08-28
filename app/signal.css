@@ -971,6 +971,23 @@ a { color: inherit; }
 .home-motion-ready .signal-footer-dramatic.is-home-visible .footer-build,
 .home-motion-ready .signal-footer-dramatic.is-home-visible .footer-directory,
 .home-motion-ready .signal-footer-dramatic.is-home-visible .footer-wordmark { opacity: 1; clip-path: inset(0); transform: none; }
+.home-motion-ready .oe-sources.is-home-visible,
+.home-motion-ready .oe-manifesto.is-home-visible > .oe-label,
+.home-motion-ready .oe-manifesto.is-home-visible > h2,
+.home-motion-ready .oe-manifesto.is-home-visible .oe-manifesto-copy,
+.home-motion-ready .oe-confluence.is-home-visible .oe-confluence-copy,
+.home-motion-ready .oe-confluence.is-home-visible .oe-stream,
+.home-motion-ready .oe-data-section.is-home-visible > header,
+.home-motion-ready .oe-data-section.is-home-visible .oe-atlas,
+.home-motion-ready .oe-discover.is-home-visible .oe-discover-head,
+.home-motion-ready .oe-discover.is-home-visible .home-discovery-tool,
+.home-motion-ready .oe-api.is-home-visible .oe-api-heading,
+.home-motion-ready .oe-api.is-home-visible .oe-transform,
+.home-motion-ready .oe-api.is-home-visible .oe-code-window,
+.home-motion-ready .oe-api.is-home-visible .oe-api-actions,
+.home-motion-ready .signal-footer-dramatic.is-home-visible .footer-build,
+.home-motion-ready .signal-footer-dramatic.is-home-visible .footer-directory,
+.home-motion-ready .signal-footer-dramatic.is-home-visible .footer-wordmark { will-change: auto; }
 
 .oe-confluence-copy > a span,
 .oe-api-actions a span,
