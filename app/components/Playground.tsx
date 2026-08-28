@@ -45,6 +45,7 @@ export function Playground({ indicators, locale = "en" }: { indicators: Playgrou
   const [urlReady, setUrlReady] = useState(false);
   const [origin, setOrigin] = useState("");
   const initialRun = useRef(false);
+  const snippetLanguages = ["curl", "python", "javascript"] as const;
   const visibleIndicators = indicators.filter((item) => `${item.name} ${item.officialName} ${item.id} ${item.source}`.toLowerCase().includes(indicatorQuery.toLowerCase()));
   const numericLimit = Number(limit);
   const validationError = endpoint !== "observations" ? ""
@@ -206,21 +207,32 @@ export function Playground({ indicators, locale = "en" }: { indicators: Playgrou
 
         <div className="snippet-panel">
           <div className="snippet-tabs" role="tablist" aria-label={pt ? "Linguagem do exemplo de código" : "Code example language"}>
-            {(["curl", "python", "javascript"] as const).map((language) => (
+            {snippetLanguages.map((language, index) => (
               <button
                 key={language}
+                id={`snippet-tab-${language}`}
                 role="tab"
                 aria-selected={snippet === language}
+                aria-controls="snippet-code-panel"
+                tabIndex={snippet === language ? 0 : -1}
                 className={snippet === language ? "active" : ""}
                 type="button"
                 onClick={() => setSnippet(language)}
+                onKeyDown={(event) => {
+                  if (event.key !== "ArrowLeft" && event.key !== "ArrowRight") return;
+                  event.preventDefault();
+                  const direction = event.key === "ArrowRight" ? 1 : -1;
+                  const next = snippetLanguages[(index + direction + snippetLanguages.length) % snippetLanguages.length];
+                  setSnippet(next);
+                  document.getElementById(`snippet-tab-${next}`)?.focus();
+                }}
               >
                 {language === "javascript" ? "JavaScript" : language === "python" ? "Python" : "cURL"}
               </button>
             ))}
             <CopyButton value={snippets[snippet]} label={pt ? "Copiar código" : "Copy code"} successLabel={pt ? "Copiado" : "Copied"} />
           </div>
-          <pre><code>{snippets[snippet]}</code></pre>
+          <pre id="snippet-code-panel" role="tabpanel" aria-labelledby={`snippet-tab-${snippet}`} tabIndex={0}><code>{snippets[snippet]}</code></pre>
         </div>
       </div>
 

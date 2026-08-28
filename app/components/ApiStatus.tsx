@@ -57,9 +57,9 @@ export function ApiStatus({ locale = "en" }: { locale?: Locale }) {
   const checking = checks.some((check) => check.state === "checking");
 
   return (
-    <div className="status-panel">
+    <div className="status-panel" aria-live="polite" aria-busy={checking}>
       <div className="overall-status">
-        <span className={checking ? "status-orb checking" : allOk ? "status-orb" : "status-orb error"} />
+        <span className={checking ? "status-orb checking" : allOk ? "status-orb" : "status-orb error"} aria-hidden="true" />
         <div>
           <strong>{checking ? (pt ? "Executando verificações" : "Running live checks") : allOk ? (pt ? "Todos os sistemas verificados estão operacionais" : "All checked systems operational") : (pt ? "Uma ou mais verificações precisam de atenção" : "One or more checks need attention")}</strong>
           <span>{checkedAt ? `${pt ? "Verificado" : "Checked"} ${checkedAt}` : (pt ? "Verificando esta implantação" : "Checking this deployment now")}</span>
@@ -69,7 +69,7 @@ export function ApiStatus({ locale = "en" }: { locale?: Locale }) {
       <div className="status-checks">
         {checks.map((check) => (
           <div key={check.id}>
-            <span className={`check-mark ${check.state}`}>{check.state === "ok" ? "✓" : check.state === "error" ? "!" : "·"}</span>
+            <span className={`check-mark ${check.state}`} aria-hidden="true">{check.state === "ok" ? "✓" : check.state === "error" ? "!" : "·"}</span>
             <div><strong>{check.label}</strong><small>{check.endpoint}</small></div>
             <span>{check.detail}</span>
           </div>

@@ -269,7 +269,7 @@ pre, code { font-family: var(--font-data), monospace; }
 .atlas-docs-head.compact { padding: 75px 0; }
 .atlas-docs-head.compact h1 { font-size: clamp(50px,6vw,80px); }
 .docs-search { position: relative; max-width: 540px; margin: 35px auto 0; text-align: left; }
-.docs-search label { display: none; }
+.docs-search label { position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px; overflow: hidden; clip: rect(0,0,0,0); white-space: nowrap; border: 0; }
 .docs-search input { width: 100%; height: 60px; padding: 0 20px; border: 1px solid rgba(255,255,255,.17); border-radius: 17px; outline: 0; background: rgba(255,255,255,.1); color: white; font-size: 13px; }
 .docs-search input::placeholder { color: rgba(255,255,255,.48); }
 .docs-search > div { position: absolute; z-index: 5; top: 67px; left: 0; right: 0; padding: 7px; border-radius: 15px; background: white; color: var(--ink); box-shadow: 0 25px 60px rgba(0,0,0,.2); }
@@ -927,6 +927,15 @@ pre, code { font-family: var(--font-data), monospace; }
 .range-control button:hover:not(.active) { border-bottom-color: #aaa; color: #111; }
 .snippet-tabs button { transition: color .2s ease, border-color .2s ease; }
 .snippet-tabs button:hover:not(.active) { color: #fff; border-bottom-color: rgba(255,255,255,.42); }
+
+.atlas-page a:focus-visible,
+.atlas-page button:focus-visible,
+.atlas-page input:focus-visible,
+.atlas-page select:focus-visible,
+.atlas-page [tabindex]:focus-visible {
+  outline: 2px solid currentColor;
+  outline-offset: 3px;
+}
 
 @media (max-width: 720px) {
   .atlas-shell { width: calc(100% - 32px); }
