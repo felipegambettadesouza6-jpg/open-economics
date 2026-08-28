@@ -1578,6 +1578,19 @@ a { color: inherit; }
   background: currentColor;
   transform: translateY(-50%);
 }
+.signal-header .atlas-language:hover {
+  border-color: #111;
+  background: #111;
+  color: #fff;
+  text-shadow: none;
+}
+.signal-header.is-dark .atlas-language:hover {
+  border-color: #fff;
+  background: #fff;
+  color: #111;
+  text-shadow: none;
+}
+.signal-header .atlas-language:active { transform: translateY(1px); }
 .signal-page,
 .atlas-page { font-variant-emoji: text; }
 .signal-search-input > b {

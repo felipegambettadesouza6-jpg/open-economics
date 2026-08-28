@@ -896,6 +896,29 @@ pre, code { font-family: var(--font-data), monospace; }
   transform: translate(-5px,-50%);
 }
 
+/* Quiet but explicit feedback for the shared product controls. */
+.preview-trigger,
+.clear-filters,
+.overall-status button,
+.run-button {
+  transition: color .2s ease, background .2s ease, border-color .2s ease, transform .2s ease, opacity .2s ease;
+}
+.preview-trigger:hover { color: #cf594b; border-color: currentColor; }
+.preview-trigger:active { transform: translateY(1px); }
+.clear-filters:hover { background: #f5f5f2; }
+.clear-filters:active { transform: translateY(1px); }
+.overall-status button:hover:not(:disabled) { border-color: #111; background: #111; color: #fff; }
+.overall-status button:active:not(:disabled) { transform: translateY(1px); }
+.overall-status button:disabled,
+.run-button:disabled { cursor: wait; opacity: .5; }
+.run-button:hover:not(:disabled) { background: #2b2b2b; }
+.run-button:active:not(:disabled) { transform: translateY(1px); }
+.run-button span { display: inline-block; transition: transform .25s cubic-bezier(.16,1,.3,1); }
+.run-button:hover:not(:disabled) span { transform: translateX(4px); }
+.range-control button:hover:not(.active) { border-bottom-color: #aaa; color: #111; }
+.snippet-tabs button { transition: color .2s ease, border-color .2s ease; }
+.snippet-tabs button:hover:not(.active) { color: #fff; border-bottom-color: rgba(255,255,255,.42); }
+
 @media (max-width: 720px) {
   .atlas-shell { width: calc(100% - 32px); }
   .atlas-page-hero:has(+ .atlas-catalog),

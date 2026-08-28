@@ -190,7 +190,7 @@ export function Playground({ indicators, locale = "en" }: { indicators: Playgrou
         <div className="generated-url">
           <span>{pt ? "URL gerada" : "Generated URL"}</span>
           <code>{requestPath}</code>
-          <CopyButton value={absoluteUrl} />
+          <CopyButton value={absoluteUrl} label={pt ? "Copiar URL" : "Copy URL"} successLabel={pt ? "Copiado" : "Copied"} />
         </div>
         <button className="run-button" type="button" onClick={execute} disabled={running}>
           {running ? (pt ? "Executando…" : "Running request…") : (pt ? "Executar requisição" : "Run request")} <span>→</span>
@@ -210,7 +210,7 @@ export function Playground({ indicators, locale = "en" }: { indicators: Playgrou
                 {language === "javascript" ? "JavaScript" : language === "python" ? "Python" : "cURL"}
               </button>
             ))}
-            <CopyButton value={snippets[snippet]} label="Copy" />
+            <CopyButton value={snippets[snippet]} label={pt ? "Copiar código" : "Copy code"} successLabel={pt ? "Copiado" : "Copied"} />
           </div>
           <pre><code>{snippets[snippet]}</code></pre>
         </div>
@@ -238,7 +238,7 @@ export function Playground({ indicators, locale = "en" }: { indicators: Playgrou
             <pre className="response-body"><code>{result.body}</code></pre>
             <div className="response-legend"><span><code>data</code>{pt ? "observações normalizadas" : "normalized observations"}</span><span><code>meta</code>{pt ? "definição e origem" : "definition and provenance"}</span><span><code>status</code>{pt ? "semântica do valor" : "value semantics"}</span></div>
             <div className="response-actions">
-              <CopyButton value={result.body} label="Copy response" />
+              <CopyButton value={result.body} label={pt ? "Copiar resposta" : "Copy response"} successLabel={pt ? "Copiado" : "Copied"} />
               <a href={requestPath} target="_blank" rel="noreferrer">Open raw response ↗</a>
             </div>
           </>

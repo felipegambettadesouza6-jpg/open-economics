@@ -5,10 +5,12 @@ import { useState } from "react";
 export function CopyButton({
   value,
   label = "Copy",
+  successLabel = "Copied",
   className = "",
 }: {
   value: string;
   label?: string;
+  successLabel?: string;
   className?: string;
 }) {
   const [copied, setCopied] = useState(false);
@@ -24,9 +26,8 @@ export function CopyButton({
   }
 
   return (
-    <button className={`copy-button ${className}`} type="button" onClick={copy}>
-      {copied ? "Copied" : label}
+    <button className={`copy-button ${className}`} type="button" onClick={copy} aria-live="polite">
+      {copied ? successLabel : label}
     </button>
   );
 }
-

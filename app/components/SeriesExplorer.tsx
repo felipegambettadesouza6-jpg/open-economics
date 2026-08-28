@@ -129,7 +129,7 @@ export function SeriesExplorer({
           ))}
         </div>
         <div className="series-actions">
-          <CopyButton value={requestPath} label={pt ? "Copiar URL" : "Copy API URL"} />
+          <CopyButton value={requestPath} label={pt ? "Copiar URL" : "Copy API URL"} successLabel={pt ? "Copiado" : "Copied"} />
           <a href={`${requestPath}&format=csv`} download>{pt ? "Baixar CSV" : "Download CSV"}</a>
           <a href={requestPath}>{pt ? "Ver JSON" : "View JSON"} ↗</a>
         </div>
