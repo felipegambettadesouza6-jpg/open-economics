@@ -11,21 +11,22 @@ interface Check {
   detail: string;
 }
 
-const initialChecks: Check[] = [
-  { id: "api", label: "API router & catalog", endpoint: "/api/v1/health", state: "checking", detail: "Checking…" },
-  { id: "ibge", label: "IBGE Aggregates", endpoint: "/api/v1/indicators/br-ipca-monthly/latest", state: "checking", detail: "Checking…" },
-  { id: "bcb", label: "BCB SGS", endpoint: "/api/v1/indicators/br-selic-target/latest", state: "checking", detail: "Checking…" },
-];
+function initialChecks(pt: boolean): Check[] { return [
+  { id: "api", label: pt ? "Roteador da API e catálogo" : "API router & catalog", endpoint: "/api/v1/health", state: "checking", detail: pt ? "Verificando…" : "Checking…" },
+  { id: "ibge", label: pt ? "Agregados do IBGE" : "IBGE Aggregates", endpoint: "/api/v1/indicators/br-ipca-monthly/latest", state: "checking", detail: pt ? "Verificando…" : "Checking…" },
+  { id: "bcb", label: "BCB SGS", endpoint: "/api/v1/indicators/br-selic-target/latest", state: "checking", detail: pt ? "Verificando…" : "Checking…" },
+]; }
 
 export function ApiStatus({ locale = "en" }: { locale?: Locale }) {
   const pt = locale === "pt-br";
-  const [checks, setChecks] = useState(initialChecks);
+  const [checks, setChecks] = useState(() => initialChecks(pt));
   const [checkedAt, setCheckedAt] = useState("");
 
   const runChecks = useCallback(async () => {
-    setChecks(initialChecks);
+    const pendingChecks = initialChecks(pt);
+    setChecks(pendingChecks);
     const results = await Promise.all(
-      initialChecks.map(async (check): Promise<Check> => {
+      pendingChecks.map(async (check): Promise<Check> => {
         const started = performance.now();
         try {
           const response = await fetch(check.endpoint, { cache: "no-store" });
@@ -35,17 +36,17 @@ export function ApiStatus({ locale = "en" }: { locale?: Locale }) {
             ...check,
             state: response.ok ? "ok" : "error",
             detail: response.ok
-              ? `${duration} ms${payload.meta?.stale ? " · stale snapshot" : " · response current"}`
+              ? `${duration} ms${payload.meta?.stale ? (pt ? " · snapshot desatualizado" : " · stale snapshot") : (pt ? " · resposta atual" : " · response current")}`
               : `HTTP ${response.status}`,
           };
         } catch {
-          return { ...check, state: "error", detail: "Network request failed" };
+          return { ...check, state: "error", detail: pt ? "Falha na requisição de rede" : "Network request failed" };
         }
       }),
     );
     setChecks(results);
     setCheckedAt(new Date().toLocaleString(locale, { dateStyle: "medium", timeStyle: "medium" }));
-  }, [locale]);
+  }, [locale, pt]);
 
   useEffect(() => {
     const timer = window.setTimeout(() => { void runChecks(); }, 0);

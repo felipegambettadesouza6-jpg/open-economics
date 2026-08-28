@@ -5,6 +5,18 @@ import { categoryLabels, indicators } from "@/lib/catalog/indicators";
 import { sources } from "@/lib/catalog/sources";
 import { isLocale, localized } from "@/lib/i18n";
 
+const categoryLabelsPt: Record<string, string> = { inflation: "Inflação", "interest-rates": "Taxas de juros", currencies: "Câmbio", activity: "Atividade econômica", labor: "Trabalho", credit: "Crédito", fiscal: "Fiscal", external: "Setor externo", markets: "Mercados" };
+const sourceCopyPt: Record<string, { description: string; attribution: string }> = {
+  bcb: {
+    description: "O banco central do Brasil publica séries monetárias, de crédito, fiscais, do setor externo e financeiras por meio de seus serviços de dados abertos.",
+    attribution: "Fonte: Banco Central do Brasil (BCB).",
+  },
+  ibge: {
+    description: "O instituto oficial de estatística do Brasil publica contas nacionais, preços, indústria, comércio, serviços e dados do mercado de trabalho.",
+    attribution: "Fonte: IBGE. Preserve o nome oficial da série e o período de referência.",
+  },
+};
+
 export default async function SourcesPage({ params }: { params: Promise<{ locale: string }> }) {
   const { locale: value } = await params;
   if (!isLocale(value)) notFound();
@@ -27,15 +39,15 @@ export default async function SourcesPage({ params }: { params: Promise<{ locale
           <div className="publisher-identity">
             <p className="atlas-kicker">{source.shortName} · {pt ? "PUBLICADOR OFICIAL" : "OFFICIAL PUBLISHER"}</p>
             <h2>{source.name}</h2>
-            <p>{source.description}</p>
+            <p>{pt ? sourceCopyPt[source.id]?.description ?? source.description : source.description}</p>
             <div className="publisher-metrics"><span><b>{sourceIndicators.length}</b>{pt ? "séries" : "series"}</span><span><b>{categories.length}</b>{pt ? "temas" : "topics"}</span><span><b>{source.shortName}</b>ID</span></div>
           </div>
           <div className="publisher-series">
-            <span>{categories.map((category) => categoryLabels[category]).join(" · ")}</span>
-            {sourceIndicators.slice(0, 5).map((indicator) => <a href={localized(locale, `/indicators/${indicator.id}`)} key={indicator.id}><b>{indicator.name}</b><code>{indicator.id}</code><small>{indicator.unitSymbol}</small></a>)}
+            <span>{categories.map((category) => pt ? categoryLabelsPt[category] ?? categoryLabels[category] : categoryLabels[category]).join(" · ")}</span>
+            {sourceIndicators.slice(0, 5).map((indicator) => <a href={localized(locale, `/indicators/${indicator.id}`)} key={indicator.id}><b>{pt ? indicator.officialName : indicator.name}</b><code>{indicator.id}</code><small>{indicator.unitSymbol}</small></a>)}
             <a className="publisher-all" href={localized(locale, `/catalog?source=${source.shortName}`)}>{pt ? `Ver todas as ${sourceIndicators.length} séries` : `View all ${sourceIndicators.length} series`}<span>→</span></a>
           </div>
-          <footer><span>{source.attribution}</span><a href={source.catalogUrl} target="_blank" rel="noreferrer">{pt ? "Catálogo oficial" : "Official catalog"} ↗</a></footer>
+          <footer><span>{pt ? sourceCopyPt[source.id]?.attribution ?? source.attribution : source.attribution}</span><div><a href={source.licenseUrl} target="_blank" rel="noreferrer">{pt ? "Licença" : "License"} ↗</a><a href={source.catalogUrl} target="_blank" rel="noreferrer">{pt ? "Catálogo oficial" : "Official catalog"} ↗</a></div></footer>
         </article>;
       })}
     </section>
