@@ -20,20 +20,31 @@ export interface CatalogItem {
 }
 
 const categoryOptions = [
-  ["", "All areas"],
-  ["inflation", "Inflation"],
-  ["interest-rates", "Interest rates"],
-  ["currencies", "Currencies"],
-  ["activity", "Economic activity"],
-  ["labor", "Labor"],
-  ["credit", "Credit"],
-  ["fiscal", "Fiscal"],
-  ["external", "External sector"],
-  ["markets", "Markets"],
-];
+  ["", "All areas", "Todas as áreas"],
+  ["inflation", "Inflation", "Inflação"],
+  ["interest-rates", "Interest rates", "Taxas de juros"],
+  ["currencies", "Currencies", "Câmbio"],
+  ["activity", "Economic activity", "Atividade econômica"],
+  ["labor", "Labor", "Trabalho"],
+  ["credit", "Credit", "Crédito"],
+  ["fiscal", "Fiscal", "Fiscal"],
+  ["external", "External sector", "Setor externo"],
+  ["markets", "Markets", "Mercados"],
+] as const;
+
+const frequencyLabels = {
+  daily: ["Daily", "Diária"],
+  monthly: ["Monthly", "Mensal"],
+  quarterly: ["Quarterly", "Trimestral"],
+  annual: ["Annual", "Anual"],
+} as const;
 
 export function CatalogExplorer({ items, locale = "en" }: { items: CatalogItem[]; locale?: Locale }) {
   const pt = locale === "pt-br";
+  const categoryLabel = (value: string, fallback = value) => categoryOptions.find(([option]) => option === value)?.[pt ? 2 : 1] ?? fallback;
+  const frequencyLabel = (value: string) => frequencyLabels[value as keyof typeof frequencyLabels]?.[pt ? 1 : 0] ?? value;
+  const displayName = (item: CatalogItem) => pt ? item.officialName : item.name;
+  const displayDescription = (item: CatalogItem) => pt ? item.name : item.description;
   const [query, setQuery] = useState("");
   const [category, setCategory] = useState("");
   const [source, setSource] = useState("");
@@ -114,7 +125,7 @@ export function CatalogExplorer({ items, locale = "en" }: { items: CatalogItem[]
           <input
             value={query}
             onChange={(event) => { setQuery(event.target.value); setPreview(null); }}
-            placeholder="IPCA, Selic, unemployment, 433…"
+            placeholder={pt ? "IPCA, Selic, desemprego, 433…" : "IPCA, Selic, unemployment, 433…"}
             type="search"
           />
           <kbd>/</kbd>
@@ -122,17 +133,17 @@ export function CatalogExplorer({ items, locale = "en" }: { items: CatalogItem[]
         <a className="button dark" href={localized(locale, "/playground")}>{pt ? "Abrir playground" : "Open playground"} →</a>
       </div>
 
-      <div className="filter-bar" aria-label="Catalog filters">
+      <div className="filter-bar" aria-label={pt ? "Filtros do catálogo" : "Catalog filters"}>
         <label>
           <span>{pt ? "Tema" : "Topic"}</span>
           <select value={category} onChange={(event) => setCategory(event.target.value)}>
-            {categoryOptions.map(([value, label]) => <option key={value} value={value}>{label}</option>)}
+            {categoryOptions.map(([value, en, portuguese]) => <option key={value} value={value}>{pt ? portuguese : en}</option>)}
           </select>
         </label>
         <label>
           <span>{pt ? "Fonte" : "Source"}</span>
           <select value={source} onChange={(event) => setSource(event.target.value)}>
-            <option value="">All sources</option>
+            <option value="">{pt ? "Todas as fontes" : "All sources"}</option>
             <option value="IBGE">IBGE</option>
             <option value="BCB">BCB</option>
           </select>
@@ -140,11 +151,11 @@ export function CatalogExplorer({ items, locale = "en" }: { items: CatalogItem[]
         <label>
           <span>{pt ? "Frequência" : "Frequency"}</span>
           <select value={frequency} onChange={(event) => setFrequency(event.target.value)}>
-            <option value="">All frequencies</option>
-            <option value="daily">Daily</option>
-            <option value="monthly">Monthly</option>
-            <option value="quarterly">Quarterly</option>
-            <option value="annual">Annual</option>
+            <option value="">{pt ? "Todas as frequências" : "All frequencies"}</option>
+            <option value="daily">{pt ? "Diária" : "Daily"}</option>
+            <option value="monthly">{pt ? "Mensal" : "Monthly"}</option>
+            <option value="quarterly">{pt ? "Trimestral" : "Quarterly"}</option>
+            <option value="annual">{pt ? "Anual" : "Annual"}</option>
           </select>
         </label>
         <label>
@@ -167,12 +178,12 @@ export function CatalogExplorer({ items, locale = "en" }: { items: CatalogItem[]
       {shownPreview && <section className="catalog-focus" aria-live="polite">
         <div className="catalog-focus-head">
           <p>{pt ? "SÉRIE EM FOCO" : "SERIES IN FOCUS"}</p>
-          <div><span>{shownPreview.categoryName}</span><span>{shownPreview.frequency}</span><span>{shownPreview.sourceAgency}</span></div>
+          <div><span>{categoryLabel(shownPreview.category, shownPreview.categoryName)}</span><span>{frequencyLabel(shownPreview.frequency)}</span><span>{shownPreview.sourceAgency}</span></div>
         </div>
         <div className="catalog-focus-body">
           <div className="catalog-focus-copy">
-            <h2>{shownPreview.name}</h2>
-            <p>{shownPreview.description}</p>
+            <h2>{displayName(shownPreview)}</h2>
+            <p>{displayDescription(shownPreview)}</p>
             <code>{shownPreview.id}</code>
             <dl>
               <div><dt>{pt ? "Valor atual" : "Current value"}</dt><dd>{latestPreview?.value?.toLocaleString(locale, { maximumFractionDigits: 2 }) ?? "—"}<i>{shownPreview.unitSymbol}</i></dd></div>
@@ -192,26 +203,26 @@ export function CatalogExplorer({ items, locale = "en" }: { items: CatalogItem[]
 
       <div className="catalog-list">
         <div className="catalog-list-head">
-          <span>Indicator</span><span>Area</span><span>Frequency</span><span>Source</span>
+          <span>{pt ? "Indicador" : "Indicator"}</span><span>{pt ? "Área" : "Area"}</span><span>{pt ? "Frequência" : "Frequency"}</span><span>{pt ? "Fonte" : "Source"}</span>
         </div>
         {results.map((item) => (
           <div className={`catalog-result ${shownPreview?.id === item.id ? "is-previewing" : ""}`} key={item.id}>
             <a className="result-hit" href={localized(locale, `/indicators/${item.id}`)}>
             <span className="result-main">
-              <strong>{item.name}</strong>
-              <small>{item.description}</small>
+              <strong>{displayName(item)}</strong>
+              <small>{displayDescription(item)}</small>
               <code>{item.id}</code>
             </span>
-            <span>{item.categoryName}</span>
+            <span>{categoryLabel(item.category, item.categoryName)}</span>
             <span className="result-frequency">
-              {item.frequency}
+              {frequencyLabel(item.frequency)}
               <small>{item.unitSymbol}{item.seasonalAdjustment ? " · SA" : ""}</small>
             </span>
             <span className="result-source">
               <b>{item.sourceAgency}</b>
               <i aria-hidden="true">↗</i>
             </span>
-            </a><button className="preview-trigger" type="button" aria-label={`Focus ${item.name}`} onClick={() => setPreview(item)}><span aria-hidden="true" /></button>
+            </a><button className="preview-trigger" type="button" aria-label={pt ? `Focar ${item.officialName}` : `Focus ${item.name}`} onClick={() => setPreview(item)}><span aria-hidden="true" /></button>
           </div>
         ))}
         {results.length === 0 && (
