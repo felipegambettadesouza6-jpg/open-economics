@@ -275,11 +275,13 @@ pre, code { font-family: var(--font-data), monospace; }
 .docs-search > div { position: absolute; z-index: 5; top: 67px; left: 0; right: 0; padding: 7px; border-radius: 15px; background: white; color: var(--ink); box-shadow: 0 25px 60px rgba(0,0,0,.2); }
 .docs-search > div a { padding: 11px; display: flex; justify-content: space-between; border-radius: 9px; font-size: 10px; text-decoration: none; }
 .docs-search > div a:hover { background: #f1efe9; }
+.docs-search > div > p { margin: 0; padding: 13px 11px; color: #777; font-size: 10px; }
 .atlas-docs-layout { padding-top: 85px; padding-bottom: 150px; display: grid; grid-template-columns: 220px minmax(0,760px); justify-content: center; gap: 100px; }
 .atlas-docs-nav { position: sticky; top: 30px; height: max-content; display: flex; flex-direction: column; gap: 12px; }
 .atlas-docs-nav strong { margin: 18px 0 4px; color: #8b8982; font: 500 8px var(--font-data), monospace; text-transform: uppercase; }
 .atlas-docs-nav a { color: #615f59; font-size: 10px; text-decoration: none; }
 .atlas-docs-content > section { padding: 0 0 90px; }
+.atlas-docs-content > section[id] { scroll-margin-top: 88px; }
 .atlas-docs-content h2 { margin: 14px 0 23px; font-size: 46px; font-weight: 520; letter-spacing: -.055em; }
 .atlas-docs-content h3 { margin: 35px 0 12px; font-size: 14px; }
 .atlas-docs-content p, .atlas-docs-content li { color: #66645e; font-size: 12px; line-height: 1.75; }
