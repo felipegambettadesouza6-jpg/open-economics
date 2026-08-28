@@ -7,6 +7,7 @@ import { localized, type Locale } from "@/lib/i18n";
 interface PlaygroundIndicator {
   id: string;
   name: string;
+  officialName: string;
   source: string;
   frequency: string;
 }
@@ -44,7 +45,12 @@ export function Playground({ indicators, locale = "en" }: { indicators: Playgrou
   const [urlReady, setUrlReady] = useState(false);
   const [origin, setOrigin] = useState("");
   const initialRun = useRef(false);
-  const visibleIndicators = indicators.filter((item) => `${item.name} ${item.id} ${item.source}`.toLowerCase().includes(indicatorQuery.toLowerCase()));
+  const visibleIndicators = indicators.filter((item) => `${item.name} ${item.officialName} ${item.id} ${item.source}`.toLowerCase().includes(indicatorQuery.toLowerCase()));
+  const numericLimit = Number(limit);
+  const validationError = endpoint !== "observations" ? ""
+    : start > end ? (pt ? "A data inicial deve ser anterior ou igual à data final." : "Start date must be on or before end date.")
+      : !Number.isInteger(numericLimit) || numericLimit < 1 || numericLimit > 5000 ? (pt ? "O limite deve ser um número inteiro entre 1 e 5000." : "Limit must be a whole number between 1 and 5000.")
+        : "";
 
   useEffect(() => {
     queueMicrotask(() => setOrigin(window.location.origin));
@@ -95,6 +101,7 @@ export function Playground({ indicators, locale = "en" }: { indicators: Playgrou
   };
 
   const execute = useCallback(async () => {
+    if (validationError) return;
     setRunning(true);
     const started = performance.now();
     try {
@@ -128,7 +135,7 @@ export function Playground({ indicators, locale = "en" }: { indicators: Playgrou
     } finally {
       setRunning(false);
     }
-  }, [requestPath]);
+  }, [requestPath, validationError]);
 
   useEffect(() => {
     if (!urlReady || initialRun.current) return;
@@ -141,14 +148,14 @@ export function Playground({ indicators, locale = "en" }: { indicators: Playgrou
       <div className="playground-builder">
         <div className="builder-head">
           <span>{pt ? "Construtor de requisição" : "Request builder"}</span>
-          <b>GET only</b>
+          <b>{pt ? "Somente GET" : "GET only"}</b>
         </div>
         <label className="form-field">
           <span>Endpoint <small>{pt ? "Escolha o tipo de resposta" : "Choose the response shape"}</small></span>
           <select value={endpoint} onChange={(event) => setEndpoint(event.target.value as Endpoint)}>
-            <option value="observations">Series observations</option>
-            <option value="latest">Latest observation</option>
-            <option value="metadata">Indicator metadata</option>
+            <option value="observations">{pt ? "Observações da série" : "Series observations"}</option>
+            <option value="latest">{pt ? "Observação mais recente" : "Latest observation"}</option>
+            <option value="metadata">{pt ? "Metadados do indicador" : "Indicator metadata"}</option>
           </select>
         </label>
         <label className="form-field">
@@ -156,7 +163,7 @@ export function Playground({ indicators, locale = "en" }: { indicators: Playgrou
           <input className="indicator-search" type="search" value={indicatorQuery} onChange={(event) => setIndicatorQuery(event.target.value)} placeholder={pt ? "Filtrar por nome ou ID…" : "Filter by name or ID…"} />
           <select value={indicator} onChange={(event) => setIndicator(event.target.value)}>
             {visibleIndicators.map((item) => (
-              <option key={item.id} value={item.id}>{item.name} · {item.source}</option>
+              <option key={item.id} value={item.id}>{pt ? item.officialName : item.name} · {item.source}</option>
             ))}
           </select>
         </label>
@@ -164,25 +171,25 @@ export function Playground({ indicators, locale = "en" }: { indicators: Playgrou
           <>
             <div className="form-grid">
               <label className="form-field">
-                <span>{pt ? "Data inicial" : "Start date"} <small>YYYY-MM-DD · inclusive</small></span>
-                <input type="date" value={start} onChange={(event) => setStart(event.target.value)} />
+                <span>{pt ? "Data inicial" : "Start date"} <small>YYYY-MM-DD · {pt ? "inclusiva" : "inclusive"}</small></span>
+                <input type="date" value={start} onChange={(event) => setStart(event.target.value)} aria-invalid={Boolean(validationError && start > end)} />
               </label>
               <label className="form-field">
-                <span>{pt ? "Data final" : "End date"} <small>YYYY-MM-DD · inclusive</small></span>
-                <input type="date" value={end} onChange={(event) => setEnd(event.target.value)} />
+                <span>{pt ? "Data final" : "End date"} <small>YYYY-MM-DD · {pt ? "inclusiva" : "inclusive"}</small></span>
+                <input type="date" value={end} onChange={(event) => setEnd(event.target.value)} aria-invalid={Boolean(validationError && start > end)} />
               </label>
             </div>
             <div className="form-grid">
               <label className="form-field">
                 <span>{pt ? "Ordem" : "Order"} <small>{pt ? "ordenação por data" : "sort by date"}</small></span>
                 <select value={order} onChange={(event) => setOrder(event.target.value)}>
-                  <option value="asc">Ascending</option>
-                  <option value="desc">Descending</option>
+                  <option value="asc">{pt ? "Crescente" : "Ascending"}</option>
+                  <option value="desc">{pt ? "Decrescente" : "Descending"}</option>
                 </select>
               </label>
               <label className="form-field">
                 <span>{pt ? "Limite" : "Limit"} <small>1—5000</small></span>
-                <input min="1" max="5000" type="number" value={limit} onChange={(event) => setLimit(event.target.value)} />
+                <input min="1" max="5000" type="number" value={limit} onChange={(event) => setLimit(event.target.value)} aria-invalid={Boolean(validationError && !(numericLimit >= 1 && numericLimit <= 5000))} />
               </label>
             </div>
           </>
@@ -192,12 +199,13 @@ export function Playground({ indicators, locale = "en" }: { indicators: Playgrou
           <code>{requestPath}</code>
           <CopyButton value={absoluteUrl} label={pt ? "Copiar URL" : "Copy URL"} successLabel={pt ? "Copiado" : "Copied"} />
         </div>
-        <button className="run-button" type="button" onClick={execute} disabled={running}>
+        {validationError && <p className="request-validation" id="request-validation" role="alert">{validationError}</p>}
+        <button className="run-button" type="button" onClick={execute} disabled={running || Boolean(validationError)} aria-describedby={validationError ? "request-validation" : undefined}>
           {running ? (pt ? "Executando…" : "Running request…") : (pt ? "Executar requisição" : "Run request")} <span>→</span>
         </button>
 
         <div className="snippet-panel">
-          <div className="snippet-tabs" role="tablist" aria-label="Code example language">
+          <div className="snippet-tabs" role="tablist" aria-label={pt ? "Linguagem do exemplo de código" : "Code example language"}>
             {(["curl", "python", "javascript"] as const).map((language) => (
               <button
                 key={language}
@@ -231,15 +239,15 @@ export function Playground({ indicators, locale = "en" }: { indicators: Playgrou
         {result ? (
           <>
             <div className="response-meta">
-              <span>request <code>{result.requestId ?? "not available"}</code></span>
-              <span>{result.cacheControl ?? "no cache header"}</span>
+              <span>request <code>{result.requestId ?? (pt ? "indisponível" : "not available")}</code></span>
+              <span>{result.cacheControl ?? (pt ? "sem cabeçalho de cache" : "no cache header")}</span>
               {result.warning && <span className="warning">{result.warning}</span>}
             </div>
             <pre className="response-body"><code>{result.body}</code></pre>
             <div className="response-legend"><span><code>data</code>{pt ? "observações normalizadas" : "normalized observations"}</span><span><code>meta</code>{pt ? "definição e origem" : "definition and provenance"}</span><span><code>status</code>{pt ? "semântica do valor" : "value semantics"}</span></div>
             <div className="response-actions">
               <CopyButton value={result.body} label={pt ? "Copiar resposta" : "Copy response"} successLabel={pt ? "Copiado" : "Copied"} />
-              <a href={requestPath} target="_blank" rel="noreferrer">Open raw response ↗</a>
+              <a href={requestPath} target="_blank" rel="noreferrer">{pt ? "Abrir resposta bruta" : "Open raw response"} ↗</a>
             </div>
           </>
         ) : (
