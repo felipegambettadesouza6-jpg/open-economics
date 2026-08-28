@@ -110,7 +110,7 @@ export function CatalogExplorer({ items, locale = "en" }: { items: CatalogItem[]
       <div className="catalog-search-row">
         <label className="search-box">
           <span className="sr-only">{pt ? "Buscar indicadores" : "Search indicators"}</span>
-          <span aria-hidden="true">⌕</span>
+          <span className="data-search-mark" aria-hidden="true" />
           <input
             value={query}
             onChange={(event) => { setQuery(event.target.value); setPreview(null); }}
@@ -211,7 +211,7 @@ export function CatalogExplorer({ items, locale = "en" }: { items: CatalogItem[]
               <b>{item.sourceAgency}</b>
               <i aria-hidden="true">↗</i>
             </span>
-            </a><button className="preview-trigger" type="button" aria-label={`Focus ${item.name}`} onClick={() => setPreview(item)}>{shownPreview?.id === item.id ? "●" : "⌁"}</button>
+            </a><button className="preview-trigger" type="button" aria-label={`Focus ${item.name}`} onClick={() => setPreview(item)}><span aria-hidden="true" /></button>
           </div>
         ))}
         {results.length === 0 && (

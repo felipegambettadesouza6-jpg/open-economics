@@ -1,31 +1,40 @@
 "use client";
 
 import type { CSSProperties } from "react";
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { LanguageSwitch } from "@/app/components/LanguageSwitch";
 import { localized, type Locale, ui } from "@/lib/i18n";
 
 export function SiteHeader({ locale = "en" }: { locale?: Locale }) {
   const copy = ui[locale];
+  const darkRef = useRef(false);
   const [scrolled, setScrolled] = useState(false);
   const [compact, setCompact] = useState(false);
-  const [deep, setDeep] = useState(false);
   const [dark, setDark] = useState(false);
   const [progress, setProgress] = useState(0);
+  const [morph, setMorph] = useState(0);
 
   useEffect(() => {
     let frame = 0;
     const update = () => {
       frame = 0;
-      setScrolled(window.scrollY > 24);
-      setCompact(window.scrollY > 440);
-      setDeep(window.scrollY > 1450);
+      const nextMorph = Math.min(1, Math.max(0, window.scrollY / 220));
+      setScrolled(window.scrollY > 8);
+      setCompact(nextMorph > .42);
+      setMorph(nextMorph);
       setProgress(Math.min(1, window.scrollY / Math.max(1, document.documentElement.scrollHeight - window.innerHeight)));
-      const navLine = window.scrollY > 24 ? 46 : 42;
-      setDark([...document.querySelectorAll<HTMLElement>("[data-nav-theme='dark']")].some((section) => {
+      const nav = document.querySelector<HTMLElement>(".signal-nav");
+      const navHeight = Math.max(48, nav?.getBoundingClientRect().height ?? 58);
+      const darkCoverage = [...document.querySelectorAll<HTMLElement>("[data-nav-theme='dark']")].reduce((maximum, section) => {
         const bounds = section.getBoundingClientRect();
-        return bounds.top <= navLine && bounds.bottom >= navLine;
-      }));
+        const overlap = Math.max(0, Math.min(navHeight, bounds.bottom) - Math.max(0, bounds.top));
+        return Math.max(maximum, overlap / navHeight);
+      }, 0);
+      const nextDark = darkRef.current ? darkCoverage > .48 : darkCoverage >= .64;
+      if (nextDark !== darkRef.current) {
+        darkRef.current = nextDark;
+        setDark(nextDark);
+      }
     };
     const schedule = () => { if (!frame) frame = window.requestAnimationFrame(update); };
     update();
@@ -34,7 +43,27 @@ export function SiteHeader({ locale = "en" }: { locale?: Locale }) {
     return () => { window.removeEventListener("scroll", schedule); window.removeEventListener("resize", schedule); if (frame) window.cancelAnimationFrame(frame); };
   }, []);
 
-  return <header className={`signal-header ${scrolled ? "is-scrolled" : ""} ${compact ? "is-compact" : ""} ${deep ? "is-deep" : ""} ${dark ? "is-dark" : ""}`} style={{ "--scroll-progress": progress } as CSSProperties}><div className="signal-nav">
+  const open = 1 - morph;
+  const headerStyle = {
+    "--scroll-progress": progress,
+    "--header-morph": morph,
+    "--nav-height": `${92 - morph * 34}px`,
+    "--nav-left": `${50 - morph * 40}%`,
+    "--nav-shift": `${-50 + morph * 50}%`,
+    "--nav-gap": `${40 - morph * 14}px`,
+    "--nav-font-size": `${12 - morph * .6}px`,
+    "--action-gap": `${18 - morph * 8}px`,
+    "--brand-copy-opacity": open,
+    "--brand-copy-shift": `${-10 * morph}px`,
+    "--brand-hit-width": `${28 + open * 124}px`,
+    "--brand-font-size": `${15 - morph}px`,
+    "--brand-mark-scale": 1 - morph * .08,
+    "--language-size": `${42 - morph * 6}px`,
+    "--cta-x": `${16 - morph * 3}px`,
+    "--cta-y": `${11 - morph * 2}px`,
+  } as CSSProperties;
+
+  return <header className={`signal-header ${scrolled ? "is-scrolled" : ""} ${compact ? "is-compact" : ""} ${dark ? "is-dark" : ""}`} style={headerStyle}><div className="signal-nav">
     <a className="signal-brand" href={localized(locale)} aria-label="Open Economics home"><span className="signal-mark" aria-hidden="true"><i /><i /><i /></span><span>Open Economics</span></a>
     <nav className="signal-nav-links" aria-label="Primary navigation">
       <a href={localized(locale, "/catalog")}>{copy.nav.explore}</a><a href={localized(locale, "/docs")}>{copy.nav.docs}</a><a href={localized(locale, "/sources")}>{copy.nav.sources}</a><a className="signal-status" href={localized(locale, "/status")}><i aria-hidden="true" />{copy.nav.status}</a>

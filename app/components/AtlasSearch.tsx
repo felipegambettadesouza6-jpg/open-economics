@@ -20,7 +20,7 @@ export function AtlasSearch({ indicators, locale }: { indicators: IndicatorDefin
   }, []);
   return <div className="atlas-command">
     <label htmlFor="atlas-search">{copy.searchLabel}</label>
-    <div className="atlas-search-row"><span aria-hidden="true">⌕</span><input ref={inputRef} id="atlas-search" value={query} onChange={(event) => setQuery(event.target.value)} placeholder={copy.searchPlaceholder} autoComplete="off" /><kbd>/</kbd></div>
+    <div className="atlas-search-row"><span className="data-search-mark" aria-hidden="true" /><input ref={inputRef} id="atlas-search" value={query} onChange={(event) => setQuery(event.target.value)} placeholder={copy.searchPlaceholder} autoComplete="off" /><kbd>/</kbd></div>
     <div className="atlas-results" aria-live="polite">
       {results.map((indicator) => <a href={localized(locale, `/indicators/${indicator.id}`)} key={indicator.id}><span><b>{indicator.name}</b><small>{indicator.officialName}</small></span><code>{indicator.unitSymbol} · {indicator.frequency}</code></a>)}
       {query && results.length === 0 && <p>{locale === "pt-br" ? "Nenhuma série encontrada." : "No matching series."}</p>}
