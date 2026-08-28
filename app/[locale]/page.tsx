@@ -66,7 +66,7 @@ export default async function LocalizedHome({ params }: { params: Promise<{ loca
     <section className="oe-api" data-nav-theme="dark">
       <div className="oe-api-grid" aria-hidden="true" />
       <div className="oe-api-heading"><p className="oe-label">OPEN ECONOMICS API</p><h2>{pt ? <>Do dado oficial<br />ao seu produto,<br /><span>em uma chamada.</span></> : <>From official data<br />to your product,<br /><span>in one call.</span></>}</h2></div>
-      <div className="oe-transform" aria-hidden="true"><span><i>01</i> Official observation<b>IBGE · 2026-07 · 0.07</b></span><em>→</em><span><i>02</i> Normalized series<b>br-ipca-monthly</b></span><em>→</em><span><i>03</i> Product-ready JSON<b>value · period · provenance</b></span></div>
+      <div className="oe-transform" aria-hidden="true"><span><i>01</i>{pt ? "Observação oficial" : "Official observation"}<b>IBGE · 2026-07 · 0.07</b></span><em>→</em><span><i>02</i>{pt ? "Série normalizada" : "Normalized series"}<b>br-ipca-monthly</b></span><em>→</em><span><i>03</i>{pt ? "JSON pronto para uso" : "Product-ready JSON"}<b>{pt ? "valor · período · proveniência" : "value · period · provenance"}</b></span></div>
       <div className="oe-code-window">
         <div><span>REQUEST</span><span>JSON</span></div>
         <pre><code><i>GET</i> /api/v1/indicators/br-ipca-12m/observations<br /><br /><em>{`{`}</em><br />  <b>&quot;indicator&quot;</b>: <q>br-ipca-12m</q>,<br />  <b>&quot;unit&quot;</b>: <q>percent</q>,<br />  <b>&quot;source&quot;</b>: <q>IBGE</q>,<br />  <b>&quot;data&quot;</b>: [<br />    {`{`} <b>&quot;period&quot;</b>: <q>2026-07</q>, <b>&quot;value&quot;</b>: 4.44 {`}`}<br />  ]<br /><em>{`}`}</em></code></pre>
