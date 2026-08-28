@@ -887,7 +887,7 @@ a { color: inherit; }
 .signal-search-input:focus-within > b { transform: rotate(45deg); }
 
 @media (min-width: 1100px) {
-  .signal-hero { min-height: 960px; margin-bottom: 230px; padding-top: 96px; }
+  .signal-hero { min-height: 960px; margin-bottom: 170px; padding-top: 96px; }
   .signal-hero h1 { max-width: min(48vw,640px); font-size: clamp(90px,8.05vw,130px); line-height: .84; }
   .signal-hero-intro { top: 550px; width: 330px; }
   .economic-field { top: 108px; right: 0; left: 53%; width: auto; min-height: 650px; }
@@ -1183,12 +1183,13 @@ a { color: inherit; }
 .field-index button:active { transform: translateY(0); }
 
 /* Long scenes use the page edge and whitespace as part of the composition. */
-.oe-manifesto { min-height: 820px; margin-bottom: 280px; }
+.oe-sources { margin-bottom: 130px; }
+.oe-manifesto { min-height: 720px; margin-bottom: 140px; }
 .oe-manifesto-copy { margin-top: 96px; }
 .oe-confluence {
   width: 100%;
   min-height: 820px;
-  margin: 0 0 270px;
+  margin: 0 0 190px;
   grid-template-columns: minmax(360px,.68fr) minmax(620px,1.32fr);
   background: #0e0e0e;
 }
@@ -1207,7 +1208,7 @@ a { color: inherit; }
 .normalization-inputs button:hover:not(.active) { opacity: 1; background: rgba(17,17,17,.035); }
 .normalization-inputs button:active { transform: translateX(2px); }
 
-.oe-data-section { margin-bottom: 280px; }
+.oe-data-section { margin-bottom: 180px; }
 .oe-data-section > header { margin-bottom: 62px; }
 .oe-atlas,
 .oe-atlas.tone-blue,
@@ -1236,7 +1237,8 @@ a { color: inherit; }
 .oe-atlas-tabs button:hover { color: #111; border-color: #111; }
 .oe-atlas-tabs button:active { transform: translateY(1px); }
 
-.oe-discover { margin-bottom: 280px; }
+.oe-discover { margin-bottom: 190px; }
+.oe-discover-head { min-height: 420px; }
 .home-discovery-results button { transition: padding .3s cubic-bezier(.16,1,.3,1),background .22s ease,color .22s ease,transform .3s cubic-bezier(.16,1,.3,1); }
 .home-discovery-results button:hover:not(.active) { padding-inline: 14px; background: #f3f3f0; transform: none; }
 .home-discovery-results button:active { transform: translateX(3px); }
