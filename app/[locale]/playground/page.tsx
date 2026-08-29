@@ -5,8 +5,18 @@ import { SiteFooter } from "@/app/components/SiteFooter";
 import { SiteHeader } from "@/app/components/SiteHeader";
 import { indicators } from "@/lib/catalog/indicators";
 import { isLocale } from "@/lib/i18n";
+import { localizedMetadata } from "@/lib/metadata";
 
-export const metadata: Metadata = { title: "API playground | Open Economics", description: "Build, execute, understand, and share a real Open Economics API request." };
+export async function generateMetadata({ params }: { params: Promise<{ locale: string }> }): Promise<Metadata> {
+  const { locale } = await params;
+  if (!isLocale(locale)) return {};
+  return localizedMetadata({
+    locale,
+    path: "/playground",
+    title: locale === "pt-br" ? "Playground da API | Open Economics" : "API playground | Open Economics",
+    description: locale === "pt-br" ? "Monte, execute, entenda e compartilhe uma requisição real da Open Economics API." : "Build, execute, understand, and share a real Open Economics API request.",
+  });
+}
 export default async function PlaygroundPage({ params }: { params: Promise<{ locale: string }> }) {
   const { locale: value } = await params; if (!isLocale(value)) notFound(); const locale = value; const pt = locale === "pt-br";
   const options = indicators.map((indicator) => ({ id: indicator.id, name: indicator.name, officialName: indicator.officialName, source: indicator.sourceAgency, frequency: indicator.frequency }));

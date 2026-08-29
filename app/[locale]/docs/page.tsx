@@ -4,8 +4,18 @@ import { DocsSearch } from "@/app/components/DocsSearch";
 import { SiteFooter } from "@/app/components/SiteFooter";
 import { SiteHeader } from "@/app/components/SiteHeader";
 import { isLocale, localized } from "@/lib/i18n";
+import { localizedMetadata } from "@/lib/metadata";
 
-export const metadata: Metadata = { title: "Documentation | Open Economics", description: "Quickstart, data model, date semantics, revisions, and examples for Open Economics." };
+export async function generateMetadata({ params }: { params: Promise<{ locale: string }> }): Promise<Metadata> {
+  const { locale } = await params;
+  if (!isLocale(locale)) return {};
+  return localizedMetadata({
+    locale,
+    path: "/docs",
+    title: locale === "pt-br" ? "Documentação | Open Economics" : "Documentation | Open Economics",
+    description: locale === "pt-br" ? "Início rápido, modelo de dados, semântica de datas, revisões e exemplos da Open Economics." : "Quickstart, data model, date semantics, revisions, and examples for Open Economics.",
+  });
+}
 export default async function DocsPage({ params }: { params: Promise<{ locale: string }> }) {
   const { locale: value } = await params; if (!isLocale(value)) notFound(); const locale = value; const pt = locale === "pt-br";
   return <main className="atlas-page atlas-utility"><SiteHeader locale={locale} /><section className="atlas-docs-head"><div className="atlas-shell"><p className="atlas-kicker">05 / {pt ? "Documentação" : "Documentation"}</p><h1>{pt ? "Contratos claros. Dados legíveis." : "Clear contracts. Readable data."}</h1><p>{pt ? "Tudo para recuperar séries oficiais sem perder seu significado." : "Everything needed to retrieve official series without losing their meaning."}</p><DocsSearch locale={locale} /></div></section><div className="atlas-docs-layout atlas-shell"><aside className="atlas-docs-nav"><strong>{pt ? "Guia" : "Guide"}</strong><a href="#quickstart">{pt ? "Início rápido" : "Quickstart"}</a><a href="#model">{pt ? "Modelo de dados" : "Data model"}</a><a href="#dates">{pt ? "Datas e períodos" : "Dates & periods"}</a><a href="#revisions">{pt ? "Revisões" : "Revisions"}</a><strong>{pt ? "Referência" : "Reference"}</strong><a href={localized(locale, "/docs/api-reference")}>{pt ? "Referência da API" : "API reference"}</a><a href={localized(locale, "/docs/errors")}>{pt ? "Erros" : "Errors"}</a><a href={localized(locale, "/docs/attribution")}>{pt ? "Atribuição" : "Attribution"}</a></aside><article className="atlas-docs-content">

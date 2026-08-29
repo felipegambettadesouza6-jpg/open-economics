@@ -20,7 +20,7 @@ function bcb(input: BcbInput): IndicatorDefinition {
     sourceAgency: "BCB",
     geography: "Brazil",
     upstream: { seriesCode: code },
-    sourceUrl: `https://www3.bcb.gov.br/sgspub/consultarmetadados/consultarMetadadosSeries.do?method=consultarMetadadosSeriesInternet&hdOidSerieSelecionada=${code}`,
+    sourceUrl: `https://dadosabertos.bcb.gov.br/dataset?q=${code}`,
     license: BCB_LICENSE,
     licenseUrl: BCB_LICENSE_URL,
     cacheTtlSeconds: cacheTtlSeconds ?? (rest.frequency === "daily" ? 3600 : 21600),

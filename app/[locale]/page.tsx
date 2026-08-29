@@ -9,12 +9,13 @@ import { SiteFooter } from "@/app/components/SiteFooter";
 import { SiteHeader } from "@/app/components/SiteHeader";
 import { indicators } from "@/lib/catalog/indicators";
 import { isLocale, localized, ui } from "@/lib/i18n";
+import { localizedMetadata } from "@/lib/metadata";
 
 export async function generateMetadata({ params }: { params: Promise<{ locale: string }> }): Promise<Metadata> {
   const { locale } = await params;
   if (!isLocale(locale)) return {};
   const title = locale === "pt-br" ? "Open Economics — Dados oficiais, feitos para fluir" : "Open Economics — Official data, made to flow";
-  return { title, description: ui[locale].intro, alternates: { canonical: localized(locale), languages: { en: "/en", "pt-BR": "/pt-br" } } };
+  return localizedMetadata({ locale, title, description: ui[locale].intro });
 }
 
 export default async function LocalizedHome({ params }: { params: Promise<{ locale: string }> }) {

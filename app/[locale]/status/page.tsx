@@ -1,8 +1,21 @@
+import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 import { ApiStatus } from "@/app/components/ApiStatus";
 import { SiteFooter } from "@/app/components/SiteFooter";
 import { SiteHeader } from "@/app/components/SiteHeader";
 import { isLocale } from "@/lib/i18n";
+import { localizedMetadata } from "@/lib/metadata";
+
+export async function generateMetadata({ params }: { params: Promise<{ locale: string }> }): Promise<Metadata> {
+  const { locale } = await params;
+  if (!isLocale(locale)) return {};
+  return localizedMetadata({
+    locale,
+    path: "/status",
+    title: locale === "pt-br" ? "Status da API | Open Economics" : "API status | Open Economics",
+    description: locale === "pt-br" ? "Verificações ao vivo da API Open Economics e de suas fontes oficiais." : "Live checks of the Open Economics API and its official sources.",
+  });
+}
 
 export default async function StatusPage({ params }: { params: Promise<{ locale: string }> }) {
   const { locale: value } = await params; if (!isLocale(value)) notFound(); const locale = value; const pt = locale === "pt-br";

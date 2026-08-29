@@ -33,7 +33,7 @@ export function SiteFooter({ locale = "en", dramatic = false }: { locale?: Local
         <div>
           <span>{pt ? "Integridade" : "Integrity"}</span>
           <a href={localized(locale, "/sources")}>{pt ? "Origem e licenças" : "Provenance & licenses"}</a>
-          <a href={localized(locale, "/docs/revisions")}>{pt ? "Revisões" : "Revisions"}</a>
+          <a href={`${localized(locale, "/docs")}#revisions`}>{pt ? "Revisões" : "Revisions"}</a>
           <a href={localized(locale, "/status")}>Live status</a>
         </div>
         <div>

@@ -1,9 +1,11 @@
+import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 import { SiteFooter } from "@/app/components/SiteFooter";
 import { SiteHeader } from "@/app/components/SiteHeader";
 import { categoryLabels, indicators } from "@/lib/catalog/indicators";
 import { sources } from "@/lib/catalog/sources";
 import { isLocale, localized } from "@/lib/i18n";
+import { localizedMetadata } from "@/lib/metadata";
 
 const categoryLabelsPt: Record<string, string> = { inflation: "Inflação", "interest-rates": "Taxas de juros", currencies: "Câmbio", activity: "Atividade econômica", labor: "Trabalho", credit: "Crédito", fiscal: "Fiscal", external: "Setor externo", markets: "Mercados" };
 const sourceCopyPt: Record<string, { description: string; attribution: string }> = {
@@ -16,6 +18,17 @@ const sourceCopyPt: Record<string, { description: string; attribution: string }>
     attribution: "Fonte: IBGE. Preserve o nome oficial da série e o período de referência.",
   },
 };
+
+export async function generateMetadata({ params }: { params: Promise<{ locale: string }> }): Promise<Metadata> {
+  const { locale } = await params;
+  if (!isLocale(locale)) return {};
+  return localizedMetadata({
+    locale,
+    path: "/sources",
+    title: locale === "pt-br" ? "Fontes e proveniência | Open Economics" : "Sources and provenance | Open Economics",
+    description: locale === "pt-br" ? "Consulte publicadores, licenças, atribuição e cobertura das séries oficiais." : "Review publishers, licenses, attribution, and coverage for every official series.",
+  });
+}
 
 export default async function SourcesPage({ params }: { params: Promise<{ locale: string }> }) {
   const { locale: value } = await params;

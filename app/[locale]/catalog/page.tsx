@@ -5,8 +5,18 @@ import { SiteFooter } from "@/app/components/SiteFooter";
 import { SiteHeader } from "@/app/components/SiteHeader";
 import { categoryLabels, indicators } from "@/lib/catalog/indicators";
 import { isLocale } from "@/lib/i18n";
+import { localizedMetadata } from "@/lib/metadata";
 
-export const metadata: Metadata = { title: "Economic data catalog | Open Economics", description: "Search Brazilian economic indicators in English or Portuguese, then inspect or use the series." };
+export async function generateMetadata({ params }: { params: Promise<{ locale: string }> }): Promise<Metadata> {
+  const { locale } = await params;
+  if (!isLocale(locale)) return {};
+  return localizedMetadata({
+    locale,
+    path: "/catalog",
+    title: locale === "pt-br" ? "Catálogo de dados econômicos | Open Economics" : "Economic data catalog | Open Economics",
+    description: locale === "pt-br" ? "Encontre, entenda e use indicadores econômicos oficiais do Brasil." : "Find, understand, and use official Brazilian economic indicators.",
+  });
+}
 
 export default async function CatalogPage({ params }: { params: Promise<{ locale: string }> }) {
   const { locale: value } = await params; if (!isLocale(value)) notFound(); const locale = value; const pt = locale === "pt-br";
