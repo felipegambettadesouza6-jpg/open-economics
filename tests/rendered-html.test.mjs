@@ -63,6 +63,7 @@ test("server-renders the major localized product experiences", async () => {
     ["/en/indicators/br-ipca-12m", /IPCA — 12-month change/i],
     ["/en/playground", /Build it\. Run it\. Understand it\./i],
     ["/en/docs", /Clear contracts\. Readable data\./i],
+    ["/en/guides", /Brazilian economic data, from endpoint to answer\./i],
     ["/en/sources", /Know where every value came from\./i],
     ["/en/status", /Failure is data, too\./i],
     ["/pt-br/docs", /Contratos claros\. Dados legíveis\./i],
@@ -125,6 +126,7 @@ test("publishes crawl directives, a bilingual sitemap, structured data, and priv
   const sitemap = await sitemapResponse.text();
   assert.match(sitemap, /hreflang="pt-BR"/i);
   assert.match(sitemap, /\/en\/indicators\/br-ipca-monthly/i);
+  assert.match(sitemap, /\/en\/guides/i);
   assert.match(await indicatorResponse.text(), /"@type":"Dataset"/i);
 
   const runtime = await worker();

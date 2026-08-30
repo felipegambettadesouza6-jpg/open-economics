@@ -2,7 +2,7 @@
 
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { CopyButton } from "@/app/components/CopyButton";
-import { useSearchTelemetry } from "@/app/components/Telemetry";
+import { recordActivation, useSearchTelemetry } from "@/app/components/Telemetry";
 import { localized, type Locale } from "@/lib/i18n";
 
 interface PlaygroundIndicator {
@@ -103,7 +103,7 @@ export function Playground({ indicators, locale = "en" }: { indicators: Playgrou
     javascript: `const response = await fetch("${absoluteUrl}");\nif (!response.ok) throw new Error(\`HTTP \${response.status}\`);\nconst { data, meta } = await response.json();\nconsole.log(data, meta.provenance);`,
   };
 
-  const execute = useCallback(async () => {
+  const execute = useCallback(async (activated = false) => {
     if (validationError) return;
     setRunning(true);
     const started = performance.now();
@@ -125,6 +125,7 @@ export function Playground({ indicators, locale = "en" }: { indicators: Playgrou
         cacheControl: response.headers.get("cache-control"),
         warning: response.headers.get("warning"),
       });
+      if (activated && response.ok) recordActivation("playground_run");
     } catch (error) {
       setResult({
         status: 0,
@@ -143,7 +144,7 @@ export function Playground({ indicators, locale = "en" }: { indicators: Playgrou
   useEffect(() => {
     if (!urlReady || initialRun.current) return;
     initialRun.current = true;
-    void execute();
+    void execute(false);
   }, [execute, urlReady]);
 
   return (
@@ -200,10 +201,10 @@ export function Playground({ indicators, locale = "en" }: { indicators: Playgrou
         <div className="generated-url">
           <span>{pt ? "URL gerada" : "Generated URL"}</span>
           <code>{requestPath}</code>
-          <CopyButton value={absoluteUrl} label={pt ? "Copiar URL" : "Copy URL"} successLabel={pt ? "Copiado" : "Copied"} />
+          <CopyButton value={absoluteUrl} label={pt ? "Copiar URL" : "Copy URL"} successLabel={pt ? "Copiado" : "Copied"} activation="api_url_copy" />
         </div>
         {validationError && <p className="request-validation" id="request-validation" role="alert">{validationError}</p>}
-        <button className="run-button" type="button" onClick={execute} disabled={running || Boolean(validationError)} aria-describedby={validationError ? "request-validation" : undefined}>
+        <button className="run-button" type="button" onClick={() => void execute(true)} disabled={running || Boolean(validationError)} aria-describedby={validationError ? "request-validation" : undefined}>
           {running ? (pt ? "Executando…" : "Running request…") : (pt ? "Executar requisição" : "Run request")} <span>→</span>
         </button>
 
@@ -232,7 +233,7 @@ export function Playground({ indicators, locale = "en" }: { indicators: Playgrou
                 {language === "javascript" ? "JavaScript" : language === "python" ? "Python" : "cURL"}
               </button>
             ))}
-            <CopyButton value={snippets[snippet]} label={pt ? "Copiar código" : "Copy code"} successLabel={pt ? "Copiado" : "Copied"} />
+            <CopyButton value={snippets[snippet]} label={pt ? "Copiar código" : "Copy code"} successLabel={pt ? "Copiado" : "Copied"} activation="code_copy" />
           </div>
           <pre id="snippet-code-panel" role="tabpanel" aria-labelledby={`snippet-tab-${snippet}`} tabIndex={0}><code>{snippets[snippet]}</code></pre>
         </div>
@@ -260,8 +261,8 @@ export function Playground({ indicators, locale = "en" }: { indicators: Playgrou
             <pre className="response-body"><code>{result.body}</code></pre>
             <div className="response-legend"><span><code>data</code>{pt ? "observações normalizadas" : "normalized observations"}</span><span><code>meta</code>{pt ? "definição e origem" : "definition and provenance"}</span><span><code>status</code>{pt ? "semântica do valor" : "value semantics"}</span></div>
             <div className="response-actions">
-              <CopyButton value={result.body} label={pt ? "Copiar resposta" : "Copy response"} successLabel={pt ? "Copiado" : "Copied"} />
-              <a href={requestPath} target="_blank" rel="noreferrer">{pt ? "Abrir resposta bruta" : "Open raw response"} ↗</a>
+              <CopyButton value={result.body} label={pt ? "Copiar resposta" : "Copy response"} successLabel={pt ? "Copiado" : "Copied"} activation="response_copy" />
+              <a href={requestPath} target="_blank" rel="noreferrer" data-activation="raw_response_open">{pt ? "Abrir resposta bruta" : "Open raw response"} ↗</a>
             </div>
           </>
         ) : (

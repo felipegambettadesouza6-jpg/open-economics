@@ -27,6 +27,7 @@ export function SiteFooter({ locale = "en", dramatic = false }: { locale?: Local
           <span>{pt ? "Construa" : "Build"}</span>
           <a href={localized(locale, "/playground")}>Playground</a>
           <a href={localized(locale, "/docs")}>Quickstart</a>
+          <a href={localized(locale, "/guides")}>{pt ? "Exemplos práticos" : "Practical examples"}</a>
           <a href={localized(locale, "/docs/api-reference")}>API reference</a>
           <a href="/api/v1/openapi.json">OpenAPI 3.1</a>
         </div>
@@ -76,6 +77,7 @@ export function SiteFooter({ locale = "en", dramatic = false }: { locale?: Local
           <div>
             <span>{pt ? "Recursos" : "Resources"}</span>
             <a href={localized(locale, "/docs")}>Documentation</a>
+            <a href={localized(locale, "/guides")}>{pt ? "Exemplos práticos" : "Practical examples"}</a>
             <a href={localized(locale, "/sources")}>{pt ? "Fontes e licenças" : "Sources & licenses"}</a>
             <a href="/api/v1/openapi.json">OpenAPI 3.1</a>
           </div>

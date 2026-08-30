@@ -2,6 +2,10 @@
 
 A free, read-only API for authoritative Brazilian economic time series.
 
+- **Live API:** https://open-economics-data.knbf982hkn.chatgpt.site/api/v1
+- **Documentation:** https://open-economics-data.knbf982hkn.chatgpt.site/en/docs
+- **Runnable examples:** https://open-economics-data.knbf982hkn.chatgpt.site/en/guides
+
 Open Economics gives data from Banco Central do Brasil (BCB) and IBGE a single
 contract without obscuring where it came from. Every response includes a stable
 indicator ID, unit, frequency, original publisher value, source identifier,
@@ -10,9 +14,9 @@ upstream request URL, license, and cache state.
 ## Start with the catalog
 
 ```bash
-curl --fail --silent "http://localhost:3000/api/v1"
-curl --fail --silent "http://localhost:3000/api/v1/indicators?q=ipca&source=ibge"
-curl --fail --silent "http://localhost:3000/api/v1/indicators/br-ipca-monthly"
+curl --fail --silent "https://open-economics-data.knbf982hkn.chatgpt.site/api/v1"
+curl --fail --silent "https://open-economics-data.knbf982hkn.chatgpt.site/api/v1/indicators?q=ipca&source=ibge"
+curl --fail --silent "https://open-economics-data.knbf982hkn.chatgpt.site/api/v1/indicators/br-ipca-monthly"
 ```
 
 `GET /api/v1/indicators` is the discovery endpoint. Its
@@ -34,13 +38,13 @@ silently become an empty result set.
 
 ```bash
 curl --fail --silent \
-  "http://localhost:3000/api/v1/indicators/br-ipca-monthly/observations?start=2024-01-01&end=2024-12-31"
+  "https://open-economics-data.knbf982hkn.chatgpt.site/api/v1/indicators/br-ipca-monthly/observations?start=2024-01-01&end=2024-12-31"
 
 curl --fail --silent \
-  "http://localhost:3000/api/v1/indicators/br-selic-target/observations?start=2025-01-01&order=desc&limit=12"
+  "https://open-economics-data.knbf982hkn.chatgpt.site/api/v1/indicators/br-selic-target/observations?start=2025-01-01&order=desc&limit=12"
 
 curl --fail --silent \
-  "http://localhost:3000/api/v1/indicators/br-selic-target/latest"
+  "https://open-economics-data.knbf982hkn.chatgpt.site/api/v1/indicators/br-selic-target/latest"
 ```
 
 Observation requests accept `start`, `end`, `order=asc|desc`, `limit=1..5000`,

@@ -3,6 +3,7 @@ import { indicators } from "@/lib/catalog/indicators";
 type TelemetryEvent =
   | {
       event: "page_view";
+      actor?: unknown;
       path?: unknown;
       referrer?: unknown;
       session?: unknown;
@@ -28,9 +29,25 @@ type TelemetryEvent =
       path?: unknown;
       session?: unknown;
       ttfb_ms?: unknown;
+    }
+  | {
+      action?: unknown;
+      actor?: unknown;
+      event: "activation";
+      path?: unknown;
+      session?: unknown;
     };
 
 const SEARCH_SURFACES = new Set(["hero", "home", "atlas", "catalog", "docs", "playground"]);
+const ACTIVATION_ACTIONS = new Set([
+  "api_url_copy",
+  "code_copy",
+  "csv_download",
+  "indicator_view",
+  "playground_run",
+  "raw_response_open",
+  "response_copy",
+]);
 const SEARCH_ENGINES = ["google.", "bing.", "duckduckgo.", "search.yahoo.", "ecosia.", "brave."];
 const SOCIAL_SITES = ["linkedin.", "x.com", "twitter.", "facebook.", "instagram.", "reddit.", "youtube."];
 
@@ -62,6 +79,37 @@ async function recordUnique(db: D1Database | undefined, rawSession: unknown) {
   await db.prepare(
     "INSERT OR IGNORE INTO usage_uniques (day, session_hash, created_at) VALUES (?, ?, ?)",
   ).bind(today, hash, Date.now()).run();
+}
+
+async function actorHash(rawActor: unknown) {
+  if (typeof rawActor !== "string" || !/^[a-f0-9-]{16,64}$/i.test(rawActor)) return "";
+  const bytes = new TextEncoder().encode(`open-economics-actor-v1:${rawActor}`);
+  const digest = await crypto.subtle.digest("SHA-256", bytes);
+  return [...new Uint8Array(digest)].map((value) => value.toString(16).padStart(2, "0")).join("");
+}
+
+async function recordActor(db: D1Database | undefined, rawActor: unknown, activation: string | null = null) {
+  if (!db) return;
+  const hash = await actorHash(rawActor);
+  if (!hash) return;
+  const today = day();
+  const now = Date.now();
+  const activatedAt = activation ? now : null;
+  await db.prepare(
+    `INSERT INTO usage_actors (
+       actor_hash, first_seen_day, last_seen_day, active_days,
+       first_activated_at, last_activated_at, activation_type, activation_count,
+       created_at, updated_at
+     ) VALUES (?, ?, ?, 1, ?, ?, ?, ?, ?, ?)
+     ON CONFLICT(actor_hash) DO UPDATE SET
+       active_days = usage_actors.active_days + CASE WHEN usage_actors.last_seen_day <> excluded.last_seen_day THEN 1 ELSE 0 END,
+       last_seen_day = excluded.last_seen_day,
+       first_activated_at = COALESCE(usage_actors.first_activated_at, excluded.first_activated_at),
+       last_activated_at = COALESCE(excluded.last_activated_at, usage_actors.last_activated_at),
+       activation_type = COALESCE(usage_actors.activation_type, excluded.activation_type),
+       activation_count = usage_actors.activation_count + excluded.activation_count,
+       updated_at = excluded.updated_at`,
+  ).bind(hash, today, today, activatedAt, activatedAt, activation, activation ? 1 : 0, now, now).run();
 }
 
 function cleanPath(value: unknown) {
@@ -124,7 +172,11 @@ export async function handleTelemetry(request: Request, db: D1Database | undefin
     if (payload.event === "page_view") {
       const path = cleanPath(payload.path);
       const source = referrer(payload.referrer, url.hostname);
+      const indicatorId = /^\/(?:en|pt-br)\/indicators\/([^/]+)$/.exec(path)?.[1];
+      const activation = indicatorId && indicators.some((item) => item.id === indicatorId) ? "indicator_view" : null;
+      await recordActor(db, payload.actor, activation);
       await increment(db, "page_view", { path, locale: localeFromPath(path), ...source });
+      if (activation) await increment(db, "activation", { action: activation, path, locale: localeFromPath(path) });
     } else if (payload.event === "search") {
       const query = cleanQuery(payload.query);
       const surface = typeof payload.surface === "string" && SEARCH_SURFACES.has(payload.surface) ? payload.surface : "unknown";
@@ -141,6 +193,12 @@ export async function handleTelemetry(request: Request, db: D1Database | undefin
         load: timingBucket(payload.load_ms),
         ttfb: timingBucket(payload.ttfb_ms),
       });
+    } else if (payload.event === "activation") {
+      const action = typeof payload.action === "string" && ACTIVATION_ACTIONS.has(payload.action) ? payload.action : "";
+      if (!action) return new Response(null, { status: 400 });
+      const path = cleanPath(payload.path);
+      await recordActor(db, payload.actor, action);
+      await increment(db, "activation", { action, path, locale: localeFromPath(path) });
     } else {
       return new Response(null, { status: 400 });
     }

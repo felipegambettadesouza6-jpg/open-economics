@@ -1,17 +1,20 @@
 "use client";
 
 import { useState } from "react";
+import { recordActivation, type ActivationAction } from "@/app/components/Telemetry";
 
 export function CopyButton({
   value,
   label = "Copy",
   successLabel = "Copied",
   className = "",
+  activation,
 }: {
   value: string;
   label?: string;
   successLabel?: string;
   className?: string;
+  activation?: ActivationAction;
 }) {
   const [copied, setCopied] = useState(false);
 
@@ -19,6 +22,7 @@ export function CopyButton({
     try {
       await navigator.clipboard.writeText(value);
       setCopied(true);
+      if (activation) recordActivation(activation);
       window.setTimeout(() => setCopied(false), 1800);
     } catch {
       setCopied(false);

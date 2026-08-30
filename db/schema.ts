@@ -40,3 +40,23 @@ export const usageUniques = sqliteTable(
     index("idx_usage_uniques_day").on(table.day),
   ],
 );
+
+export const usageActors = sqliteTable(
+  "usage_actors",
+  {
+    actorHash: text("actor_hash").primaryKey(),
+    firstSeenDay: text("first_seen_day").notNull(),
+    lastSeenDay: text("last_seen_day").notNull(),
+    activeDays: integer("active_days").notNull().default(1),
+    firstActivatedAt: integer("first_activated_at"),
+    lastActivatedAt: integer("last_activated_at"),
+    activationType: text("activation_type"),
+    activationCount: integer("activation_count").notNull().default(0),
+    createdAt: integer("created_at").notNull(),
+    updatedAt: integer("updated_at").notNull(),
+  },
+  (table) => [
+    index("idx_usage_actors_activated").on(table.firstActivatedAt),
+    index("idx_usage_actors_last_seen").on(table.lastSeenDay),
+  ],
+);

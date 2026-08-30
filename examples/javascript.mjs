@@ -1,5 +1,5 @@
 // Fetch official Brazilian policy-rate observations from Open Economics API.
-const baseUrl = process.env.OPEN_ECONOMICS_URL ?? "http://localhost:3000";
+const baseUrl = process.env.OPEN_ECONOMICS_URL ?? "https://open-economics-data.knbf982hkn.chatgpt.site";
 const url = new URL("/api/v1/indicators/br-selic-target/observations", baseUrl);
 url.searchParams.set("start", "2025-01-01");
 url.searchParams.set("order", "desc");
@@ -13,4 +13,3 @@ if (!response.ok) {
 const { data, meta } = await response.json();
 console.table(data);
 console.log(meta.provenance);
-
