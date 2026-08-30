@@ -20,6 +20,14 @@ type TelemetryEvent =
       kind?: unknown;
       path?: unknown;
       session?: unknown;
+    }
+  | {
+      event: "performance";
+      device?: unknown;
+      load_ms?: unknown;
+      path?: unknown;
+      session?: unknown;
+      ttfb_ms?: unknown;
     };
 
 const SEARCH_SURFACES = new Set(["hero", "home", "atlas", "catalog", "docs", "playground"]);
@@ -81,6 +89,16 @@ function cleanQuery(value: unknown) {
   return normalized.replace(/[^\p{L}\p{N}\s._/-]/gu, "");
 }
 
+function timingBucket(value: unknown) {
+  const milliseconds = typeof value === "number" && Number.isFinite(value) ? value : -1;
+  if (milliseconds < 0) return "unknown";
+  if (milliseconds < 500) return "under_500ms";
+  if (milliseconds < 1000) return "500_999ms";
+  if (milliseconds < 2000) return "1_2s";
+  if (milliseconds < 4000) return "2_4s";
+  return "over_4s";
+}
+
 export async function handleTelemetry(request: Request, db: D1Database | undefined) {
   const url = new URL(request.url);
   if (request.method !== "POST") return new Response(null, { status: 405, headers: { Allow: "POST" } });
@@ -116,6 +134,13 @@ export async function handleTelemetry(request: Request, db: D1Database | undefin
     } else if (payload.event === "browser_error") {
       const kind = payload.kind === "unhandledrejection" ? "unhandledrejection" : "error";
       await increment(db, "browser_error", { kind, path: cleanPath(payload.path) });
+    } else if (payload.event === "performance") {
+      await increment(db, "performance", {
+        path: cleanPath(payload.path),
+        device: payload.device === "mobile" ? "mobile" : "desktop",
+        load: timingBucket(payload.load_ms),
+        ttfb: timingBucket(payload.ttfb_ms),
+      });
     } else {
       return new Response(null, { status: 400 });
     }

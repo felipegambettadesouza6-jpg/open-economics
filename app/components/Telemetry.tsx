@@ -50,11 +50,26 @@ export function Telemetry() {
     try { referrer = document.referrer ? new URL(document.referrer).hostname : ""; } catch { referrer = ""; }
     sendTelemetry({ event: "page_view", path: window.location.pathname, referrer });
 
+    const reportPerformance = () => window.setTimeout(() => {
+      const navigation = performance.getEntriesByType("navigation")[0] as PerformanceNavigationTiming | undefined;
+      if (!navigation || navigation.loadEventEnd <= 0) return;
+      sendTelemetry({
+        event: "performance",
+        path: window.location.pathname,
+        device: window.innerWidth < 640 ? "mobile" : "desktop",
+        load_ms: Math.round(navigation.loadEventEnd - navigation.startTime),
+        ttfb_ms: Math.round(navigation.responseStart - navigation.requestStart),
+      });
+    }, 0);
+    if (document.readyState === "complete") reportPerformance();
+    else window.addEventListener("load", reportPerformance, { once: true });
+
     const error = () => sendTelemetry({ event: "browser_error", kind: "error", path: window.location.pathname });
     const rejection = () => sendTelemetry({ event: "browser_error", kind: "unhandledrejection", path: window.location.pathname });
     window.addEventListener("error", error);
     window.addEventListener("unhandledrejection", rejection);
     return () => {
+      window.removeEventListener("load", reportPerformance);
       window.removeEventListener("error", error);
       window.removeEventListener("unhandledrejection", rejection);
     };
