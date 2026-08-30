@@ -1,0 +1,110 @@
+{
+  "info": {
+    "_postman_id": "bc801a82-89f1-4b26-aa52-a46b2ed49d1a",
+    "name": "Open Economics — Brazilian economic data",
+    "description": "No-key examples for discovering and fetching official Brazilian economic time series in normalized JSON or CSV.",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "variable": [
+    {
+      "key": "baseUrl",
+      "value": "https://open-economics-data.knbf982hkn.chatgpt.site/api/v1",
+      "type": "string"
+    }
+  ],
+  "auth": {
+    "type": "noauth"
+  },
+  "item": [
+    {
+      "name": "Discover the API",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "{{baseUrl}}",
+          "host": ["{{baseUrl}}"]
+        },
+        "description": "Machine-readable entry point with links to the catalog, sources, health, and OpenAPI document."
+      }
+    },
+    {
+      "name": "Search the indicator catalog",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "{{baseUrl}}/indicators?q=ipca&source=ibge",
+          "host": ["{{baseUrl}}"],
+          "path": ["indicators"],
+          "query": [
+            { "key": "q", "value": "ipca", "description": "Search names, aliases, stable IDs, and official codes" },
+            { "key": "source", "value": "ibge", "description": "Optional source filter: ibge or bcb" }
+          ]
+        },
+        "description": "Find canonical indicator IDs without knowing BCB or IBGE numeric codes."
+      }
+    },
+    {
+      "name": "Latest IPCA — 12 months",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "{{baseUrl}}/indicators/br-ipca-12m/latest",
+          "host": ["{{baseUrl}}"],
+          "path": ["indicators", "br-ipca-12m", "latest"]
+        },
+        "description": "Latest official trailing 12-month IPCA observation from IBGE."
+      }
+    },
+    {
+      "name": "Latest Selic target",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "{{baseUrl}}/indicators/br-selic-target/latest",
+          "host": ["{{baseUrl}}"],
+          "path": ["indicators", "br-selic-target", "latest"]
+        },
+        "description": "Latest official Copom Selic target from Banco Central do Brasil."
+      }
+    },
+    {
+      "name": "Monthly Selic history",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "{{baseUrl}}/indicators/br-selic-monthly/observations?start=2020-01-01&order=asc",
+          "host": ["{{baseUrl}}"],
+          "path": ["indicators", "br-selic-monthly", "observations"],
+          "query": [
+            { "key": "start", "value": "2020-01-01" },
+            { "key": "order", "value": "asc" }
+          ]
+        },
+        "description": "Selic accumulated in each calendar month, normalized from BCB SGS."
+      }
+    },
+    {
+      "name": "Download IPCA history as CSV",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "{{baseUrl}}/indicators/br-ipca-monthly/observations?start=2020-01-01&order=asc&format=csv",
+          "host": ["{{baseUrl}}"],
+          "path": ["indicators", "br-ipca-monthly", "observations"],
+          "query": [
+            { "key": "start", "value": "2020-01-01" },
+            { "key": "order", "value": "asc" },
+            { "key": "format", "value": "csv" }
+          ]
+        },
+        "description": "CSV rows retain indicator and official-source identifiers and provenance URLs."
+      }
+    }
+  ]
+}

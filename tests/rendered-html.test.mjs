@@ -1,4 +1,5 @@
 import assert from "node:assert/strict";
+import { readFile } from "node:fs/promises";
 import test from "node:test";
 
 async function worker() {
@@ -116,6 +117,14 @@ test("publishes a valid OpenAPI document and health report", async () => {
   assert.ok(openapi.paths["/indicators/{id}/observations"]);
   assert.equal(health.status, "ok");
   assert.ok(health.catalog.indicators >= 25);
+});
+
+test("ships a no-auth Postman collection for developer directories", async () => {
+  const collection = JSON.parse(await readFile(new URL("../public/open-economics.postman_collection.json", import.meta.url), "utf8"));
+  assert.equal(collection.auth.type, "noauth");
+  assert.equal(collection.variable[0].key, "baseUrl");
+  assert.ok(collection.item.some((item) => item.name === "Latest Selic target"));
+  assert.ok(collection.item.some((item) => item.name === "Download IPCA history as CSV"));
 });
 
 test("publishes crawl directives, a bilingual sitemap, structured data, and privacy-safe telemetry ingestion", async () => {

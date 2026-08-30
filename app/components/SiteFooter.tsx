@@ -33,6 +33,7 @@ export function SiteFooter({ locale = "en", dramatic = false }: { locale?: Local
           <a href={localized(locale, "/guides/ipca-api")}>{pt ? "API do IPCA" : "IPCA API"}</a>
           <a href={localized(locale, "/docs/api-reference")}>API reference</a>
           <a href="/api/v1/openapi.json">OpenAPI 3.1</a>
+          <a href="/open-economics.postman_collection.json" download>Postman</a>
         </div>
         <div>
           <span>{pt ? "Integridade" : "Integrity"}</span>
@@ -84,6 +85,7 @@ export function SiteFooter({ locale = "en", dramatic = false }: { locale?: Local
             <a href={localized(locale, "/guides/spreadsheets")}>{pt ? "IPCA e Selic em planilhas" : "IPCA & Selic in spreadsheets"}</a>
             <a href={localized(locale, "/sources")}>{pt ? "Fontes e licenças" : "Sources & licenses"}</a>
             <a href="/api/v1/openapi.json">OpenAPI 3.1</a>
+            <a href="/open-economics.postman_collection.json" download>Postman</a>
           </div>
         </nav>
       </div>
