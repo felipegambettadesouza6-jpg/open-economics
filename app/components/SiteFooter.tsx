@@ -30,6 +30,7 @@ export function SiteFooter({ locale = "en", dramatic = false }: { locale?: Local
           <a href={localized(locale, "/guides")}>{pt ? "Exemplos práticos" : "Practical examples"}</a>
           <a href={localized(locale, "/guides/spreadsheets")}>{pt ? "IPCA e Selic em planilhas" : "IPCA & Selic in spreadsheets"}</a>
           <a href={localized(locale, "/guides/selic-api")}>{pt ? "API da Selic" : "Selic API"}</a>
+          <a href={localized(locale, "/guides/ipca-api")}>{pt ? "API do IPCA" : "IPCA API"}</a>
           <a href={localized(locale, "/docs/api-reference")}>API reference</a>
           <a href="/api/v1/openapi.json">OpenAPI 3.1</a>
         </div>

@@ -2,7 +2,7 @@ import { indicators } from "@/lib/catalog/indicators";
 import { locales, localized } from "@/lib/i18n";
 import { SITE_ORIGIN } from "@/lib/metadata";
 
-const pages = ["", "/catalog", "/playground", "/docs", "/guides", "/guides/spreadsheets", "/guides/selic-api", "/docs/api-reference", "/docs/errors", "/docs/attribution", "/sources", "/status"] as const;
+const pages = ["", "/catalog", "/playground", "/docs", "/guides", "/guides/spreadsheets", "/guides/selic-api", "/guides/ipca-api", "/docs/api-reference", "/docs/errors", "/docs/attribution", "/sources", "/status"] as const;
 
 function entry(path: string, priority: number, frequency: "weekly" | "monthly") {
   const alternates = locales.map((locale) => `    <xhtml:link rel="alternate" hreflang="${locale === "pt-br" ? "pt-BR" : "en"}" href="${SITE_ORIGIN}${localized(locale, path)}" />`).join("\n");
