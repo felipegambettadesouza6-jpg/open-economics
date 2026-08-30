@@ -949,3 +949,22 @@ pre, code { font-family: var(--font-data), monospace; }
   .range-control button { min-height: 44px; }
   .publisher-row footer > div { flex-wrap: wrap; gap: 14px 22px; }
 }
+
+@media (max-width: 900px) {
+  .atlas-page-hero > div { grid-template-columns: 1fr; gap: 28px; }
+  .atlas-page-hero > div > p { max-width: 480px; }
+}
+
+@media (max-width: 720px) {
+  .filter-bar select,
+  .series-actions > *,
+  .generated-url button,
+  .snippet-tabs button,
+  .response-actions button,
+  .overall-status button { min-height: 44px; }
+  .series-actions > * { display: inline-flex; align-items: center; }
+}
+
+/* Keep indicator breadcrumbs below the fixed navigation without lengthening the hero. */
+.atlas-indicator-hero { padding-top: 92px; }
+.atlas-breadcrumb { padding: 12px 0 38px; }

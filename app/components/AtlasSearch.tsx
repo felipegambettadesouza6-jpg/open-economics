@@ -1,6 +1,7 @@
 "use client";
 import { useEffect, useMemo, useRef, useState } from "react";
 import type { IndicatorDefinition } from "@/lib/domain/types";
+import { useSearchTelemetry } from "@/app/components/Telemetry";
 import { localized, type Locale, ui } from "@/lib/i18n";
 
 export function AtlasSearch({ indicators, locale }: { indicators: IndicatorDefinition[]; locale: Locale }) {
@@ -12,6 +13,7 @@ export function AtlasSearch({ indicators, locale }: { indicators: IndicatorDefin
     if (!normalized) return indicators.filter((indicator) => indicator.featured).slice(0, 4);
     return indicators.filter((indicator) => [indicator.name, indicator.officialName, indicator.id, ...indicator.aliases].join(" ").toLocaleLowerCase().includes(normalized)).slice(0, 6);
   }, [indicators, query]);
+  useSearchTelemetry({ surface: "atlas", query, results: results.length, locale });
   useEffect(() => {
     const onKeyDown = (event: KeyboardEvent) => {
       if (event.key === "/" && !["INPUT", "TEXTAREA"].includes(document.activeElement?.tagName ?? "")) { event.preventDefault(); inputRef.current?.focus(); }

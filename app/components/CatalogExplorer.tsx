@@ -2,6 +2,7 @@
 
 import { useEffect, useMemo, useState } from "react";
 import { DataChart } from "@/app/components/DataChart";
+import { useSearchTelemetry } from "@/app/components/Telemetry";
 import { localized, type Locale } from "@/lib/i18n";
 
 export interface CatalogItem {
@@ -99,6 +100,7 @@ export function CatalogExplorer({ items, locale = "en" }: { items: CatalogItem[]
       ) };
     }).filter((result) => result.matches).sort((a, b) => b.score - a.score).map((result) => result.item);
   }, [items, query, category, source, frequency, adjustment]);
+  useSearchTelemetry({ surface: "catalog", query, results: results.length, locale });
 
   const hasFilters = Boolean(query || category || source || frequency || adjustment);
   const shownPreview = (preview && results.some((item) => item.id === preview.id) ? preview : results[0]) ?? null;

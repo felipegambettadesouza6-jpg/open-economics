@@ -9,7 +9,7 @@ import { SiteFooter } from "@/app/components/SiteFooter";
 import { SiteHeader } from "@/app/components/SiteHeader";
 import { indicators } from "@/lib/catalog/indicators";
 import { isLocale, localized, ui } from "@/lib/i18n";
-import { localizedMetadata } from "@/lib/metadata";
+import { localizedMetadata, SITE_ORIGIN } from "@/lib/metadata";
 
 export async function generateMetadata({ params }: { params: Promise<{ locale: string }> }): Promise<Metadata> {
   const { locale } = await params;
@@ -23,8 +23,22 @@ export default async function LocalizedHome({ params }: { params: Promise<{ loca
   if (!isLocale(value)) notFound();
   const locale = value;
   const pt = locale === "pt-br";
+  const websiteSchema = {
+    "@context": "https://schema.org",
+    "@type": "WebSite",
+    name: "Open Economics",
+    url: `${SITE_ORIGIN}${localized(locale)}`,
+    inLanguage: pt ? "pt-BR" : "en",
+    description: ui[locale].intro,
+    potentialAction: {
+      "@type": "SearchAction",
+      target: `${SITE_ORIGIN}${localized(locale, "/catalog")}?q={search_term_string}`,
+      "query-input": "required name=search_term_string",
+    },
+  };
 
   return <main className="signal-page">
+    <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(websiteSchema).replaceAll("<", "\\u003c") }} />
     <HomeMotion />
     <SiteHeader locale={locale} />
     <SignalHero indicators={indicators} locale={locale} />

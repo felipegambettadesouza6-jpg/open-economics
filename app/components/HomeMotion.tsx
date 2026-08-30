@@ -3,7 +3,6 @@
 import { useEffect } from "react";
 
 const selectors = [
-  ".oe-sources",
   ".oe-manifesto",
   ".oe-confluence",
   ".oe-data-section",

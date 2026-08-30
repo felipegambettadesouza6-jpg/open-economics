@@ -159,7 +159,7 @@ export function DataAtlas({ locale }: { locale: Locale }) {
     <div className="oe-atlas-canvas"><canvas ref={canvasRef} aria-label={pt ? `Histórico da série ${chapter.code}` : `${chapter.code} series history`} /></div>
     <div className="oe-atlas-axis" aria-hidden="true"><span>{first?.period ?? "2023-01"}</span><span>{chapter.source} · {chapter.id}</span><span>{latest?.period ?? "2026-07"}</span></div>
     <div className="oe-atlas-bottom">
-      <div className="oe-atlas-tabs">{chapters.map((item, index) => <button className={index === active ? "active" : ""} onClick={() => changeChapter(index)} key={item.id}><span>0{index + 1}</span>{item.code}<i>{item.source}</i></button>)}</div>
+      <div className="oe-atlas-tabs">{chapters.map((item, index) => <button className={index === active ? "active" : ""} onClick={() => changeChapter(index)} aria-pressed={index === active} key={item.id}><span>0{index + 1}</span>{item.code}<i>{item.source}</i></button>)}</div>
       <a href={localized(locale, `/indicators/${chapter.id}`)}>{pt ? "Abrir série e metodologia" : "Open series and methodology"}<span>↗</span></a>
     </div>
   </div>;

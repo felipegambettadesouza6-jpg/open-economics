@@ -7,7 +7,7 @@ import { SiteHeader } from "@/app/components/SiteHeader";
 import { categoryLabels, getIndicator, indicators } from "@/lib/catalog/indicators";
 import { getSource } from "@/lib/catalog/sources";
 import { isLocale, localized } from "@/lib/i18n";
-import { localizedMetadata } from "@/lib/metadata";
+import { localizedMetadata, SITE_ORIGIN } from "@/lib/metadata";
 
 const categoryLabelsPt: Record<string, string> = {
   inflation: "Inflação", "interest-rates": "Taxas de juros", currencies: "Câmbio",
@@ -27,14 +27,39 @@ export function generateStaticParams() { return ["en", "pt-br"].flatMap((locale)
 export async function generateMetadata({ params }: { params: Promise<{ locale: string; id: string }> }): Promise<Metadata> {
   const { locale, id } = await params; const indicator = getIndicator(id); if (!indicator || !isLocale(locale)) return { title: "Indicator not found | Open Economics" };
   const title = `${locale === "pt-br" ? indicator.officialName : indicator.name} | Open Economics`; const description = locale === "pt-br" ? `${indicator.officialName}. Série oficial publicada por ${indicator.sourceAgency}.` : `${indicator.description} ${indicator.officialName}.`;
-  return localizedMetadata({ locale, path: `/indicators/${id}`, title, description });
+  const metadata = localizedMetadata({ locale, path: `/indicators/${id}`, title, description });
+  return {
+    ...metadata,
+    openGraph: { ...metadata.openGraph, images: [] },
+    twitter: { ...metadata.twitter, images: [] },
+  };
 }
 
 export default async function IndicatorPage({ params }: { params: Promise<{ locale: string; id: string }> }) {
   const { locale: localeValue, id } = await params; if (!isLocale(localeValue)) notFound(); const locale = localeValue; const pt = locale === "pt-br"; const indicator = getIndicator(id); if (!indicator) notFound();
   const source = getSource(indicator.sourceAgency.toLowerCase()); const related = indicators.filter((item) => item.category === indicator.category && item.id !== indicator.id).slice(0, 4);
   const request = `/api/v1/indicators/${indicator.id}/observations?start=2024-01-01&order=asc`;
+  const datasetSchema = {
+    "@context": "https://schema.org",
+    "@type": "Dataset",
+    name: pt ? indicator.officialName : indicator.name,
+    alternateName: pt ? indicator.name : indicator.officialName,
+    description: pt ? `Série oficial publicada por ${indicator.sourceAgency}.` : indicator.description,
+    url: `${SITE_ORIGIN}${localized(locale, `/indicators/${indicator.id}`)}`,
+    identifier: indicator.id,
+    inLanguage: pt ? "pt-BR" : "en",
+    isAccessibleForFree: true,
+    license: indicator.licenseUrl,
+    temporalCoverage: `${indicator.startDate}/..`,
+    spatialCoverage: { "@type": "Place", name: "Brazil" },
+    creator: { "@type": "Organization", name: source?.name ?? indicator.sourceAgency, url: source?.homepage ?? indicator.sourceUrl },
+    distribution: [
+      { "@type": "DataDownload", encodingFormat: "application/json", contentUrl: `${SITE_ORIGIN}${request}` },
+      { "@type": "DataDownload", encodingFormat: "text/csv", contentUrl: `${SITE_ORIGIN}${request}&format=csv` },
+    ],
+  };
   return <main className="atlas-page"><SiteHeader locale={locale} />
+    <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(datasetSchema).replaceAll("<", "\\u003c") }} />
     <section className="atlas-indicator-hero atlas-shell"><div className="atlas-breadcrumb"><a href={localized(locale, "/catalog")}>{pt ? "Catálogo" : "Explore"}</a><span>→</span><a href={localized(locale, `/catalog?category=${indicator.category}`)}>{pt ? categoryLabelsPt[indicator.category] ?? categoryLabels[indicator.category] : categoryLabels[indicator.category]}</a></div><div className="indicator-atlas-title"><div><p className="atlas-kicker">{indicator.sourceAgency} / {pt ? frequencyLabelsPt[indicator.frequency] ?? indicator.frequency : indicator.frequency} / {indicator.id}</p><h1>{pt ? indicator.officialName : indicator.name}</h1><p className="official-series-name">{pt ? indicator.name : indicator.officialName}</p><p>{pt ? `Série oficial publicada por ${indicator.sourceAgency}, com frequência ${(frequencyLabelsPt[indicator.frequency] ?? indicator.frequency).toLowerCase()} e unidade ${indicator.unitSymbol}.` : indicator.description}</p></div><div className="indicator-coordinate"><span>{pt ? "ID estável da série" : "Stable series ID"}</span><code>{indicator.id}</code><CopyButton value={indicator.id} label={pt ? "Copiar ID" : "Copy ID"} successLabel={pt ? "Copiado" : "Copied"} /></div></div><div className="atlas-facts"><div><span>{pt ? "Frequência" : "Frequency"}</span><b>{pt ? frequencyLabelsPt[indicator.frequency] ?? indicator.frequency : indicator.frequency}</b></div><div><span>{pt ? "Unidade" : "Unit"}</span><b>{indicator.unitSymbol}</b></div><div><span>{pt ? "Publicador" : "Publisher"}</span><b>{indicator.sourceAgency}</b></div><div><span>{pt ? "Início" : "Coverage starts"}</span><b>{indicator.startDate.slice(0, 7)}</b></div><div><span>{pt ? "Ajuste" : "Adjustment"}</span><b>{indicator.seasonalAdjustment ? (pt ? "Sazonal" : "Seasonal") : (pt ? "Sem ajuste" : "Not adjusted")}</b></div></div></section>
     <section className="atlas-indicator-body atlas-shell">
       <SeriesExplorer indicatorId={indicator.id} unit={indicator.unitSymbol} decimals={indicator.decimals} frequency={indicator.frequency} startDate={indicator.startDate} locale={locale} />

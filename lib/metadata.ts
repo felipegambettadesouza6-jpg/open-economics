@@ -33,7 +33,7 @@ export function localizedMetadata({
       alternateLocale: locale === "pt-br" ? ["en_US"] : ["pt_BR"],
       url: canonical,
       siteName: "Open Economics",
-      images: [{ url: "/og.png", width: 1774, height: 887, alt: "Open Economics — Official data, made to flow" }],
+      images: [{ url: "/og.png", width: 1774, height: 887, alt: title }],
     },
     twitter: {
       card: "summary_large_image",

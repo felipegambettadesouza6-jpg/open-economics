@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { DM_Mono, Inter } from "next/font/google";
 import "./globals.css";
 import "./signal.css";
+import { Telemetry } from "@/app/components/Telemetry";
 import { SITE_ORIGIN } from "@/lib/metadata";
 
 const interfaceSans = Inter({
@@ -45,7 +46,7 @@ export async function generateMetadata(): Promise<Metadata> {
 export default function RootLayout({ children }: Readonly<{ children: React.ReactNode }>) {
   return (
     <html lang="en">
-      <body className={`${interfaceSans.variable} ${dataMono.variable}`}>{children}</body>
+      <body className={`${interfaceSans.variable} ${dataMono.variable}`}><Telemetry />{children}</body>
     </html>
   );
 }

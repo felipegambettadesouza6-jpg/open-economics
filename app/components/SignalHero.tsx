@@ -2,6 +2,7 @@
 
 import type { CSSProperties, PointerEvent as ReactPointerEvent } from "react";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
+import { useSearchTelemetry } from "@/app/components/Telemetry";
 import type { IndicatorDefinition } from "@/lib/domain/types";
 import { localized, type Locale } from "@/lib/i18n";
 
@@ -41,6 +42,7 @@ export function SignalHero({ indicators, locale }: { indicators: IndicatorDefini
   const transitionTimersRef = useRef<number[]>([]);
   const [query, setQuery] = useState("");
   const [active, setActive] = useState(0);
+  const [autoPlaying, setAutoPlaying] = useState(true);
   const [fieldPhase, setFieldPhase] = useState<"settled" | "leaving" | "arriving">("settled");
   const [series, setSeries] = useState<SeriesState>(() => Object.fromEntries(featured.map((item) => [item.id, { status: "loading" }])));
   const results = useMemo(() => {
@@ -48,6 +50,7 @@ export function SignalHero({ indicators, locale }: { indicators: IndicatorDefini
     if (!needle) return [];
     return indicators.filter((indicator) => [indicator.name, indicator.officialName, indicator.id, ...indicator.aliases].join(" ").toLocaleLowerCase().includes(needle)).slice(0, 5);
   }, [indicators, query]);
+  useSearchTelemetry({ surface: "hero", query, results: results.length, locale });
 
   const changeSeries = useCallback((next: number) => {
     if (next === activeRef.current || transitionRef.current) return;
@@ -57,9 +60,9 @@ export function SignalHero({ indicators, locale }: { indicators: IndicatorDefini
       activeRef.current = next;
       setActive(next);
       setFieldPhase("arriving");
-    }, 300);
-    const settleTimer = window.setTimeout(() => setFieldPhase("settled"), 860);
-    const unlockTimer = window.setTimeout(() => { transitionRef.current = false; }, 940);
+    }, 220);
+    const settleTimer = window.setTimeout(() => setFieldPhase("settled"), 660);
+    const unlockTimer = window.setTimeout(() => { transitionRef.current = false; }, 720);
     transitionTimersRef.current.push(swapTimer, settleTimer, unlockTimer);
   }, []);
 
@@ -75,10 +78,10 @@ export function SignalHero({ indicators, locale }: { indicators: IndicatorDefini
   }, []);
 
   useEffect(() => {
-    if (query) return;
+    if (query || !autoPlaying || window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
     const interval = window.setInterval(() => changeSeries((activeRef.current + 1) % featured.length), 7200);
     return () => window.clearInterval(interval);
-  }, [changeSeries, query]);
+  }, [autoPlaying, changeSeries, query]);
 
   useEffect(() => () => transitionTimersRef.current.forEach((timer) => window.clearTimeout(timer)), []);
 
@@ -221,7 +224,7 @@ export function SignalHero({ indicators, locale }: { indicators: IndicatorDefini
       </div>
     </div>
 
-    <div className={`economic-field field-phase-${fieldPhase}`} onPointerMove={moveField} style={{ "--field-x": "0", "--field-y": "0" } as CSSProperties}>
+    <div className={`economic-field field-phase-${fieldPhase} ${autoPlaying ? "is-playing" : "is-paused"}`} onPointerMove={moveField} style={{ "--field-x": "0", "--field-y": "0" } as CSSProperties}>
       <canvas ref={canvasRef} aria-label={`${current.short} historical series`} />
       <div className="field-axis-y" aria-hidden="true"><span>{tickTop}</span><span>{tickMiddle}</span><span>{tickBottom}</span></div>
       <div className="field-axis-x" aria-hidden="true"><span>{firstPeriod}</span><span>{middlePeriod}</span><span>{lastPeriod}</span></div>
@@ -233,7 +236,8 @@ export function SignalHero({ indicators, locale }: { indicators: IndicatorDefini
       <div className="field-series-id"><span>{pt ? "ID ESTÁVEL" : "STABLE SERIES ID"}</span><code>{current.id}</code></div>
       <div className="field-provenance"><span>{pt ? "FONTE OFICIAL" : "OFFICIAL SOURCE"}</span><b>{current.source}</b><small>{pt ? "unidade e período preservados" : "unit and period preserved"}</small></div>
       <div className="field-index" aria-label={pt ? "Escolher série em destaque" : "Choose featured series"}>
-        {featured.map((item, index) => <button className={active === index ? "active" : ""} key={item.id} onClick={() => changeSeries(index)} aria-label={item.short}><span>0{index + 1}</span>{item.short}<i>{item.source}</i></button>)}
+        {featured.map((item, index) => <button className={active === index ? "active" : ""} key={item.id} onClick={() => { setAutoPlaying(false); changeSeries(index); }} aria-label={item.short} aria-pressed={active === index}><span>0{index + 1}</span>{item.short}<i>{item.source}</i></button>)}
+        <button className="field-autoplay" type="button" onClick={() => setAutoPlaying((playing) => !playing)} aria-label={autoPlaying ? (pt ? "Pausar rotação das séries" : "Pause series rotation") : (pt ? "Retomar rotação das séries" : "Resume series rotation")}><span aria-hidden="true">{autoPlaying ? "Ⅱ" : "▶"}</span></button>
       </div>
     </div>
 

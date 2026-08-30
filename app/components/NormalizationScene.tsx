@@ -44,6 +44,7 @@ export function NormalizationScene({ locale }: { locale: Locale }) {
   const rootRef = useRef<HTMLDivElement>(null);
   const [active, setActive] = useState(0);
   const [visible, setVisible] = useState(false);
+  const [autoPlaying, setAutoPlaying] = useState(true);
 
   useEffect(() => {
     const root = rootRef.current;
@@ -54,10 +55,10 @@ export function NormalizationScene({ locale }: { locale: Locale }) {
   }, []);
 
   useEffect(() => {
-    if (!visible || window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
+    if (!visible || !autoPlaying || window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
     const interval = window.setInterval(() => setActive((current) => (current + 1) % records.length), 2600);
     return () => window.clearInterval(interval);
-  }, [visible]);
+  }, [autoPlaying, visible]);
 
   const record = records[active];
 
@@ -65,10 +66,11 @@ export function NormalizationScene({ locale }: { locale: Locale }) {
     <div className="normalization-stage-head">
       <span>{pt ? "ESTRUTURAS DE ORIGEM" : "UPSTREAM STRUCTURES"}</span>
       <span>{pt ? "CONTRATO NORMALIZADO" : "NORMALIZED CONTRACT"}</span>
+      <button type="button" onClick={() => setAutoPlaying((playing) => !playing)}>{autoPlaying ? (pt ? "Pausar" : "Pause") : (pt ? "Retomar" : "Resume")}</button>
     </div>
     <div className="normalization-stage">
       <div className="normalization-inputs">
-        {records.map((item, index) => <button className={active === index ? "active" : ""} type="button" onClick={() => setActive(index)} key={item.id}>
+        {records.map((item, index) => <button className={active === index ? "active" : ""} type="button" onClick={() => { setAutoPlaying(false); setActive(index); }} aria-pressed={active === index} key={item.id}>
           <span><i>{item.format}</i>{item.publisher}</span>
           <code>{item.raw.map((line) => <b key={line}>{line}</b>)}</code>
         </button>)}

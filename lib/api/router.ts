@@ -6,6 +6,7 @@ import { parseCatalogQuery, parseObservationQuery } from "@/lib/api/query";
 import { publicIndicator, publicSource } from "@/lib/api/serialization";
 import { getSeries } from "@/lib/services/series-service";
 import type { IndicatorDefinition, Observation } from "@/lib/domain/types";
+import { recordApiRequest, recordApiSearch } from "@/lib/telemetry";
 
 export interface ApiEnv {
   DB?: D1Database;
@@ -275,7 +276,7 @@ async function observationsResponse(
   );
 }
 
-async function routeGet(request: Request, env: ApiEnv, id: string) {
+async function routeGet(request: Request, env: ApiEnv, id: string, ctx: ApiExecutionContext) {
   const url = new URL(request.url);
   const path = url.pathname.replace(/\/+$/, "");
 
@@ -344,6 +345,7 @@ async function routeGet(request: Request, env: ApiEnv, id: string) {
 
   if (path === "/api/v1/indicators") {
     const { matches, total, query } = filterCatalog(url);
+    ctx.waitUntil(recordApiSearch(env.DB, request, total));
     const base = apiBase(url);
     return json(
       {
@@ -389,7 +391,6 @@ export async function handleApi(
   env: ApiEnv,
   ctx: ApiExecutionContext,
 ): Promise<Response> {
-  void ctx;
   const id = requestId(request);
   const origin = new URL(request.url).origin;
   const started = performance.now();
@@ -404,7 +405,7 @@ export async function handleApi(
       return response;
     }
 
-    const response = await routeGet(request, env, id);
+    const response = await routeGet(request, env, id, ctx);
     const output =
       request.method === "HEAD"
         ? new Response(null, { status: response.status, statusText: response.statusText, headers: response.headers })
@@ -418,9 +419,11 @@ export async function handleApi(
         duration_ms: Number((performance.now() - started).toFixed(1)),
       }),
     );
+    ctx.waitUntil(recordApiRequest(env.DB, request, output.status));
     return output;
   } catch (error) {
     const response = problem(error, id, origin);
+    ctx.waitUntil(recordApiRequest(env.DB, request, response.status));
     return request.method === "HEAD"
       ? new Response(null, { status: response.status, statusText: response.statusText, headers: response.headers })
       : response;

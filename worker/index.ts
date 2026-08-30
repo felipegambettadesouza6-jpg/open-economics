@@ -2,6 +2,7 @@
 import { handleImageOptimization, DEFAULT_DEVICE_SIZES, DEFAULT_IMAGE_SIZES } from "vinext/server/image-optimization";
 import handler from "vinext/server/app-router-entry";
 import { handleApi } from "../lib/api/router";
+import { handleTelemetry } from "../lib/telemetry";
 
 interface Env {
   ASSETS: Fetcher;
@@ -39,6 +40,10 @@ const worker = {
           return result.response();
         },
       }, allowedWidths);
+    }
+
+    if (url.pathname === "/_events") {
+      return handleTelemetry(request, env.DB);
     }
 
     if (url.pathname === "/api" || url.pathname.startsWith("/api/")) {

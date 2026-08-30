@@ -2,6 +2,7 @@
 
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { CopyButton } from "@/app/components/CopyButton";
+import { useSearchTelemetry } from "@/app/components/Telemetry";
 import { localized, type Locale } from "@/lib/i18n";
 
 interface PlaygroundIndicator {
@@ -47,6 +48,7 @@ export function Playground({ indicators, locale = "en" }: { indicators: Playgrou
   const initialRun = useRef(false);
   const snippetLanguages = ["curl", "python", "javascript"] as const;
   const visibleIndicators = indicators.filter((item) => `${item.name} ${item.officialName} ${item.id} ${item.source}`.toLowerCase().includes(indicatorQuery.toLowerCase()));
+  useSearchTelemetry({ surface: "playground", query: indicatorQuery, results: visibleIndicators.length, locale });
   const numericLimit = Number(limit);
   const validationError = endpoint !== "observations" ? ""
     : start > end ? (pt ? "A data inicial deve ser anterior ou igual à data final." : "Start date must be on or before end date.")
