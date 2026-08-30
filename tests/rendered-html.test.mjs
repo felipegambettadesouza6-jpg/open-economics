@@ -64,6 +64,9 @@ test("server-renders the major localized product experiences", async () => {
     ["/en/playground", /Build it\. Run it\. Understand it\./i],
     ["/en/docs", /Clear contracts\. Readable data\./i],
     ["/en/guides", /Brazilian economic data, from endpoint to answer\./i],
+    ["/en/guides/spreadsheets", /Brazil IPCA and Selic in your spreadsheet/i],
+    ["/pt-br/guides/spreadsheets", /IPCA e Selic na sua planilha/i],
+    ["/pt-br/guides/selic-api", /A série Selic certa/i],
     ["/en/sources", /Know where every value came from\./i],
     ["/en/status", /Failure is data, too\./i],
     ["/pt-br/docs", /Contratos claros\. Dados legíveis\./i],
@@ -127,6 +130,8 @@ test("publishes crawl directives, a bilingual sitemap, structured data, and priv
   assert.match(sitemap, /hreflang="pt-BR"/i);
   assert.match(sitemap, /\/en\/indicators\/br-ipca-monthly/i);
   assert.match(sitemap, /\/en\/guides/i);
+  assert.match(sitemap, /\/pt-br\/guides\/spreadsheets/i);
+  assert.match(sitemap, /\/pt-br\/guides\/selic-api/i);
   assert.match(await indicatorResponse.text(), /"@type":"Dataset"/i);
 
   const runtime = await worker();

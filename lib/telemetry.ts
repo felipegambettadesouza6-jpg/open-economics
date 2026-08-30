@@ -4,9 +4,12 @@ type TelemetryEvent =
   | {
       event: "page_view";
       actor?: unknown;
+      campaign?: unknown;
+      medium?: unknown;
       path?: unknown;
       referrer?: unknown;
       session?: unknown;
+      source?: unknown;
     }
   | {
       event: "search";
@@ -88,7 +91,14 @@ async function actorHash(rawActor: unknown) {
   return [...new Uint8Array(digest)].map((value) => value.toString(16).padStart(2, "0")).join("");
 }
 
-async function recordActor(db: D1Database | undefined, rawActor: unknown, activation: string | null = null) {
+type Acquisition = { campaign: string; channel: string; referrer: string };
+
+async function recordActor(
+  db: D1Database | undefined,
+  rawActor: unknown,
+  activation: string | null = null,
+  acquisition: Acquisition = { campaign: "", channel: "", referrer: "" },
+) {
   if (!db) return;
   const hash = await actorHash(rawActor);
   if (!hash) return;
@@ -98,18 +108,26 @@ async function recordActor(db: D1Database | undefined, rawActor: unknown, activa
   await db.prepare(
     `INSERT INTO usage_actors (
        actor_hash, first_seen_day, last_seen_day, active_days,
+       first_channel, first_referrer, first_campaign,
        first_activated_at, last_activated_at, activation_type, activation_count,
        created_at, updated_at
-     ) VALUES (?, ?, ?, 1, ?, ?, ?, ?, ?, ?)
+     ) VALUES (?, ?, ?, 1, ?, ?, ?, ?, ?, ?, ?, ?, ?)
      ON CONFLICT(actor_hash) DO UPDATE SET
        active_days = usage_actors.active_days + CASE WHEN usage_actors.last_seen_day <> excluded.last_seen_day THEN 1 ELSE 0 END,
        last_seen_day = excluded.last_seen_day,
+       first_channel = COALESCE(usage_actors.first_channel, NULLIF(excluded.first_channel, '')),
+       first_referrer = COALESCE(usage_actors.first_referrer, NULLIF(excluded.first_referrer, '')),
+       first_campaign = COALESCE(usage_actors.first_campaign, NULLIF(excluded.first_campaign, '')),
        first_activated_at = COALESCE(usage_actors.first_activated_at, excluded.first_activated_at),
        last_activated_at = COALESCE(excluded.last_activated_at, usage_actors.last_activated_at),
        activation_type = COALESCE(usage_actors.activation_type, excluded.activation_type),
        activation_count = usage_actors.activation_count + excluded.activation_count,
        updated_at = excluded.updated_at`,
-  ).bind(hash, today, today, activatedAt, activatedAt, activation, activation ? 1 : 0, now, now).run();
+  ).bind(
+    hash, today, today,
+    acquisition.channel || null, acquisition.referrer || null, acquisition.campaign || null,
+    activatedAt, activatedAt, activation, activation ? 1 : 0, now, now,
+  ).run();
 }
 
 function cleanPath(value: unknown) {
@@ -135,6 +153,11 @@ function cleanQuery(value: unknown) {
   const normalized = value.trim().toLocaleLowerCase().replace(/\s+/g, " ").slice(0, 80);
   if (normalized.length < 2 || normalized.includes("@") || /https?:|\d{7,}/i.test(normalized)) return "";
   return normalized.replace(/[^\p{L}\p{N}\s._/-]/gu, "");
+}
+
+function cleanCampaign(value: unknown) {
+  if (typeof value !== "string") return "";
+  return value.trim().toLocaleLowerCase().replace(/[^a-z0-9._-]/g, "-").replace(/-+/g, "-").slice(0, 60);
 }
 
 function timingBucket(value: unknown) {
@@ -171,11 +194,25 @@ export async function handleTelemetry(request: Request, db: D1Database | undefin
     await recordUnique(db, payload.session);
     if (payload.event === "page_view") {
       const path = cleanPath(payload.path);
-      const source = referrer(payload.referrer, url.hostname);
+      const referring = referrer(payload.referrer, url.hostname);
+      const campaign = cleanCampaign(payload.campaign);
+      const source = cleanCampaign(payload.source);
+      const medium = cleanCampaign(payload.medium);
       const indicatorId = /^\/(?:en|pt-br)\/indicators\/([^/]+)$/.exec(path)?.[1];
       const activation = indicatorId && indicators.some((item) => item.id === indicatorId) ? "indicator_view" : null;
-      await recordActor(db, payload.actor, activation);
-      await increment(db, "page_view", { path, locale: localeFromPath(path), ...source });
+      await recordActor(db, payload.actor, activation, {
+        campaign,
+        channel: source ? medium || "campaign" : referring.channel,
+        referrer: source || referring.referrer,
+      });
+      await increment(db, "page_view", {
+        path,
+        locale: localeFromPath(path),
+        ...referring,
+        ...(source ? { source } : {}),
+        ...(medium ? { medium } : {}),
+        ...(campaign ? { campaign } : {}),
+      });
       if (activation) await increment(db, "activation", { action: activation, path, locale: localeFromPath(path) });
     } else if (payload.event === "search") {
       const query = cleanQuery(payload.query);

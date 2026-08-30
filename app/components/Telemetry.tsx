@@ -83,7 +83,15 @@ export function Telemetry() {
   useEffect(() => {
     let referrer = "";
     try { referrer = document.referrer ? new URL(document.referrer).hostname : ""; } catch { referrer = ""; }
-    sendTelemetry({ event: "page_view", path: window.location.pathname, referrer });
+    const params = new URLSearchParams(window.location.search);
+    sendTelemetry({
+      event: "page_view",
+      path: window.location.pathname,
+      referrer,
+      campaign: params.get("utm_campaign") ?? "",
+      medium: params.get("utm_medium") ?? "",
+      source: params.get("utm_source") ?? "",
+    });
 
     const reportPerformance = () => window.setTimeout(() => {
       const navigation = performance.getEntriesByType("navigation")[0] as PerformanceNavigationTiming | undefined;

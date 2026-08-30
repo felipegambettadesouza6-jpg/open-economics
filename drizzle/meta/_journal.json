@@ -22,6 +22,13 @@
       "when": 1788114043448,
       "tag": "0002_fat_human_torch",
       "breakpoints": true
+    },
+    {
+      "idx": 3,
+      "version": "6",
+      "when": 1788128092079,
+      "tag": "0003_clean_bug",
+      "breakpoints": true
     }
   ]
 }
