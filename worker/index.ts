@@ -21,6 +21,30 @@ interface ExecutionContext {
   passThroughOnException(): void;
 }
 
+function productionResponse(request: Request, response: Response) {
+  const url = new URL(request.url);
+  const headers = new Headers(response.headers);
+  headers.set("Permissions-Policy", "camera=(), microphone=(), geolocation=()");
+  headers.set("Referrer-Policy", "strict-origin-when-cross-origin");
+  headers.set("Strict-Transport-Security", "max-age=31536000");
+  headers.set("X-Content-Type-Options", "nosniff");
+  headers.set("X-Frame-Options", "DENY");
+
+  if (url.pathname.startsWith("/_next/static/")) {
+    headers.set("Cache-Control", "public, max-age=31536000, immutable");
+  } else if (["/og.png", "/icon.svg"].includes(url.pathname)) {
+    headers.set("Cache-Control", "public, max-age=86400, s-maxage=604800");
+  } else if ((request.method === "GET" || request.method === "HEAD") && headers.get("content-type")?.startsWith("text/html") && response.ok) {
+    headers.set("Cache-Control", "public, max-age=60, s-maxage=300, stale-while-revalidate=86400");
+  }
+
+  return new Response(request.method === "HEAD" ? null : response.body, {
+    status: response.status,
+    statusText: response.statusText,
+    headers,
+  });
+}
+
 // Image security config. SVG sources with .svg extension auto-skip the
 // optimization endpoint on the client side (served directly, no proxy).
 // To route SVGs through the optimizer (with security headers), set
@@ -53,7 +77,7 @@ const worker = {
       return handleApi(request, env, ctx);
     }
 
-    return handler.fetch(request, env, ctx);
+    return productionResponse(request, await handler.fetch(request, env, ctx));
   },
 };
 

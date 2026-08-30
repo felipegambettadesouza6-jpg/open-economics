@@ -37,6 +37,9 @@ test("redirects legacy links and server-renders the bilingual Open Economics hom
   const response = await request("/en");
   assert.equal(response.status, 200);
   assert.match(response.headers.get("content-type") ?? "", /^text\/html\b/i);
+  assert.match(response.headers.get("cache-control") ?? "", /s-maxage=300/i);
+  assert.equal(response.headers.get("x-frame-options"), "DENY");
+  assert.equal(response.headers.get("referrer-policy"), "strict-origin-when-cross-origin");
 
   const html = await response.text();
   assert.match(html, /Open Economics/i);
