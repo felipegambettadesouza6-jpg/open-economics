@@ -65,11 +65,10 @@ test("server-renders the major localized product experiences", async () => {
     ["/en/playground", /Build it\. Run it\. Understand it\./i],
     ["/en/docs", /Clear contracts\. Readable data\./i],
     ["/en/guides", /Brazilian economic data, from endpoint to answer\./i],
-    ["/en/guides/spreadsheets", /Brazil IPCA, Selic, and CDI in your spreadsheet/i],
-    ["/pt-br/guides/spreadsheets", /IPCA, Selic e CDI na sua planilha/i],
+    ["/en/guides/spreadsheets", /Brazil IPCA and Selic in your spreadsheet/i],
+    ["/pt-br/guides/spreadsheets", /IPCA e Selic na sua planilha/i],
     ["/pt-br/guides/selic-api", /A série Selic certa/i],
     ["/pt-br/guides/ipca-api", /IPCA mensal ou em 12 meses/i],
-    ["/pt-br/guides/cdi-api", /CDI mensal oficial/i],
     ["/en/sources", /Know where every value came from\./i],
     ["/en/status", /Failure is data, too\./i],
     ["/pt-br/docs", /Contratos claros\. Dados legíveis\./i],
@@ -125,7 +124,6 @@ test("ships a no-auth Postman collection for developer directories", async () =>
   assert.equal(collection.auth.type, "noauth");
   assert.equal(collection.variable[0].key, "baseUrl");
   assert.ok(collection.item.some((item) => item.name === "Latest Selic target"));
-  assert.ok(collection.item.some((item) => item.name === "Monthly CDI history"));
   assert.ok(collection.item.some((item) => item.name === "Download IPCA history as CSV"));
 });
 
@@ -145,7 +143,6 @@ test("publishes crawl directives, a bilingual sitemap, structured data, and priv
   assert.match(sitemap, /\/pt-br\/guides\/spreadsheets/i);
   assert.match(sitemap, /\/pt-br\/guides\/selic-api/i);
   assert.match(sitemap, /\/pt-br\/guides\/ipca-api/i);
-  assert.match(sitemap, /\/pt-br\/guides\/cdi-api/i);
   assert.match(await indicatorResponse.text(), /"@type":"Dataset"/i);
 
   const runtime = await worker();

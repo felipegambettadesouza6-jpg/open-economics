@@ -11,7 +11,6 @@ const csv = {
   ipca12m: `${SITE_ORIGIN}/api/v1/indicators/br-ipca-12m/observations?start=2020-01-01&order=asc&format=csv`,
   selicMonthly: `${SITE_ORIGIN}/api/v1/indicators/br-selic-monthly/observations?start=2020-01-01&order=asc&format=csv`,
   selicTarget: `${SITE_ORIGIN}/api/v1/indicators/br-selic-target/observations?start=2025-01-01&order=asc&format=csv`,
-  cdiMonthly: `${SITE_ORIGIN}/api/v1/indicators/br-cdi-monthly/observations?start=2020-01-01&order=asc&format=csv`,
   usdBrl: `${SITE_ORIGIN}/api/v1/indicators/br-usd-brl/observations?start=2026-01-01&order=asc&format=csv`,
 };
 
@@ -21,10 +20,10 @@ export async function generateMetadata({ params }: { params: Promise<{ locale: s
   return localizedMetadata({
     locale,
     path: "/guides/spreadsheets",
-    title: locale === "pt-br" ? "IPCA, Selic e CDI no Google Sheets e Excel | Open Economics" : "Brazil IPCA, Selic, and CDI in Google Sheets and Excel | Open Economics",
+    title: locale === "pt-br" ? "IPCA e Selic no Google Sheets e Excel | Open Economics" : "Brazil IPCA and Selic in Google Sheets and Excel | Open Economics",
     description: locale === "pt-br"
-      ? "Importe IPCA, Selic, CDI e dólar em planilhas com CSV público, sem cadastro ou chave de API. Fórmulas e URLs prontas para copiar."
-      : "Import Brazil IPCA, Selic, CDI, and exchange-rate data into spreadsheets with public CSV—no signup or API key. Copy-ready formulas and URLs.",
+      ? "Importe IPCA, Selic e dólar em planilhas com CSV público, sem cadastro ou chave de API. Fórmulas e URLs prontas para copiar."
+      : "Import Brazil IPCA, Selic, and exchange-rate data into spreadsheets with public CSV—no signup or API key. Copy-ready formulas and URLs.",
   });
 }
 
@@ -37,7 +36,7 @@ export default async function SpreadsheetGuide({ params }: { params: Promise<{ l
   const structuredData = {
     "@context": "https://schema.org",
     "@type": "HowTo",
-    name: pt ? "Como importar IPCA, Selic e CDI no Google Sheets e Excel" : "How to import Brazil IPCA, Selic, and CDI into Google Sheets and Excel",
+    name: pt ? "Como importar IPCA e Selic no Google Sheets e Excel" : "How to import Brazil IPCA and Selic into Google Sheets and Excel",
     description: pt ? "Use CSV público da Open Economics em uma planilha, sem chave de API." : "Use Open Economics public CSV in a spreadsheet without an API key.",
     inLanguage: pt ? "pt-BR" : "en",
     totalTime: "PT2M",
@@ -53,7 +52,7 @@ export default async function SpreadsheetGuide({ params }: { params: Promise<{ l
     <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(structuredData).replaceAll("<", "\\u003c") }} />
     <section className="atlas-docs-head"><div className="atlas-shell">
       <p className="atlas-kicker">07 / {pt ? "Planilhas" : "Spreadsheets"}</p>
-      <h1>{pt ? "IPCA, Selic e CDI na sua planilha, em dois minutos." : "Brazil IPCA, Selic, and CDI in your spreadsheet in two minutes."}</h1>
+      <h1>{pt ? "IPCA e Selic na sua planilha, em dois minutos." : "Brazil IPCA and Selic in your spreadsheet in two minutes."}</h1>
       <p>{pt ? "CSV público, direto das fontes oficiais, com URLs estáveis. Sem cadastro, chave de API, add-on ou código." : "Public CSV from official sources with stable URLs. No signup, API key, add-on, or code."}</p>
     </div></section>
     <div className="atlas-docs-layout atlas-shell">
@@ -87,7 +86,6 @@ export default async function SpreadsheetGuide({ params }: { params: Promise<{ l
             <div><dt>IPCA · {pt ? "acumulado em 12 meses" : "trailing 12 months"}</dt><dd><code>{csv.ipca12m}</code><CopyButton value={csv.ipca12m} label={pt ? "Copiar URL" : "Copy URL"} successLabel={pt ? "Copiada" : "Copied"} activation="api_url_copy" /></dd></div>
             <div><dt>Selic · {pt ? "acumulada no mês" : "accumulated in month"}</dt><dd><code>{csv.selicMonthly}</code><CopyButton value={csv.selicMonthly} label={pt ? "Copiar URL" : "Copy URL"} successLabel={pt ? "Copiada" : "Copied"} activation="api_url_copy" /></dd></div>
             <div><dt>Selic · {pt ? "meta do Copom" : "Copom target"}</dt><dd><code>{csv.selicTarget}</code><CopyButton value={csv.selicTarget} label={pt ? "Copiar URL" : "Copy URL"} successLabel={pt ? "Copiada" : "Copied"} activation="api_url_copy" /></dd></div>
-            <div><dt>CDI · {pt ? "acumulado no mês" : "accumulated in month"}</dt><dd><code>{csv.cdiMonthly}</code><CopyButton value={csv.cdiMonthly} label={pt ? "Copiar URL" : "Copy URL"} successLabel={pt ? "Copiada" : "Copied"} activation="api_url_copy" /></dd></div>
             <div><dt>USD/BRL · {pt ? "dólar venda diário" : "daily selling rate"}</dt><dd><code>{csv.usdBrl}</code><CopyButton value={csv.usdBrl} label={pt ? "Copiar URL" : "Copy URL"} successLabel={pt ? "Copiada" : "Copied"} activation="api_url_copy" /></dd></div>
           </dl>
         </section>

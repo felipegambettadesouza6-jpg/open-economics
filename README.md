@@ -125,7 +125,7 @@ read or write failure is treated as a cache bypass, never as a data failure.
   commodity series. Rows are normalized, sorted, and de-duplicated because
   upstream ordering is not guaranteed.
 
-There are 33 curated indicators across inflation, interest rates, currencies,
+There are 32 curated indicators across inflation, interest rates, currencies,
 activity, labor, credit, fiscal, external, and markets. Values are never
 fabricated, forward-filled, or silently sign-inverted. BCB NFSP fiscal series
 retain BCB's financing-requirement sign convention.

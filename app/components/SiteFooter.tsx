@@ -14,7 +14,6 @@ export function SiteFooter({ locale = "en", dramatic = false }: { locale?: Local
           <a href={localized(locale, "/catalog")}>{pt ? "Explorar catálogo" : "Explore catalog"}</a>
           <a href={localized(locale, "/indicators/br-ipca-monthly")}>IPCA</a>
           <a href={localized(locale, "/indicators/br-selic-target")}>Selic</a>
-          <a href={localized(locale, "/indicators/br-cdi-monthly")}>CDI</a>
           <a href={localized(locale, "/sources")}>{pt ? "Fontes oficiais" : "Official sources"}</a>
         </div>
         <div>
@@ -32,7 +31,6 @@ export function SiteFooter({ locale = "en", dramatic = false }: { locale?: Local
           <a href={localized(locale, "/guides/spreadsheets")}>{pt ? "IPCA e Selic em planilhas" : "IPCA & Selic in spreadsheets"}</a>
           <a href={localized(locale, "/guides/selic-api")}>{pt ? "API da Selic" : "Selic API"}</a>
           <a href={localized(locale, "/guides/ipca-api")}>{pt ? "API do IPCA" : "IPCA API"}</a>
-          <a href={localized(locale, "/guides/cdi-api")}>{pt ? "API do CDI" : "CDI API"}</a>
           <a href={localized(locale, "/docs/api-reference")}>API reference</a>
           <a href="/api/v1/openapi.json">OpenAPI 3.1</a>
           <a href="/open-economics.postman_collection.json" download>Postman</a>
@@ -84,8 +82,7 @@ export function SiteFooter({ locale = "en", dramatic = false }: { locale?: Local
             <span>{pt ? "Recursos" : "Resources"}</span>
             <a href={localized(locale, "/docs")}>Documentation</a>
             <a href={localized(locale, "/guides")}>{pt ? "Exemplos práticos" : "Practical examples"}</a>
-            <a href={localized(locale, "/guides/spreadsheets")}>{pt ? "IPCA, Selic e CDI em planilhas" : "IPCA, Selic & CDI in spreadsheets"}</a>
-            <a href={localized(locale, "/guides/cdi-api")}>{pt ? "API do CDI" : "CDI API"}</a>
+            <a href={localized(locale, "/guides/spreadsheets")}>{pt ? "IPCA e Selic em planilhas" : "IPCA & Selic in spreadsheets"}</a>
             <a href={localized(locale, "/sources")}>{pt ? "Fontes e licenças" : "Sources & licenses"}</a>
             <a href="/api/v1/openapi.json">OpenAPI 3.1</a>
             <a href="/open-economics.postman_collection.json" download>Postman</a>
