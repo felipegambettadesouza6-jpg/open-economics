@@ -114,6 +114,8 @@ test("publishes a valid OpenAPI document and health report", async () => {
   const openapi = await openapiResponse.json();
   const health = await healthResponse.json();
   assert.equal(openapi.openapi, "3.1.0");
+  assert.equal(openapi.info.contact.url, "https://github.com/felipegambettadesouza6-jpg/open-economics/issues");
+  assert.equal(openapi.externalDocs.url, "https://github.com/felipegambettadesouza6-jpg/open-economics");
   assert.ok(openapi.paths["/indicators/{id}/observations"]);
   assert.equal(health.status, "ok");
   assert.ok(health.catalog.indicators >= 25);

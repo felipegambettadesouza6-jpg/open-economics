@@ -10,6 +10,14 @@ export function createOpenApiDocument(origin: string) {
       license: {
         name: "API code: MIT. Data: upstream licenses apply.",
       },
+      contact: {
+        name: "Open Economics maintainers",
+        url: "https://github.com/felipegambettadesouza6-jpg/open-economics/issues",
+      },
+    },
+    externalDocs: {
+      description: "Documentation, source code, and reliability policy",
+      url: "https://github.com/felipegambettadesouza6-jpg/open-economics",
     },
     servers: [{ url: `${origin}/api/v1`, description: "Current deployment" }],
     tags: [

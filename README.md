@@ -5,11 +5,23 @@ A free, read-only API for authoritative Brazilian economic time series.
 - **Live API:** https://open-economics-data.knbf982hkn.chatgpt.site/api/v1
 - **Documentation:** https://open-economics-data.knbf982hkn.chatgpt.site/en/docs
 - **Runnable examples:** https://open-economics-data.knbf982hkn.chatgpt.site/en/guides
+- **Source and issue tracker:** https://github.com/felipegambettadesouza6-jpg/open-economics
+- **Reliability policy:** [RELIABILITY.md](./RELIABILITY.md)
 
 Open Economics gives data from Banco Central do Brasil (BCB) and IBGE a single
 contract without obscuring where it came from. Every response includes a stable
 indicator ID, unit, frequency, original publisher value, source identifier,
 upstream request URL, license, and cache state.
+
+## When to use Open Economics
+
+If one official series solves your use case, call BCB or IBGE directly. That is
+the shortest and most trustworthy path.
+
+Open Economics is useful when a product combines common BCB and IBGE series and
+would otherwise maintain separate discovery, date, unit, error, provenance, and
+CSV conventions. It provides one small curated catalog and one response
+contract; it is not a replacement for either publisher's complete catalog.
 
 ## Start with the catalog
 
@@ -114,6 +126,10 @@ The API caches successfully normalized source responses in D1 when configured.
 If a refresh fails and a previous matching snapshot exists, it is returned with
 `meta.stale: true`, `meta.cache: "stale"`, and HTTP `Warning: 110`. A cache
 read or write failure is treated as a cache bypass, never as a data failure.
+
+The service is currently best-effort and has no uptime SLA. See
+[RELIABILITY.md](./RELIABILITY.md) for the explicit availability, freshness,
+change-management, and incident-reporting policy.
 
 ## Sources and correctness
 
