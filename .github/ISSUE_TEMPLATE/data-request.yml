@@ -1,0 +1,41 @@
+name: Data correction or indicator request
+description: Propose a correction or a series backed by a real use case.
+title: "[Data]: "
+labels: [data]
+body:
+  - type: dropdown
+    id: request_type
+    attributes:
+      label: Request type
+      options:
+        - Correction to an existing indicator
+        - New indicator for a real integration
+    validations:
+      required: true
+  - type: textarea
+    id: use_case
+    attributes:
+      label: Real use case
+      description: Describe the product, analysis, or integration that will use this data.
+    validations:
+      required: true
+  - type: input
+    id: source
+    attributes:
+      label: Official source URL
+      placeholder: https://...
+    validations:
+      required: true
+  - type: textarea
+    id: contract
+    attributes:
+      label: Source identifiers and semantics
+      description: Include the publisher ID/code, unit, frequency, date meaning, and license when known.
+    validations:
+      required: true
+  - type: textarea
+    id: gap
+    attributes:
+      label: Why the current catalog does not solve it
+    validations:
+      required: true

@@ -7,6 +7,10 @@ A free, read-only API for authoritative Brazilian economic time series.
 - **Runnable examples:** https://open-economics-data.knbf982hkn.chatgpt.site/en/guides
 - **Source and issue tracker:** https://github.com/felipegambettadesouza6-jpg/open-economics
 - **Reliability policy:** [RELIABILITY.md](./RELIABILITY.md)
+- **Contributing:** [CONTRIBUTING.md](./CONTRIBUTING.md)
+- **Security:** [SECURITY.md](./SECURITY.md)
+
+**[Try the API in the browser →](https://open-economics-data.knbf982hkn.chatgpt.site/en/playground?utm_source=github&utm_medium=repository&utm_campaign=github-repo)**
 
 Open Economics gives data from Banco Central do Brasil (BCB) and IBGE a single
 contract without obscuring where it came from. Every response includes a stable
