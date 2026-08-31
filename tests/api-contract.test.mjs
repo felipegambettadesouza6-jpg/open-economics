@@ -13,6 +13,37 @@ function env() {
   };
 }
 
+function envWithSnapshots() {
+  const snapshots = new Map();
+  const DB = {
+    async batch() { return []; },
+    prepare(sql) {
+      let values = [];
+      return {
+        bind(...nextValues) {
+          values = nextValues;
+          return this;
+        },
+        async first() {
+          if (!sql.startsWith("SELECT payload_json")) return null;
+          return snapshots.get(values[0]) ?? null;
+        },
+        async run() {
+          if (sql.startsWith("INSERT INTO series_snapshots")) {
+            snapshots.set(values[0], {
+              payload_json: values[2],
+              fetched_at: values[3],
+              expires_at: values[4],
+            });
+          }
+          return {};
+        },
+      };
+    },
+  };
+  return { runtimeEnv: { ...env(), DB }, snapshots };
+}
+
 const ctx = { waitUntil() {}, passThroughOnException() {} };
 
 async function request(path, init = {}, runtimeEnv = env()) {
@@ -152,5 +183,46 @@ test("treats cache failures as a cache bypass instead of a data failure", { conc
     );
     assert.equal(response.status, 200);
     assert.equal((await response.json()).meta.cache, "miss");
+  });
+});
+
+test("retries transient BCB failures before returning an upstream error", { concurrency: false }, async () => {
+  let attempts = 0;
+  await withFetchMock(async () => {
+    attempts += 1;
+    if (attempts === 1) return new Response("temporary", { status: 503 });
+    return new Response(JSON.stringify([{ data: "01/01/2024", valor: "11.75" }]));
+  }, async () => {
+    const response = await request(
+      "/api/v1/indicators/br-selic-target/observations?start=2024-01-01&end=2024-01-01",
+    );
+    assert.equal(response.status, 200);
+    assert.equal((await response.json()).data[0].value, 11.75);
+  });
+  assert.equal(attempts, 2);
+});
+
+test("latest endpoints reuse a stable stale snapshot when BCB is unavailable", { concurrency: false }, async () => {
+  const { runtimeEnv, snapshots } = envWithSnapshots();
+  await withFetchMock(async () => new Response(JSON.stringify([
+    { data: "31/08/2026", valor: "11.75" },
+  ])), async () => {
+    const response = await request("/api/v1/indicators/br-selic-target/latest", {}, runtimeEnv);
+    assert.equal(response.status, 200);
+    assert.equal((await response.json()).meta.cache, "miss");
+  });
+
+  const snapshot = snapshots.get("v2:br-selic-target:latest");
+  assert.ok(snapshot);
+  snapshot.expires_at = Date.now() - 1;
+
+  await withFetchMock(async () => { throw new TypeError("network down"); }, async () => {
+    const response = await request("/api/v1/indicators/br-selic-target/latest", {}, runtimeEnv);
+    assert.equal(response.status, 200);
+    assert.equal(response.headers.get("warning"), '110 - "Response is stale; official source refresh failed"');
+    const body = await response.json();
+    assert.equal(body.meta.cache, "stale");
+    assert.equal(body.meta.stale, true);
+    assert.equal(body.data[0].value, 11.75);
   });
 });

@@ -247,7 +247,13 @@ async function observationsResponse(
   const series = await getSeries(
     indicator,
     { start: query.start, end: query.end },
-    { db: env.DB },
+    {
+      db: env.DB,
+      // A rolling date range gives /latest a different range key every day.
+      // Keep one stable snapshot so a brief publisher outage can still return
+      // the most recently verified observation with stale=true.
+      snapshotKey: latestOnly ? `v2:${indicator.id}:latest` : undefined,
+    },
   );
 
   let ordered = [...series.result.observations];

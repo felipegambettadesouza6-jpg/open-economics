@@ -7,6 +7,7 @@ import { createSnapshotRepository } from "@/lib/cache/snapshot-repository";
 export interface SeriesServiceContext {
   db?: D1Database;
   fetcher?: typeof fetch;
+  snapshotKey?: string;
 }
 
 export interface SeriesServiceResult {
@@ -22,7 +23,7 @@ export async function getSeries(
 ): Promise<SeriesServiceResult> {
   // Incrementing this key version cleanly separates snapshots whenever
   // normalization semantics change, without making cache migration a runtime risk.
-  const cacheKey = `v2:${definition.id}:${range.start}:${range.end}`;
+  const cacheKey = context.snapshotKey ?? `v2:${definition.id}:${range.start}:${range.end}`;
   const repository = createSnapshotRepository(context.db);
   let snapshot: Awaited<ReturnType<typeof repository.get>> = null;
   try {
