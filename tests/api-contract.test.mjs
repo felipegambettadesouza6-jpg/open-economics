@@ -50,6 +50,16 @@ test("catalog exposes canonical filters and rejects invalid filter values", { co
   assert.equal((await invalid.json()).code, "INVALID_CATEGORY");
 });
 
+test("exposes the official monthly CDI series with stable semantics", { concurrency: false }, async () => {
+  const response = await request("/api/v1/indicators/br-cdi-monthly");
+  assert.equal(response.status, 200);
+  const body = await response.json();
+  assert.equal(body.data.id, "br-cdi-monthly");
+  assert.equal(body.data.frequency, "monthly");
+  assert.equal(body.data.unit_symbol, "% p.m.");
+  assert.equal(body.data.upstream.seriesCode, 4391);
+});
+
 test("normalizes BCB daily observations, preserves raw provenance, and sorts upstream rows", { concurrency: false }, async () => {
   let upstreamUrl = "";
   await withFetchMock(async (input) => {

@@ -89,6 +89,23 @@
       }
     },
     {
+      "name": "Monthly CDI history",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "{{baseUrl}}/indicators/br-cdi-monthly/observations?start=2020-01-01&order=asc",
+          "host": ["{{baseUrl}}"],
+          "path": ["indicators", "br-cdi-monthly", "observations"],
+          "query": [
+            { "key": "start", "value": "2020-01-01" },
+            { "key": "order", "value": "asc" }
+          ]
+        },
+        "description": "CDI accumulated in each calendar month from the official BCB SGS series 4391."
+      }
+    },
+    {
       "name": "Download IPCA history as CSV",
       "request": {
         "method": "GET",

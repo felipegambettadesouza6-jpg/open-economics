@@ -19,7 +19,7 @@ interface ApiExecutionContext {
 const CORS_HEADERS = {
   "Access-Control-Allow-Origin": "*",
   "Access-Control-Allow-Methods": "GET, HEAD, OPTIONS",
-  "Access-Control-Allow-Headers": "Accept, Content-Type, X-Request-Id",
+  "Access-Control-Allow-Headers": "Accept, Content-Type, X-Request-Id, X-Open-Economics-Internal",
   "Access-Control-Expose-Headers": "Cache-Control, Server-Timing, Warning, X-Request-Id",
   "Access-Control-Max-Age": "86400",
 };
@@ -394,6 +394,7 @@ export async function handleApi(
   const id = requestId(request);
   const origin = new URL(request.url).origin;
   const started = performance.now();
+  const internal = request.headers.get("x-open-economics-internal") === "1";
 
   try {
     if (request.method === "OPTIONS") {
@@ -419,11 +420,11 @@ export async function handleApi(
         duration_ms: Number((performance.now() - started).toFixed(1)),
       }),
     );
-    ctx.waitUntil(recordApiRequest(env.DB, request, output.status));
+    if (!internal) ctx.waitUntil(recordApiRequest(env.DB, request, output.status));
     return output;
   } catch (error) {
     const response = problem(error, id, origin);
-    ctx.waitUntil(recordApiRequest(env.DB, request, response.status));
+    if (!internal) ctx.waitUntil(recordApiRequest(env.DB, request, response.status));
     return request.method === "HEAD"
       ? new Response(null, { status: response.status, statusText: response.statusText, headers: response.headers })
       : response;
