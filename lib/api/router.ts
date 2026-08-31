@@ -253,6 +253,7 @@ async function observationsResponse(
       // Keep one stable snapshot so a brief publisher outage can still return
       // the most recently verified observation with stale=true.
       snapshotKey: latestOnly ? `v2:${indicator.id}:latest` : undefined,
+      latestOnly,
     },
   );
 

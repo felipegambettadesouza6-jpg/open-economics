@@ -8,6 +8,7 @@ export interface DateRange {
 export interface ProviderContext {
   fetcher: typeof fetch;
   signal?: AbortSignal;
+  latestOnly?: boolean;
 }
 
 export interface ProviderAdapter {
@@ -18,4 +19,3 @@ export interface ProviderAdapter {
     context: ProviderContext,
   ): Promise<SeriesResult>;
 }
-

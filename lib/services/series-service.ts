@@ -3,11 +3,13 @@ import { ApiError } from "@/lib/errors";
 import { getProvider } from "@/lib/providers/registry";
 import type { DateRange } from "@/lib/providers/provider";
 import { createSnapshotRepository } from "@/lib/cache/snapshot-repository";
+import { getBundledLatest } from "@/lib/cache/bundled-latest";
 
 export interface SeriesServiceContext {
   db?: D1Database;
   fetcher?: typeof fetch;
   snapshotKey?: string;
+  latestOnly?: boolean;
 }
 
 export interface SeriesServiceResult {
@@ -44,6 +46,7 @@ export async function getSeries(
     const result = await provider.fetchSeries(definition, range, {
       fetcher: context.fetcher ?? fetch,
       signal: controller.signal,
+      latestOnly: context.latestOnly,
     });
     try {
       await repository.put(cacheKey, definition.id, result, definition.cacheTtlSeconds);
@@ -55,6 +58,10 @@ export async function getSeries(
   } catch (error) {
     if (snapshot) {
       return { result: snapshot.payload, cache: "stale", stale: true };
+    }
+    const bundledLatest = context.latestOnly ? getBundledLatest(definition.id, range) : null;
+    if (bundledLatest) {
+      return { result: bundledLatest, cache: "stale", stale: true };
     }
     if (error instanceof ApiError || (error instanceof Error && error.name === "AbortError")) {
       throw error;

@@ -209,7 +209,9 @@ test("latest endpoints reuse a stable stale snapshot when BCB is unavailable", {
   ])), async () => {
     const response = await request("/api/v1/indicators/br-selic-target/latest", {}, runtimeEnv);
     assert.equal(response.status, 200);
-    assert.equal((await response.json()).meta.cache, "miss");
+    const body = await response.json();
+    assert.equal(body.meta.cache, "miss");
+    assert.match(body.meta.provenance.upstream_url, /\/dados\/ultimos\/400\?formato=json/);
   });
 
   const snapshot = snapshots.get("v2:br-selic-target:latest");
@@ -224,5 +226,24 @@ test("latest endpoints reuse a stable stale snapshot when BCB is unavailable", {
     assert.equal(body.meta.cache, "stale");
     assert.equal(body.meta.stale, true);
     assert.equal(body.data[0].value, 11.75);
+  });
+});
+
+test("promoted Selic latest endpoints retain an official bundled fallback", { concurrency: false }, async () => {
+  await withFetchMock(async () => { throw new TypeError("worker egress blocked"); }, async () => {
+    const target = await request("/api/v1/indicators/br-selic-target/latest");
+    assert.equal(target.status, 200);
+    assert.equal(target.headers.get("warning"), '110 - "Response is stale; official source refresh failed"');
+    const targetBody = await target.json();
+    assert.equal(targetBody.meta.stale, true);
+    assert.equal(targetBody.data[0].date, "2026-08-31");
+    assert.equal(targetBody.data[0].value, 14);
+
+    const effective = await request("/api/v1/indicators/br-selic-effective/latest");
+    assert.equal(effective.status, 200);
+    const effectiveBody = await effective.json();
+    assert.equal(effectiveBody.meta.stale, true);
+    assert.equal(effectiveBody.data[0].date, "2026-08-28");
+    assert.equal(effectiveBody.data[0].value, 13.9);
   });
 });

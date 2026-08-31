@@ -26,16 +26,20 @@ function shouldRetry(status: number) {
   return RETRYABLE_STATUSES.has(status) || status >= 500;
 }
 
-async function retryDelay(attempt: number, signal: AbortSignal) {
+async function retryDelay(attempt: number, signal?: AbortSignal) {
   const delayMs = 50 * (2 ** attempt);
   await new Promise<void>((resolve, reject) => {
-    const timeout = setTimeout(resolve, delayMs);
-    signal.addEventListener("abort", () => {
+    const timeout = setTimeout(() => {
+      signal?.removeEventListener("abort", onAbort);
+      resolve();
+    }, delayMs);
+    const onAbort = () => {
       clearTimeout(timeout);
       const error = new Error("Upstream request aborted.");
       error.name = "AbortError";
       reject(error);
-    }, { once: true });
+    };
+    signal?.addEventListener("abort", onAbort, { once: true });
   });
 }
 
@@ -79,10 +83,13 @@ export const bcbSgsProvider: ProviderAdapter = {
     const code = definition.upstream.seriesCode;
     if (!code) throw new ApiError(500, "CATALOG_ERROR", "The indicator is missing its SGS code.");
 
-    const url = new URL(`https://api.bcb.gov.br/dados/serie/bcdata.sgs.${code}/dados`);
+    const suffix = context.latestOnly ? "/ultimos/400" : "";
+    const url = new URL(`https://api.bcb.gov.br/dados/serie/bcdata.sgs.${code}/dados${suffix}`);
     url.searchParams.set("formato", "json");
-    url.searchParams.set("dataInicial", isoToBcbDate(range.start));
-    url.searchParams.set("dataFinal", isoToBcbDate(range.end));
+    if (!context.latestOnly) {
+      url.searchParams.set("dataInicial", isoToBcbDate(range.start));
+      url.searchParams.set("dataFinal", isoToBcbDate(range.end));
+    }
 
     let response: Response | null = null;
     for (let attempt = 0; attempt < MAX_ATTEMPTS; attempt += 1) {
@@ -93,7 +100,7 @@ export const bcbSgsProvider: ProviderAdapter = {
           cf: { cacheEverything: true, cacheTtl: definition.cacheTtlSeconds },
         } as RequestInit & { cf: Record<string, unknown> });
       } catch (error) {
-        if (context.signal.aborted || (error instanceof Error && error.name === "AbortError")) {
+        if (context.signal?.aborted || (error instanceof Error && error.name === "AbortError")) {
           throw error;
         }
         if (attempt === MAX_ATTEMPTS - 1) throw error;
