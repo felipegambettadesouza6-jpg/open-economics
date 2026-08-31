@@ -219,7 +219,7 @@ export function SignalHero({ indicators, locale }: { indicators: IndicatorDefini
       <p className="signal-eyebrow">{pt ? "A CAMADA ABERTA PARA DADOS OFICIAIS" : "THE OPEN LAYER FOR OFFICIAL DATA"}</p>
       <h1>{pt ? <>Dados oficiais,<br />feitos para <span>fluir.</span></> : <>Official data,<br />made to <span>flow.</span></>}</h1>
       <div className="signal-hero-intro">
-        <p>{pt ? "Descubra, entenda e use dados econômicos e financeiros por meio de uma API consistente." : "Discover, understand, and use economic and financial data through one consistent API."}</p>
+        <p>{pt ? "Uma interface consistente para produtos que combinam séries do Banco Central e do IBGE." : "One consistent interface for products that combine Central Bank and IBGE series."}</p>
         <div className="signal-hero-actions"><a className="signal-button dark" href={localized(locale, "/catalog")}>{pt ? "Explorar dados" : "Explore data"}<span>↗</span></a><a className="signal-text-link" href={localized(locale, "/docs")}>{pt ? "Começar a construir" : "Start building"}<span>→</span></a></div>
       </div>
     </div>

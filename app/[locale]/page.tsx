@@ -59,7 +59,7 @@ export default async function LocalizedHome({ params }: { params: Promise<{ loca
       <div className="oe-confluence-copy">
         <p className="oe-label">{pt ? "UMA CAMADA CONSISTENTE" : "ONE CONSISTENT LAYER"}</p>
         <h2>{pt ? "Muitas fontes. Uma forma de trabalhar." : "Many sources. One way to work."}</h2>
-        <p>{pt ? "Pesquise por conceito, compare séries e use a mesma estrutura de resposta em todos os indicadores." : "Search by concept, compare series, and work with the same response structure across every indicator."}</p>
+        <p>{pt ? "Se uma única série resolve o seu caso, use a fonte oficial diretamente. A Open Economics vale a pena quando seu produto combina BCB e IBGE: um contrato para IDs, datas, unidades, erros e proveniência." : "If one series solves your use case, use the official source directly. Open Economics earns its place when your product combines BCB and IBGE: one contract for IDs, dates, units, errors, and provenance."}</p>
         <a href={localized(locale, "/sources")}>{pt ? "Ver fontes e licenças" : "See sources and licenses"}<span>→</span></a>
       </div>
       <div className="oe-stream"><NormalizationScene locale={locale} /></div>
@@ -88,7 +88,7 @@ export default async function LocalizedHome({ params }: { params: Promise<{ loca
         <footer><span>200 OK</span><span>182 ms</span><span>PROVENANCE INCLUDED</span></footer>
       </div>
       <div className="oe-code-tape" aria-hidden="true"><span>REST / JSON / OPENAPI 3.1 / NO AUTHENTICATION / STABLE IDS / SOURCE LINKS / REVISION AWARE /</span><span>REST / JSON / OPENAPI 3.1 / NO AUTHENTICATION / STABLE IDS / SOURCE LINKS / REVISION AWARE /</span></div>
-      <div className="oe-api-actions"><p>{pt ? "Sem chave. Sem cadastro. Comece no navegador e leve para produção quando quiser." : "No key. No signup. Start in the browser and take it to production when you’re ready."}</p><div><a className="signal-button light" href={localized(locale, "/playground")}>{pt ? "Testar a API" : "Try the API"}<span>↗</span></a><a href={localized(locale, "/docs")}>{pt ? "Ler documentação" : "Read documentation"}<span>→</span></a></div></div>
+      <div className="oe-api-actions"><p>{pt ? "Sem chave e sem cadastro. Troque integrações separadas do BCB e IBGE por uma interface comum — mantendo os links oficiais em cada resposta." : "No key and no signup. Replace separate BCB and IBGE integrations with one common interface—while retaining official links in every response."}</p><div><a className="signal-button light" href={localized(locale, "/playground")}>{pt ? "Testar a API" : "Try the API"}<span>↗</span></a><a href={localized(locale, "/docs")}>{pt ? "Ler documentação" : "Read documentation"}<span>→</span></a></div></div>
     </section>
 
     <SiteFooter locale={locale} dramatic />
