@@ -1,0 +1,29 @@
+# Open Economics
+
+Open Economics is a free, public, read-only API for official Brazilian economic time series. It requires no account or API key and supports browser CORS, JSON, and CSV.
+
+Base URL: https://open-economics-data.knbf982hkn.chatgpt.site/api/v1
+Documentation: https://open-economics-data.knbf982hkn.chatgpt.site/en/docs
+Portuguese documentation: https://open-economics-data.knbf982hkn.chatgpt.site/pt-br/docs
+OpenAPI 3.1: https://open-economics-data.knbf982hkn.chatgpt.site/api/v1/openapi.json
+Indicator catalog: https://open-economics-data.knbf982hkn.chatgpt.site/api/v1/indicators
+
+## Core tasks
+
+- Search indicators: GET /api/v1/indicators?q=ipca
+- Read indicator metadata: GET /api/v1/indicators/br-ipca-monthly
+- Fetch history: GET /api/v1/indicators/br-ipca-monthly/observations?start=2020-01-01&order=asc
+- Fetch latest value: GET /api/v1/indicators/br-selic-target/latest
+- Download CSV: add format=csv to an observations request
+
+## Important series
+
+- br-ipca-monthly — IPCA monthly change, IBGE
+- br-ipca-12m — IPCA trailing 12-month change, IBGE
+- br-selic-target — Copom Selic target, BCB
+- br-selic-monthly — Selic accumulated in the month, BCB
+- br-usd-brl — official daily USD/BRL selling exchange rate, BCB
+- br-unemployment-rate — national unemployment rate, IBGE PNAD Contínua
+- br-ibc-br — BCB monthly economic activity index
+
+Responses preserve stable series IDs, frequency, units, official source IDs and URLs, raw published values, normalized dates, retrieval timestamps, license information, and upstream provenance. Values are never fabricated or silently forward-filled.

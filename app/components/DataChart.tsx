@@ -1,0 +1,154 @@
+"use client";
+
+import { useState } from "react";
+import type { Locale } from "@/lib/i18n";
+
+interface ChartObservation {
+  date: string;
+  value: number | null;
+}
+
+function formatValue(value: number, decimals: number, locale: Locale, exact = false) {
+  return new Intl.NumberFormat(locale, {
+    maximumFractionDigits: decimals,
+    minimumFractionDigits: exact ? decimals : Math.min(decimals, 1),
+  }).format(value);
+}
+
+export function DataChart({
+  data,
+  unit,
+  decimals,
+  compact = false,
+  locale = "en",
+}: {
+  data: ChartObservation[];
+  unit: string;
+  decimals: number;
+  compact?: boolean;
+  locale?: Locale;
+}) {
+  const [activeIndex, setActiveIndex] = useState<number | null>(null);
+  const valid = data.filter((item): item is ChartObservation & { value: number } => item.value !== null);
+  if (valid.length < 2) {
+    return <div className="chart-empty">{locale === "pt-br" ? "Observações insuficientes para o gráfico." : "Not enough observations for a chart."}</div>;
+  }
+
+  const width = 760;
+  const height = compact ? 188 : 300;
+  const padding = compact
+    ? { top: 12, right: 12, bottom: 25, left: 12 }
+    : { top: 18, right: 18, bottom: 38, left: 58 };
+  const values = valid.map((item) => item.value);
+  const rawMin = Math.min(...values);
+  const rawMax = Math.max(...values);
+  const spread = rawMax - rawMin || Math.max(Math.abs(rawMax) * 0.1, 1);
+  const min = rawMin - spread * 0.08;
+  const max = rawMax + spread * 0.08;
+  const x = (index: number) =>
+    padding.left + (index / Math.max(data.length - 1, 1)) * (width - padding.left - padding.right);
+  const y = (value: number) =>
+    padding.top + ((max - value) / (max - min)) * (height - padding.top - padding.bottom);
+
+  const segments: string[] = [];
+  let current = "";
+  data.forEach((item, index) => {
+    if (item.value === null) {
+      if (current) segments.push(current);
+      current = "";
+      return;
+    }
+    const command = current ? "L" : "M";
+    current += `${command}${x(index).toFixed(2)},${y(item.value).toFixed(2)} `;
+  });
+  if (current) segments.push(current);
+
+  const ticks = [0, 0.5, 1].map((fraction) => {
+    const value = max - (max - min) * fraction;
+    return { value, y: padding.top + (height - padding.top - padding.bottom) * fraction };
+  });
+  const dateTicks = [data[0], data[Math.floor((data.length - 1) / 2)], data.at(-1)!];
+  const active = activeIndex === null ? null : data[activeIndex];
+  const latestValidIndex = data.reduce((latest, item, index) => item.value === null ? latest : index, 0);
+  const chartLabel = active?.value !== null && active?.value !== undefined
+    ? `${active.date}: ${formatValue(active.value, decimals, locale, true)} ${unit}`
+    : locale === "pt-br"
+      ? `Gráfico de série temporal de ${data[0].date} a ${data.at(-1)!.date}, medido em ${unit}`
+      : `Time-series chart from ${data[0].date} to ${data.at(-1)!.date}, measured in ${unit}`;
+  const rasterCells = compact ? Array.from({ length: 34 * 10 }, (_, cellIndex) => {
+    const column = cellIndex % 34;
+    const row = Math.floor(cellIndex / 34);
+    const plotWidth = width - padding.left - padding.right;
+    const plotHeight = height - padding.top - padding.bottom;
+    const cellWidth = plotWidth / 34;
+    const cellHeight = plotHeight / 10;
+    const ratio = column / 33;
+    const point = data[Math.round(ratio * (data.length - 1))];
+    if (point?.value === null || point?.value === undefined) return null;
+    const centerY = padding.top + (row + .5) * cellHeight;
+    const distance = Math.abs(centerY - y(point.value));
+    const edgeFade = Math.pow(Math.sin(Math.PI * ratio), .7);
+    const density = Math.max(0, 1 - distance / (plotHeight * .56)) * edgeFade;
+    const stepped = Math.floor(density * 6) / 6;
+    if (stepped < .04) return null;
+    return { x: padding.left + column * cellWidth, y: padding.top + row * cellHeight, width: Math.max(1, cellWidth - 2), height: Math.max(1, cellHeight - 2), opacity: .05 + stepped * .34 };
+  }).filter((cell): cell is { x: number; y: number; width: number; height: number; opacity: number } => cell !== null) : [];
+
+  function moveSelection(delta: number) {
+    setActiveIndex((current) => Math.max(0, Math.min(data.length - 1, (current ?? data.length - 1) + delta)));
+  }
+
+  return (
+    <svg
+      className={compact ? "data-chart compact" : "data-chart"}
+      viewBox={`0 0 ${width} ${height}`}
+      role="img"
+      aria-label={chartLabel}
+      preserveAspectRatio="none"
+      tabIndex={0}
+      onFocus={() => setActiveIndex((current) => current ?? latestValidIndex)}
+      onBlur={() => setActiveIndex(null)}
+      onPointerMove={(event) => {
+        const bounds = event.currentTarget.getBoundingClientRect();
+        const ratio = Math.max(0, Math.min(1, (event.clientX - bounds.left) / bounds.width));
+        setActiveIndex(Math.round(ratio * (data.length - 1)));
+      }}
+      onPointerLeave={() => setActiveIndex(null)}
+      onKeyDown={(event) => {
+        if (event.key === "ArrowLeft") { event.preventDefault(); moveSelection(-1); }
+        if (event.key === "ArrowRight") { event.preventDefault(); moveSelection(1); }
+        if (event.key === "Escape") setActiveIndex(null);
+      }}
+    >
+      {!compact &&
+        ticks.map((tick) => (
+          <g key={tick.y}>
+            <line x1={padding.left} x2={width - padding.right} y1={tick.y} y2={tick.y} className="chart-gridline" />
+            <text x={padding.left - 10} y={tick.y + 4} textAnchor="end" className="chart-axis-label">
+              {formatValue(tick.value, decimals, locale)}
+            </text>
+          </g>
+        ))}
+      {compact && <g className="chart-raster" aria-hidden="true">{rasterCells.map((cell, index) => <rect key={index} x={cell.x} y={cell.y} width={cell.width} height={cell.height} fillOpacity={cell.opacity} />)}</g>}
+      {segments.map((path, index) => (
+        <path className="chart-line" d={path} fill="none" pathLength="1" key={index} vectorEffect="non-scaling-stroke" />
+      ))}
+      {active && active.value !== null && <g className="chart-crosshair">
+        <line x1={x(activeIndex!)} x2={x(activeIndex!)} y1={padding.top} y2={height - padding.bottom} vectorEffect="non-scaling-stroke" />
+        <circle cx={x(activeIndex!)} cy={y(active.value)} r={compact ? 4 : 5} vectorEffect="non-scaling-stroke" />
+        {!compact && <g className="chart-tooltip" transform={`translate(${Math.min(width - 150, Math.max(66, x(activeIndex!) - 70))},${Math.max(8, y(active.value) - 62)})`}><rect width="140" height="48" /><text x="10" y="18">{active.date}</text><text className="chart-tooltip-value" x="10" y="36">{formatValue(active.value, decimals, locale, true)} {unit}</text></g>}
+      </g>}
+      {dateTicks.map((item, index) => (
+        <text
+          key={`${item.date}-${index}`}
+          x={x(index === 0 ? 0 : index === 1 ? Math.floor((data.length - 1) / 2) : data.length - 1)}
+          y={height - 7}
+          textAnchor={index === 0 ? "start" : index === 2 ? "end" : "middle"}
+          className="chart-axis-label"
+        >
+          {item.date.slice(0, 7)}
+        </text>
+      ))}
+    </svg>
+  );
+}

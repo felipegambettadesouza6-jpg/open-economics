@@ -1,0 +1,8 @@
+blank_issues_enabled: false
+contact_links:
+  - name: Live API documentation
+    url: https://open-economics-data.knbf982hkn.chatgpt.site/en/docs
+    about: Try the API and review the public contract before opening an issue.
+  - name: Security report
+    url: https://github.com/felipegambettadesouza6-jpg/open-economics/security/advisories/new
+    about: Report vulnerabilities privately; do not open a public issue.
