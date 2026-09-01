@@ -1,5 +1,6 @@
 import type { SeriesResult } from "@/lib/domain/types";
 import type { DateRange } from "@/lib/providers/provider";
+import bundledSeries from "@/lib/cache/bundled-series.generated.json";
 
 // Last-known official observations bundled only for the two Selic acquisition
 // paths. They are used with stale=true when the worker cannot reach BCB and are
@@ -33,8 +34,9 @@ const BUNDLED_LATEST: Record<string, SeriesResult> = {
   },
 };
 
-export function getBundledLatest(indicatorId: string, range: DateRange): SeriesResult | null {
-  const bundled = BUNDLED_LATEST[indicatorId];
+export function getBundledFallback(indicatorId: string, range: DateRange): SeriesResult | null {
+  const bundled = BUNDLED_LATEST[indicatorId]
+    ?? (bundledSeries as Record<string, SeriesResult>)[indicatorId];
   if (!bundled) return null;
   const observations = bundled.observations.filter(
     (observation) => observation.date >= range.start && observation.date <= range.end,
