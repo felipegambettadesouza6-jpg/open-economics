@@ -83,8 +83,10 @@ test("catalog exposes canonical filters and rejects invalid filter values", { co
 
 test("normalizes BCB daily observations, preserves raw provenance, and sorts upstream rows", { concurrency: false }, async () => {
   let upstreamUrl = "";
-  await withFetchMock(async (input) => {
+  let upstreamInit;
+  await withFetchMock(async (input, init) => {
     upstreamUrl = String(input);
+    upstreamInit = init;
     return new Response(JSON.stringify([
       { data: "03/01/2024", valor: "11.75" },
       { data: "01/01/2024", valor: "11.75" },
@@ -111,12 +113,16 @@ test("normalizes BCB daily observations, preserves raw provenance, and sorts ups
     assert.match(csv, /br-selic-target,bcb,/);
   });
   assert.match(upstreamUrl, /dataFinal=03%2F01%2F2024/);
+  assert.equal(upstreamInit.cache, "no-store");
+  assert.equal("cf" in upstreamInit, false);
 });
 
 test("requests only the IBGE periods needed and retains source-specific data status", { concurrency: false }, async () => {
   let upstreamUrl = "";
-  await withFetchMock(async (input) => {
+  let upstreamInit;
+  await withFetchMock(async (input, init) => {
     upstreamUrl = String(input);
+    upstreamInit = init;
     return new Response(JSON.stringify([{
       id: "63",
       resultados: [{ series: [{ serie: { "202401": "0,42", "202402": "-", "202403": "X" } }] }],
@@ -134,6 +140,8 @@ test("requests only the IBGE periods needed and retains source-specific data sta
     assert.match(body.meta.provenance.upstream_url, /periodos\/202401\|202402\|202403\/variaveis\/63/);
   });
   assert.match(upstreamUrl, /periodos\/202401\|202402\|202403\/variaveis\/63/);
+  assert.equal(upstreamInit.cache, "no-store");
+  assert.equal("cf" in upstreamInit, false);
 });
 
 test("returns stable RFC problem details for malformed paths, future dates, and upstream connection failures", { concurrency: false }, async () => {

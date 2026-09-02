@@ -156,8 +156,11 @@ export const ibgeAggregatesProvider: ProviderAdapter = {
     const response = await context.fetcher(url, {
       headers: { Accept: "application/json", "User-Agent": "OpenEconomicsAPI/1.0" },
       signal: context.signal,
-      cf: { cacheEverything: true, cacheTtl: definition.cacheTtlSeconds },
-    } as RequestInit & { cf: Record<string, unknown> });
+      // Range-aware D1 snapshots provide the application cache. Avoid the
+      // platform fetch cache here because period-specific IBGE URLs must never
+      // reuse a response produced for another period set.
+      cache: "no-store",
+    });
 
     if (!response.ok) {
       throw new ApiError(

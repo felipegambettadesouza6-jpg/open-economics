@@ -97,8 +97,12 @@ export const bcbSgsProvider: ProviderAdapter = {
         response = await context.fetcher(url, {
           headers: { Accept: "application/json", "User-Agent": "OpenEconomicsAPI/1.0" },
           signal: context.signal,
-          cf: { cacheEverything: true, cacheTtl: definition.cacheTtlSeconds },
-        } as RequestInit & { cf: Record<string, unknown> });
+          // The platform fetch cache can collapse distinct upstream query
+          // strings into one cached response. D1 snapshots are already keyed
+          // by indicator and date range, so bypass the intermediary cache to
+          // preserve the requested SGS window.
+          cache: "no-store",
+        });
       } catch (error) {
         if (context.signal?.aborted || (error instanceof Error && error.name === "AbortError")) {
           throw error;
