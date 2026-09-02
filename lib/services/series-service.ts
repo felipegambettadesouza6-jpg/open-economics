@@ -3,7 +3,7 @@ import { ApiError } from "@/lib/errors";
 import { getProvider } from "@/lib/providers/registry";
 import type { DateRange } from "@/lib/providers/provider";
 import { createSnapshotRepository } from "@/lib/cache/snapshot-repository";
-import { getBundledLatest } from "@/lib/cache/bundled-latest";
+import { getBundledFallback } from "@/lib/cache/bundled-latest";
 
 export interface SeriesServiceContext {
   db?: D1Database;
@@ -59,9 +59,9 @@ export async function getSeries(
     if (snapshot) {
       return { result: snapshot.payload, cache: "stale", stale: true };
     }
-    const bundledLatest = context.latestOnly ? getBundledLatest(definition.id, range) : null;
-    if (bundledLatest) {
-      return { result: bundledLatest, cache: "stale", stale: true };
+    const bundledFallback = getBundledFallback(definition.id, range);
+    if (bundledFallback) {
+      return { result: bundledFallback, cache: "stale", stale: true };
     }
     if (error instanceof ApiError || (error instanceof Error && error.name === "AbortError")) {
       throw error;

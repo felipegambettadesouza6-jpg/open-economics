@@ -27,6 +27,19 @@ would otherwise maintain separate discovery, date, unit, error, provenance, and
 CSV conventions. It provides one small curated catalog and one response
 contract; it is not a replacement for either publisher's complete catalog.
 
+## One contract across BCB and IBGE
+
+The same observation envelope can retrieve BCB IBC-Br (SGS 24363) and IBGE real
+GDP growth (SIDRA 5932/6561), without maintaining two date and response parsers:
+
+```bash
+curl --fail --silent "https://open-economics-data.knbf982hkn.chatgpt.site/api/v1/indicators/br-ibc-br/observations?start=2024-01-01"
+curl --fail --silent "https://open-economics-data.knbf982hkn.chatgpt.site/api/v1/indicators/br-gdp-real-yoy/observations?start=2024-01-01"
+```
+
+The runnable [multi-source Python example](./examples/multi_source_python.py)
+uses both series and prints their official provenance and freshness state.
+
 ## Start with the catalog
 
 ```bash
@@ -166,7 +179,8 @@ npm run lint
 npm test
 ```
 
-Examples are available in [examples/python.py](./examples/python.py) and
+Examples are available in [examples/python.py](./examples/python.py),
+[examples/multi_source_python.py](./examples/multi_source_python.py), and
 [examples/javascript.mjs](./examples/javascript.mjs). The D1 migration in
 `drizzle/` is the deployment record for cache snapshots.
 

@@ -247,3 +247,31 @@ test("promoted Selic latest endpoints retain an official bundled fallback", { co
     assert.equal(effectiveBody.data[0].value, 13.9);
   });
 });
+
+test("the evidenced BCB plus IBGE acquisition path retains official bundled series", { concurrency: false }, async () => {
+  await withFetchMock(async () => { throw new TypeError("worker egress blocked"); }, async () => {
+    const ibc = await request(
+      "/api/v1/indicators/br-ibc-br/observations?start=2025-01-01&end=2026-08-31&order=asc&limit=100",
+    );
+    assert.equal(ibc.status, 200);
+    assert.equal(ibc.headers.get("warning"), '110 - "Response is stale; official source refresh failed"');
+    const ibcBody = await ibc.json();
+    assert.equal(ibcBody.meta.stale, true);
+    assert.equal(ibcBody.meta.indicator.upstream.seriesCode, 24363);
+    assert.ok(ibcBody.data.length > 12);
+    assert.equal(ibcBody.data.at(-1).date, "2026-06-01");
+    assert.equal(ibcBody.data.at(-1).value, 109.89427);
+
+    const gdp = await request(
+      "/api/v1/indicators/br-gdp-real-yoy/observations?start=2025-01-01&end=2026-08-31&order=asc&limit=100",
+    );
+    assert.equal(gdp.status, 200);
+    assert.equal(gdp.headers.get("warning"), '110 - "Response is stale; official source refresh failed"');
+    const gdpBody = await gdp.json();
+    assert.equal(gdpBody.meta.stale, true);
+    assert.equal(gdpBody.meta.indicator.upstream.aggregate, 5932);
+    assert.equal(gdpBody.meta.indicator.upstream.variable, 6561);
+    assert.equal(gdpBody.data.at(-1).period, "2026-Q1");
+    assert.equal(gdpBody.data.at(-1).value, 1.8);
+  });
+});
