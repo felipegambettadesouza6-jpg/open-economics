@@ -1,0 +1,1276 @@
+{
+  "generated_from": [
+    "open-economics-real-demand-v1",
+    "open-economics-v2-semantic-router"
+  ],
+  "ordering_rule": "Demand weight and benchmark failures rank concepts; institutions are attached only after the need is selected.",
+  "priorities": [
+    {
+      "concept_id": "electricity-generation",
+      "domain": "energy",
+      "demand_weight": 2,
+      "benchmark_tasks": 7,
+      "failed_tasks": 0,
+      "failure_weight": 0,
+      "acceptable_official_sources": [
+        "ANEEL",
+        "ONS",
+        "EPE"
+      ],
+      "next_constraint": "source-integration",
+      "priority_score": 14
+    },
+    {
+      "concept_id": "listed-company-financials",
+      "domain": "markets",
+      "demand_weight": 2,
+      "benchmark_tasks": 8,
+      "failed_tasks": 0,
+      "failure_weight": 0,
+      "acceptable_official_sources": [
+        "CVM"
+      ],
+      "next_constraint": "source-integration",
+      "priority_score": 14
+    },
+    {
+      "concept_id": "oil-gas-production",
+      "domain": "energy",
+      "demand_weight": 2,
+      "benchmark_tasks": 8,
+      "failed_tasks": 0,
+      "failure_weight": 0,
+      "acceptable_official_sources": [
+        "ANP"
+      ],
+      "next_constraint": "source-integration",
+      "priority_score": 14
+    },
+    {
+      "concept_id": "central-government-balance",
+      "domain": "fiscal-national",
+      "demand_weight": 3,
+      "benchmark_tasks": 7,
+      "failed_tasks": 0,
+      "failure_weight": 0,
+      "acceptable_official_sources": [
+        "Tesouro Nacional"
+      ],
+      "next_constraint": "dataset-validation",
+      "priority_score": 9
+    },
+    {
+      "concept_id": "credit-delinquency",
+      "domain": "credit",
+      "demand_weight": 3,
+      "benchmark_tasks": 9,
+      "failed_tasks": 0,
+      "failure_weight": 0,
+      "acceptable_official_sources": [
+        "BCB"
+      ],
+      "next_constraint": "dataset-validation",
+      "priority_score": 9
+    },
+    {
+      "concept_id": "credit-interest",
+      "domain": "credit",
+      "demand_weight": 3,
+      "benchmark_tasks": 8,
+      "failed_tasks": 0,
+      "failure_weight": 0,
+      "acceptable_official_sources": [
+        "BCB"
+      ],
+      "next_constraint": "dataset-validation",
+      "priority_score": 9
+    },
+    {
+      "concept_id": "credit-stock",
+      "domain": "credit",
+      "demand_weight": 3,
+      "benchmark_tasks": 7,
+      "failed_tasks": 0,
+      "failure_weight": 0,
+      "acceptable_official_sources": [
+        "BCB"
+      ],
+      "next_constraint": "dataset-validation",
+      "priority_score": 9
+    },
+    {
+      "concept_id": "crop-harvest",
+      "domain": "agriculture",
+      "demand_weight": 3,
+      "benchmark_tasks": 8,
+      "failed_tasks": 0,
+      "failure_weight": 0,
+      "acceptable_official_sources": [
+        "IBGE",
+        "CONAB"
+      ],
+      "next_constraint": "dataset-validation",
+      "priority_score": 9
+    },
+    {
+      "concept_id": "current-account",
+      "domain": "external",
+      "demand_weight": 3,
+      "benchmark_tasks": 7,
+      "failed_tasks": 0,
+      "failure_weight": 0,
+      "acceptable_official_sources": [
+        "BCB"
+      ],
+      "next_constraint": "dataset-validation",
+      "priority_score": 9
+    },
+    {
+      "concept_id": "employment-level",
+      "domain": "labor",
+      "demand_weight": 3,
+      "benchmark_tasks": 7,
+      "failed_tasks": 0,
+      "failure_weight": 0,
+      "acceptable_official_sources": [
+        "IBGE"
+      ],
+      "next_constraint": "dataset-validation",
+      "priority_score": 9
+    },
+    {
+      "concept_id": "exchange-rates",
+      "domain": "monetary",
+      "demand_weight": 3,
+      "benchmark_tasks": 7,
+      "failed_tasks": 0,
+      "failure_weight": 0,
+      "acceptable_official_sources": [
+        "BCB"
+      ],
+      "next_constraint": "dataset-validation",
+      "priority_score": 9
+    },
+    {
+      "concept_id": "exports",
+      "domain": "external",
+      "demand_weight": 3,
+      "benchmark_tasks": 8,
+      "failed_tasks": 0,
+      "failure_weight": 0,
+      "acceptable_official_sources": [
+        "MDIC"
+      ],
+      "next_constraint": "dataset-validation",
+      "priority_score": 9
+    },
+    {
+      "concept_id": "federal-expenditure",
+      "domain": "fiscal-national",
+      "demand_weight": 3,
+      "benchmark_tasks": 7,
+      "failed_tasks": 0,
+      "failure_weight": 0,
+      "acceptable_official_sources": [
+        "Tesouro Nacional"
+      ],
+      "next_constraint": "dataset-validation",
+      "priority_score": 9
+    },
+    {
+      "concept_id": "federal-revenue",
+      "domain": "fiscal-national",
+      "demand_weight": 3,
+      "benchmark_tasks": 8,
+      "failed_tasks": 0,
+      "failure_weight": 0,
+      "acceptable_official_sources": [
+        "Receita Federal",
+        "Tesouro Nacional"
+      ],
+      "next_constraint": "dataset-validation",
+      "priority_score": 9
+    },
+    {
+      "concept_id": "focus-expectations",
+      "domain": "monetary",
+      "demand_weight": 3,
+      "benchmark_tasks": 9,
+      "failed_tasks": 0,
+      "failure_weight": 0,
+      "acceptable_official_sources": [
+        "BCB"
+      ],
+      "next_constraint": "dataset-validation",
+      "priority_score": 9
+    },
+    {
+      "concept_id": "foreign-direct-investment",
+      "domain": "external",
+      "demand_weight": 3,
+      "benchmark_tasks": 7,
+      "failed_tasks": 0,
+      "failure_weight": 0,
+      "acceptable_official_sources": [
+        "BCB"
+      ],
+      "next_constraint": "dataset-validation",
+      "priority_score": 9
+    },
+    {
+      "concept_id": "formal-job-flow",
+      "domain": "labor",
+      "demand_weight": 3,
+      "benchmark_tasks": 8,
+      "failed_tasks": 0,
+      "failure_weight": 0,
+      "acceptable_official_sources": [
+        "MTE"
+      ],
+      "next_constraint": "dataset-validation",
+      "priority_score": 9
+    },
+    {
+      "concept_id": "formal-job-stock",
+      "domain": "labor",
+      "demand_weight": 3,
+      "benchmark_tasks": 7,
+      "failed_tasks": 0,
+      "failure_weight": 0,
+      "acceptable_official_sources": [
+        "MTE"
+      ],
+      "next_constraint": "dataset-validation",
+      "priority_score": 9
+    },
+    {
+      "concept_id": "fuel-prices",
+      "domain": "energy",
+      "demand_weight": 3,
+      "benchmark_tasks": 7,
+      "failed_tasks": 0,
+      "failure_weight": 0,
+      "acceptable_official_sources": [
+        "ANP"
+      ],
+      "next_constraint": "dataset-validation",
+      "priority_score": 9
+    },
+    {
+      "concept_id": "gdp-expenditure",
+      "domain": "activity",
+      "demand_weight": 3,
+      "benchmark_tasks": 8,
+      "failed_tasks": 0,
+      "failure_weight": 0,
+      "acceptable_official_sources": [
+        "IBGE"
+      ],
+      "next_constraint": "dataset-validation",
+      "priority_score": 9
+    },
+    {
+      "concept_id": "gdp-growth",
+      "domain": "activity",
+      "demand_weight": 3,
+      "benchmark_tasks": 9,
+      "failed_tasks": 0,
+      "failure_weight": 0,
+      "acceptable_official_sources": [
+        "IBGE"
+      ],
+      "next_constraint": "dataset-validation",
+      "priority_score": 9
+    },
+    {
+      "concept_id": "gdp-level",
+      "domain": "activity",
+      "demand_weight": 3,
+      "benchmark_tasks": 7,
+      "failed_tasks": 0,
+      "failure_weight": 0,
+      "acceptable_official_sources": [
+        "IBGE"
+      ],
+      "next_constraint": "dataset-validation",
+      "priority_score": 9
+    },
+    {
+      "concept_id": "gross-public-debt",
+      "domain": "fiscal-national",
+      "demand_weight": 3,
+      "benchmark_tasks": 7,
+      "failed_tasks": 0,
+      "failure_weight": 0,
+      "acceptable_official_sources": [
+        "BCB"
+      ],
+      "next_constraint": "dataset-validation",
+      "priority_score": 9
+    },
+    {
+      "concept_id": "household-debt-service",
+      "domain": "credit",
+      "demand_weight": 3,
+      "benchmark_tasks": 7,
+      "failed_tasks": 0,
+      "failure_weight": 0,
+      "acceptable_official_sources": [
+        "BCB"
+      ],
+      "next_constraint": "dataset-validation",
+      "priority_score": 9
+    },
+    {
+      "concept_id": "household-income",
+      "domain": "population-income",
+      "demand_weight": 3,
+      "benchmark_tasks": 7,
+      "failed_tasks": 0,
+      "failure_weight": 0,
+      "acceptable_official_sources": [
+        "IBGE"
+      ],
+      "next_constraint": "dataset-validation",
+      "priority_score": 9
+    },
+    {
+      "concept_id": "ibc-br",
+      "domain": "activity",
+      "demand_weight": 3,
+      "benchmark_tasks": 7,
+      "failed_tasks": 0,
+      "failure_weight": 0,
+      "acceptable_official_sources": [
+        "BCB"
+      ],
+      "next_constraint": "dataset-validation",
+      "priority_score": 9
+    },
+    {
+      "concept_id": "imports",
+      "domain": "external",
+      "demand_weight": 3,
+      "benchmark_tasks": 7,
+      "failed_tasks": 0,
+      "failure_weight": 0,
+      "acceptable_official_sources": [
+        "MDIC"
+      ],
+      "next_constraint": "dataset-validation",
+      "priority_score": 9
+    },
+    {
+      "concept_id": "industrial-production",
+      "domain": "activity",
+      "demand_weight": 3,
+      "benchmark_tasks": 8,
+      "failed_tasks": 0,
+      "failure_weight": 0,
+      "acceptable_official_sources": [
+        "IBGE"
+      ],
+      "next_constraint": "dataset-validation",
+      "priority_score": 9
+    },
+    {
+      "concept_id": "international-reserves",
+      "domain": "external",
+      "demand_weight": 3,
+      "benchmark_tasks": 7,
+      "failed_tasks": 0,
+      "failure_weight": 0,
+      "acceptable_official_sources": [
+        "BCB"
+      ],
+      "next_constraint": "dataset-validation",
+      "priority_score": 9
+    },
+    {
+      "concept_id": "ipca-components",
+      "domain": "prices",
+      "demand_weight": 3,
+      "benchmark_tasks": 8,
+      "failed_tasks": 0,
+      "failure_weight": 0,
+      "acceptable_official_sources": [
+        "IBGE"
+      ],
+      "next_constraint": "dataset-validation",
+      "priority_score": 9
+    },
+    {
+      "concept_id": "ipca-headline",
+      "domain": "prices",
+      "demand_weight": 3,
+      "benchmark_tasks": 11,
+      "failed_tasks": 0,
+      "failure_weight": 0,
+      "acceptable_official_sources": [
+        "IBGE"
+      ],
+      "next_constraint": "dataset-validation",
+      "priority_score": 9
+    },
+    {
+      "concept_id": "population",
+      "domain": "population-income",
+      "demand_weight": 3,
+      "benchmark_tasks": 8,
+      "failed_tasks": 0,
+      "failure_weight": 0,
+      "acceptable_official_sources": [
+        "IBGE"
+      ],
+      "next_constraint": "dataset-validation",
+      "priority_score": 9
+    },
+    {
+      "concept_id": "public-primary-balance",
+      "domain": "fiscal-national",
+      "demand_weight": 3,
+      "benchmark_tasks": 7,
+      "failed_tasks": 0,
+      "failure_weight": 0,
+      "acceptable_official_sources": [
+        "BCB",
+        "Tesouro Nacional"
+      ],
+      "next_constraint": "dataset-validation",
+      "priority_score": 9
+    },
+    {
+      "concept_id": "real-earnings",
+      "domain": "labor",
+      "demand_weight": 3,
+      "benchmark_tasks": 8,
+      "failed_tasks": 0,
+      "failure_weight": 0,
+      "acceptable_official_sources": [
+        "IBGE"
+      ],
+      "next_constraint": "dataset-validation",
+      "priority_score": 9
+    },
+    {
+      "concept_id": "retail-sales",
+      "domain": "activity",
+      "demand_weight": 3,
+      "benchmark_tasks": 7,
+      "failed_tasks": 0,
+      "failure_weight": 0,
+      "acceptable_official_sources": [
+        "IBGE"
+      ],
+      "next_constraint": "dataset-validation",
+      "priority_score": 9
+    },
+    {
+      "concept_id": "selic-target",
+      "domain": "monetary",
+      "demand_weight": 3,
+      "benchmark_tasks": 9,
+      "failed_tasks": 0,
+      "failure_weight": 0,
+      "acceptable_official_sources": [
+        "BCB"
+      ],
+      "next_constraint": "dataset-validation",
+      "priority_score": 9
+    },
+    {
+      "concept_id": "services-volume",
+      "domain": "activity",
+      "demand_weight": 3,
+      "benchmark_tasks": 7,
+      "failed_tasks": 0,
+      "failure_weight": 0,
+      "acceptable_official_sources": [
+        "IBGE"
+      ],
+      "next_constraint": "dataset-validation",
+      "priority_score": 9
+    },
+    {
+      "concept_id": "subnational-expenditure",
+      "domain": "fiscal-subnational",
+      "demand_weight": 3,
+      "benchmark_tasks": 7,
+      "failed_tasks": 0,
+      "failure_weight": 0,
+      "acceptable_official_sources": [
+        "Tesouro Nacional"
+      ],
+      "next_constraint": "dataset-validation",
+      "priority_score": 9
+    },
+    {
+      "concept_id": "subnational-revenue",
+      "domain": "fiscal-subnational",
+      "demand_weight": 3,
+      "benchmark_tasks": 8,
+      "failed_tasks": 0,
+      "failure_weight": 0,
+      "acceptable_official_sources": [
+        "Tesouro Nacional"
+      ],
+      "next_constraint": "dataset-validation",
+      "priority_score": 9
+    },
+    {
+      "concept_id": "trade-balance",
+      "domain": "external",
+      "demand_weight": 3,
+      "benchmark_tasks": 7,
+      "failed_tasks": 0,
+      "failure_weight": 0,
+      "acceptable_official_sources": [
+        "MDIC",
+        "BCB"
+      ],
+      "next_constraint": "dataset-validation",
+      "priority_score": 9
+    },
+    {
+      "concept_id": "unemployment",
+      "domain": "labor",
+      "demand_weight": 3,
+      "benchmark_tasks": 8,
+      "failed_tasks": 0,
+      "failure_weight": 0,
+      "acceptable_official_sources": [
+        "IBGE"
+      ],
+      "next_constraint": "dataset-validation",
+      "priority_score": 9
+    },
+    {
+      "concept_id": "capital-market-investors",
+      "domain": "markets",
+      "demand_weight": 1,
+      "benchmark_tasks": 7,
+      "failed_tasks": 0,
+      "failure_weight": 0,
+      "acceptable_official_sources": [
+        "CVM",
+        "B3"
+      ],
+      "next_constraint": "source-integration",
+      "priority_score": 7
+    },
+    {
+      "concept_id": "deforestation",
+      "domain": "environment",
+      "demand_weight": 1,
+      "benchmark_tasks": 7,
+      "failed_tasks": 0,
+      "failure_weight": 0,
+      "acceptable_official_sources": [
+        "INPE"
+      ],
+      "next_constraint": "source-integration",
+      "priority_score": 7
+    },
+    {
+      "concept_id": "energy-balance",
+      "domain": "energy",
+      "demand_weight": 1,
+      "benchmark_tasks": 7,
+      "failed_tasks": 0,
+      "failure_weight": 0,
+      "acceptable_official_sources": [
+        "EPE"
+      ],
+      "next_constraint": "source-integration",
+      "priority_score": 7
+    },
+    {
+      "concept_id": "greenhouse-emissions",
+      "domain": "environment",
+      "demand_weight": 1,
+      "benchmark_tasks": 7,
+      "failed_tasks": 0,
+      "failure_weight": 0,
+      "acceptable_official_sources": [
+        "MCTI"
+      ],
+      "next_constraint": "source-integration",
+      "priority_score": 7
+    },
+    {
+      "concept_id": "public-offerings",
+      "domain": "markets",
+      "demand_weight": 1,
+      "benchmark_tasks": 7,
+      "failed_tasks": 0,
+      "failure_weight": 0,
+      "acceptable_official_sources": [
+        "CVM"
+      ],
+      "next_constraint": "source-integration",
+      "priority_score": 7
+    },
+    {
+      "concept_id": "terms-of-trade",
+      "domain": "external",
+      "demand_weight": 1,
+      "benchmark_tasks": 7,
+      "failed_tasks": 0,
+      "failure_weight": 0,
+      "acceptable_official_sources": [
+        "FUNCEX",
+        "IPEA"
+      ],
+      "next_constraint": "source-integration",
+      "priority_score": 7
+    },
+    {
+      "concept_id": "administered-prices",
+      "domain": "prices",
+      "demand_weight": 2,
+      "benchmark_tasks": 8,
+      "failed_tasks": 0,
+      "failure_weight": 0,
+      "acceptable_official_sources": [
+        "BCB",
+        "IBGE"
+      ],
+      "next_constraint": "dataset-validation",
+      "priority_score": 6
+    },
+    {
+      "concept_id": "agricultural-production",
+      "domain": "agriculture",
+      "demand_weight": 2,
+      "benchmark_tasks": 7,
+      "failed_tasks": 0,
+      "failure_weight": 0,
+      "acceptable_official_sources": [
+        "IBGE"
+      ],
+      "next_constraint": "dataset-validation",
+      "priority_score": 6
+    },
+    {
+      "concept_id": "cdi",
+      "domain": "monetary",
+      "demand_weight": 2,
+      "benchmark_tasks": 7,
+      "failed_tasks": 0,
+      "failure_weight": 0,
+      "acceptable_official_sources": [
+        "BCB",
+        "B3"
+      ],
+      "next_constraint": "dataset-validation",
+      "priority_score": 6
+    },
+    {
+      "concept_id": "construction-activity",
+      "domain": "housing",
+      "demand_weight": 2,
+      "benchmark_tasks": 7,
+      "failed_tasks": 0,
+      "failure_weight": 0,
+      "acceptable_official_sources": [
+        "IBGE"
+      ],
+      "next_constraint": "dataset-validation",
+      "priority_score": 6
+    },
+    {
+      "concept_id": "construction-costs",
+      "domain": "prices",
+      "demand_weight": 2,
+      "benchmark_tasks": 7,
+      "failed_tasks": 0,
+      "failure_weight": 0,
+      "acceptable_official_sources": [
+        "IBGE"
+      ],
+      "next_constraint": "dataset-validation",
+      "priority_score": 6
+    },
+    {
+      "concept_id": "credit-concessions",
+      "domain": "credit",
+      "demand_weight": 2,
+      "benchmark_tasks": 7,
+      "failed_tasks": 0,
+      "failure_weight": 0,
+      "acceptable_official_sources": [
+        "BCB"
+      ],
+      "next_constraint": "dataset-validation",
+      "priority_score": 6
+    },
+    {
+      "concept_id": "credit-spreads",
+      "domain": "credit",
+      "demand_weight": 2,
+      "benchmark_tasks": 7,
+      "failed_tasks": 0,
+      "failure_weight": 0,
+      "acceptable_official_sources": [
+        "BCB"
+      ],
+      "next_constraint": "dataset-validation",
+      "priority_score": 6
+    },
+    {
+      "concept_id": "credit-to-gdp",
+      "domain": "credit",
+      "demand_weight": 2,
+      "benchmark_tasks": 7,
+      "failed_tasks": 0,
+      "failure_weight": 0,
+      "acceptable_official_sources": [
+        "BCB"
+      ],
+      "next_constraint": "dataset-validation",
+      "priority_score": 6
+    },
+    {
+      "concept_id": "earnings-mass",
+      "domain": "labor",
+      "demand_weight": 2,
+      "benchmark_tasks": 7,
+      "failed_tasks": 0,
+      "failure_weight": 0,
+      "acceptable_official_sources": [
+        "IBGE"
+      ],
+      "next_constraint": "dataset-validation",
+      "priority_score": 6
+    },
+    {
+      "concept_id": "electricity-consumption",
+      "domain": "energy",
+      "demand_weight": 2,
+      "benchmark_tasks": 8,
+      "failed_tasks": 0,
+      "failure_weight": 0,
+      "acceptable_official_sources": [
+        "EPE"
+      ],
+      "next_constraint": "dataset-validation",
+      "priority_score": 6
+    },
+    {
+      "concept_id": "external-debt",
+      "domain": "external",
+      "demand_weight": 2,
+      "benchmark_tasks": 7,
+      "failed_tasks": 0,
+      "failure_weight": 0,
+      "acceptable_official_sources": [
+        "BCB"
+      ],
+      "next_constraint": "dataset-validation",
+      "priority_score": 6
+    },
+    {
+      "concept_id": "federal-debt-profile",
+      "domain": "fiscal-national",
+      "demand_weight": 2,
+      "benchmark_tasks": 8,
+      "failed_tasks": 0,
+      "failure_weight": 0,
+      "acceptable_official_sources": [
+        "Tesouro Nacional"
+      ],
+      "next_constraint": "dataset-validation",
+      "priority_score": 6
+    },
+    {
+      "concept_id": "financial-institutions",
+      "domain": "markets",
+      "demand_weight": 2,
+      "benchmark_tasks": 7,
+      "failed_tasks": 0,
+      "failure_weight": 0,
+      "acceptable_official_sources": [
+        "BCB"
+      ],
+      "next_constraint": "dataset-validation",
+      "priority_score": 6
+    },
+    {
+      "concept_id": "gdp-industry",
+      "domain": "activity",
+      "demand_weight": 2,
+      "benchmark_tasks": 7,
+      "failed_tasks": 0,
+      "failure_weight": 0,
+      "acceptable_official_sources": [
+        "IBGE"
+      ],
+      "next_constraint": "dataset-validation",
+      "priority_score": 6
+    },
+    {
+      "concept_id": "health-education-spending",
+      "domain": "fiscal-subnational",
+      "demand_weight": 2,
+      "benchmark_tasks": 7,
+      "failed_tasks": 0,
+      "failure_weight": 0,
+      "acceptable_official_sources": [
+        "Tesouro Nacional",
+        "FNDE"
+      ],
+      "next_constraint": "dataset-validation",
+      "priority_score": 6
+    },
+    {
+      "concept_id": "household-consumption",
+      "domain": "population-income",
+      "demand_weight": 2,
+      "benchmark_tasks": 7,
+      "failed_tasks": 0,
+      "failure_weight": 0,
+      "acceptable_official_sources": [
+        "IBGE"
+      ],
+      "next_constraint": "dataset-validation",
+      "priority_score": 6
+    },
+    {
+      "concept_id": "housing-credit",
+      "domain": "credit",
+      "demand_weight": 2,
+      "benchmark_tasks": 7,
+      "failed_tasks": 0,
+      "failure_weight": 0,
+      "acceptable_official_sources": [
+        "BCB"
+      ],
+      "next_constraint": "dataset-validation",
+      "priority_score": 6
+    },
+    {
+      "concept_id": "housing-rent",
+      "domain": "housing",
+      "demand_weight": 2,
+      "benchmark_tasks": 8,
+      "failed_tasks": 0,
+      "failure_weight": 0,
+      "acceptable_official_sources": [
+        "IBGE"
+      ],
+      "next_constraint": "dataset-validation",
+      "priority_score": 6
+    },
+    {
+      "concept_id": "income-inequality",
+      "domain": "population-income",
+      "demand_weight": 2,
+      "benchmark_tasks": 8,
+      "failed_tasks": 0,
+      "failure_weight": 0,
+      "acceptable_official_sources": [
+        "IBGE",
+        "IPEA"
+      ],
+      "next_constraint": "dataset-validation",
+      "priority_score": 6
+    },
+    {
+      "concept_id": "inflation-diffusion",
+      "domain": "prices",
+      "demand_weight": 2,
+      "benchmark_tasks": 7,
+      "failed_tasks": 0,
+      "failure_weight": 0,
+      "acceptable_official_sources": [
+        "BCB",
+        "IBGE"
+      ],
+      "next_constraint": "dataset-validation",
+      "priority_score": 6
+    },
+    {
+      "concept_id": "inflation-target",
+      "domain": "monetary",
+      "demand_weight": 2,
+      "benchmark_tasks": 7,
+      "failed_tasks": 0,
+      "failure_weight": 0,
+      "acceptable_official_sources": [
+        "CMN",
+        "BCB"
+      ],
+      "next_constraint": "dataset-validation",
+      "priority_score": 6
+    },
+    {
+      "concept_id": "informality",
+      "domain": "labor",
+      "demand_weight": 2,
+      "benchmark_tasks": 7,
+      "failed_tasks": 0,
+      "failure_weight": 0,
+      "acceptable_official_sources": [
+        "IBGE"
+      ],
+      "next_constraint": "dataset-validation",
+      "priority_score": 6
+    },
+    {
+      "concept_id": "inpc",
+      "domain": "prices",
+      "demand_weight": 2,
+      "benchmark_tasks": 7,
+      "failed_tasks": 0,
+      "failure_weight": 0,
+      "acceptable_official_sources": [
+        "IBGE"
+      ],
+      "next_constraint": "dataset-validation",
+      "priority_score": 6
+    },
+    {
+      "concept_id": "intergovernmental-transfers",
+      "domain": "fiscal-subnational",
+      "demand_weight": 2,
+      "benchmark_tasks": 7,
+      "failed_tasks": 0,
+      "failure_weight": 0,
+      "acceptable_official_sources": [
+        "Tesouro Nacional"
+      ],
+      "next_constraint": "dataset-validation",
+      "priority_score": 6
+    },
+    {
+      "concept_id": "investment-funds",
+      "domain": "markets",
+      "demand_weight": 2,
+      "benchmark_tasks": 8,
+      "failed_tasks": 0,
+      "failure_weight": 0,
+      "acceptable_official_sources": [
+        "CVM"
+      ],
+      "next_constraint": "dataset-validation",
+      "priority_score": 6
+    },
+    {
+      "concept_id": "ipca-regional",
+      "domain": "prices",
+      "demand_weight": 2,
+      "benchmark_tasks": 7,
+      "failed_tasks": 0,
+      "failure_weight": 0,
+      "acceptable_official_sources": [
+        "IBGE"
+      ],
+      "next_constraint": "dataset-validation",
+      "priority_score": 6
+    },
+    {
+      "concept_id": "ipca15",
+      "domain": "prices",
+      "demand_weight": 2,
+      "benchmark_tasks": 7,
+      "failed_tasks": 0,
+      "failure_weight": 0,
+      "acceptable_official_sources": [
+        "IBGE"
+      ],
+      "next_constraint": "dataset-validation",
+      "priority_score": 6
+    },
+    {
+      "concept_id": "labor-force-participation",
+      "domain": "labor",
+      "demand_weight": 2,
+      "benchmark_tasks": 7,
+      "failed_tasks": 0,
+      "failure_weight": 0,
+      "acceptable_official_sources": [
+        "IBGE"
+      ],
+      "next_constraint": "dataset-validation",
+      "priority_score": 6
+    },
+    {
+      "concept_id": "livestock-production",
+      "domain": "agriculture",
+      "demand_weight": 2,
+      "benchmark_tasks": 7,
+      "failed_tasks": 0,
+      "failure_weight": 0,
+      "acceptable_official_sources": [
+        "IBGE"
+      ],
+      "next_constraint": "dataset-validation",
+      "priority_score": 6
+    },
+    {
+      "concept_id": "monetary-aggregates",
+      "domain": "monetary",
+      "demand_weight": 2,
+      "benchmark_tasks": 7,
+      "failed_tasks": 0,
+      "failure_weight": 0,
+      "acceptable_official_sources": [
+        "BCB"
+      ],
+      "next_constraint": "dataset-validation",
+      "priority_score": 6
+    },
+    {
+      "concept_id": "municipal-gdp",
+      "domain": "activity",
+      "demand_weight": 2,
+      "benchmark_tasks": 7,
+      "failed_tasks": 0,
+      "failure_weight": 0,
+      "acceptable_official_sources": [
+        "IBGE"
+      ],
+      "next_constraint": "dataset-validation",
+      "priority_score": 6
+    },
+    {
+      "concept_id": "net-public-debt",
+      "domain": "fiscal-national",
+      "demand_weight": 2,
+      "benchmark_tasks": 7,
+      "failed_tasks": 0,
+      "failure_weight": 0,
+      "acceptable_official_sources": [
+        "BCB"
+      ],
+      "next_constraint": "dataset-validation",
+      "priority_score": 6
+    },
+    {
+      "concept_id": "personnel-spending",
+      "domain": "fiscal-subnational",
+      "demand_weight": 2,
+      "benchmark_tasks": 8,
+      "failed_tasks": 0,
+      "failure_weight": 0,
+      "acceptable_official_sources": [
+        "Tesouro Nacional"
+      ],
+      "next_constraint": "dataset-validation",
+      "priority_score": 6
+    },
+    {
+      "concept_id": "pix-statistics",
+      "domain": "markets",
+      "demand_weight": 2,
+      "benchmark_tasks": 7,
+      "failed_tasks": 0,
+      "failure_weight": 0,
+      "acceptable_official_sources": [
+        "BCB"
+      ],
+      "next_constraint": "dataset-validation",
+      "priority_score": 6
+    },
+    {
+      "concept_id": "population-projections",
+      "domain": "population-income",
+      "demand_weight": 2,
+      "benchmark_tasks": 8,
+      "failed_tasks": 0,
+      "failure_weight": 0,
+      "acceptable_official_sources": [
+        "IBGE"
+      ],
+      "next_constraint": "dataset-validation",
+      "priority_score": 6
+    },
+    {
+      "concept_id": "portfolio-flows",
+      "domain": "external",
+      "demand_weight": 2,
+      "benchmark_tasks": 7,
+      "failed_tasks": 0,
+      "failure_weight": 0,
+      "acceptable_official_sources": [
+        "BCB"
+      ],
+      "next_constraint": "dataset-validation",
+      "priority_score": 6
+    },
+    {
+      "concept_id": "poverty",
+      "domain": "population-income",
+      "demand_weight": 2,
+      "benchmark_tasks": 8,
+      "failed_tasks": 0,
+      "failure_weight": 0,
+      "acceptable_official_sources": [
+        "IBGE",
+        "IPEA"
+      ],
+      "next_constraint": "dataset-validation",
+      "priority_score": 6
+    },
+    {
+      "concept_id": "producer-prices",
+      "domain": "prices",
+      "demand_weight": 2,
+      "benchmark_tasks": 7,
+      "failed_tasks": 0,
+      "failure_weight": 0,
+      "acceptable_official_sources": [
+        "IBGE"
+      ],
+      "next_constraint": "dataset-validation",
+      "priority_score": 6
+    },
+    {
+      "concept_id": "rural-credit",
+      "domain": "agriculture",
+      "demand_weight": 2,
+      "benchmark_tasks": 7,
+      "failed_tasks": 0,
+      "failure_weight": 0,
+      "acceptable_official_sources": [
+        "BCB"
+      ],
+      "next_constraint": "dataset-validation",
+      "priority_score": 6
+    },
+    {
+      "concept_id": "selic-effective",
+      "domain": "monetary",
+      "demand_weight": 2,
+      "benchmark_tasks": 7,
+      "failed_tasks": 0,
+      "failure_weight": 0,
+      "acceptable_official_sources": [
+        "BCB"
+      ],
+      "next_constraint": "dataset-validation",
+      "priority_score": 6
+    },
+    {
+      "concept_id": "social-security-balance",
+      "domain": "fiscal-national",
+      "demand_weight": 2,
+      "benchmark_tasks": 8,
+      "failed_tasks": 0,
+      "failure_weight": 0,
+      "acceptable_official_sources": [
+        "Previdência Social",
+        "Tesouro Nacional"
+      ],
+      "next_constraint": "dataset-validation",
+      "priority_score": 6
+    },
+    {
+      "concept_id": "state-gdp",
+      "domain": "activity",
+      "demand_weight": 2,
+      "benchmark_tasks": 8,
+      "failed_tasks": 0,
+      "failure_weight": 0,
+      "acceptable_official_sources": [
+        "IBGE"
+      ],
+      "next_constraint": "dataset-validation",
+      "priority_score": 6
+    },
+    {
+      "concept_id": "subnational-debt",
+      "domain": "fiscal-subnational",
+      "demand_weight": 2,
+      "benchmark_tasks": 7,
+      "failed_tasks": 0,
+      "failure_weight": 0,
+      "acceptable_official_sources": [
+        "Tesouro Nacional"
+      ],
+      "next_constraint": "dataset-validation",
+      "priority_score": 6
+    },
+    {
+      "concept_id": "underutilization",
+      "domain": "labor",
+      "demand_weight": 2,
+      "benchmark_tasks": 7,
+      "failed_tasks": 0,
+      "failure_weight": 0,
+      "acceptable_official_sources": [
+        "IBGE"
+      ],
+      "next_constraint": "dataset-validation",
+      "priority_score": 6
+    },
+    {
+      "concept_id": "wage-gaps",
+      "domain": "labor",
+      "demand_weight": 2,
+      "benchmark_tasks": 7,
+      "failed_tasks": 0,
+      "failure_weight": 0,
+      "acceptable_official_sources": [
+        "IBGE",
+        "MTE"
+      ],
+      "next_constraint": "dataset-validation",
+      "priority_score": 6
+    },
+    {
+      "concept_id": "yield-curve",
+      "domain": "monetary",
+      "demand_weight": 2,
+      "benchmark_tasks": 7,
+      "failed_tasks": 0,
+      "failure_weight": 0,
+      "acceptable_official_sources": [
+        "BCB",
+        "ANBIMA"
+      ],
+      "next_constraint": "dataset-validation",
+      "priority_score": 6
+    },
+    {
+      "concept_id": "consumer-durable-ownership",
+      "domain": "population-income",
+      "demand_weight": 1,
+      "benchmark_tasks": 7,
+      "failed_tasks": 0,
+      "failure_weight": 0,
+      "acceptable_official_sources": [
+        "IBGE"
+      ],
+      "next_constraint": "dataset-validation",
+      "priority_score": 3
+    },
+    {
+      "concept_id": "food-supply-stocks",
+      "domain": "agriculture",
+      "demand_weight": 1,
+      "benchmark_tasks": 7,
+      "failed_tasks": 0,
+      "failure_weight": 0,
+      "acceptable_official_sources": [
+        "CONAB",
+        "IBGE"
+      ],
+      "next_constraint": "dataset-validation",
+      "priority_score": 3
+    },
+    {
+      "concept_id": "housing-stock",
+      "domain": "housing",
+      "demand_weight": 1,
+      "benchmark_tasks": 7,
+      "failed_tasks": 0,
+      "failure_weight": 0,
+      "acceptable_official_sources": [
+        "IBGE"
+      ],
+      "next_constraint": "dataset-validation",
+      "priority_score": 3
+    }
+  ]
+}

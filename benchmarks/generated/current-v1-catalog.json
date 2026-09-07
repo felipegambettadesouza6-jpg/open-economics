@@ -1,0 +1,1273 @@
+[
+  {
+    "id": "br-ipca-monthly",
+    "name": "IPCA — monthly change",
+    "official_name": "IPCA - Variação mensal",
+    "description": "Monthly change in Brazil's official broad consumer price index.",
+    "country": "BR",
+    "geography": "Brazil",
+    "category": "inflation",
+    "category_name": "Inflation",
+    "frequency": "monthly",
+    "unit": "Percent",
+    "unit_symbol": "%",
+    "decimals": 2,
+    "seasonal_adjustment": false,
+    "date_semantics": "Normalized to the first calendar day of the official IBGE reference period; source_date preserves the original IBGE period key.",
+    "coverage_start": "1979-12-01",
+    "status": "active",
+    "provider": "ibge-aggregates",
+    "source_agency": "IBGE",
+    "upstream": {
+      "aggregate": 1737,
+      "variable": 63
+    },
+    "aliases": [
+      "IPCA",
+      "inflation",
+      "inflação",
+      "consumer prices",
+      "63",
+      "1737"
+    ],
+    "notes": null,
+    "transformations": [],
+    "source_url": "https://servicodados.ibge.gov.br/api/v3/agregados/1737/metadados",
+    "license": "IBGE terms of use",
+    "license_url": "https://www.ibge.gov.br/termos-de-uso.html",
+    "links": {
+      "self": "http://benchmark.local/api/v1/indicators/br-ipca-monthly",
+      "observations": "http://benchmark.local/api/v1/indicators/br-ipca-monthly/observations",
+      "latest": "http://benchmark.local/api/v1/indicators/br-ipca-monthly/latest"
+    }
+  },
+  {
+    "id": "br-ipca-12m",
+    "name": "IPCA — 12-month change",
+    "official_name": "IPCA - Variação acumulada em 12 meses",
+    "description": "Change in the IPCA over the trailing twelve months.",
+    "country": "BR",
+    "geography": "Brazil",
+    "category": "inflation",
+    "category_name": "Inflation",
+    "frequency": "monthly",
+    "unit": "Percent",
+    "unit_symbol": "%",
+    "decimals": 2,
+    "seasonal_adjustment": false,
+    "date_semantics": "Normalized to the first calendar day of the official IBGE reference period; source_date preserves the original IBGE period key.",
+    "coverage_start": "1980-11-01",
+    "status": "active",
+    "provider": "ibge-aggregates",
+    "source_agency": "IBGE",
+    "upstream": {
+      "aggregate": 1737,
+      "variable": 2265
+    },
+    "aliases": [
+      "IPCA 12 months",
+      "IPCA 12 meses",
+      "annual inflation",
+      "2265"
+    ],
+    "notes": null,
+    "transformations": [],
+    "source_url": "https://servicodados.ibge.gov.br/api/v3/agregados/1737/metadados",
+    "license": "IBGE terms of use",
+    "license_url": "https://www.ibge.gov.br/termos-de-uso.html",
+    "links": {
+      "self": "http://benchmark.local/api/v1/indicators/br-ipca-12m",
+      "observations": "http://benchmark.local/api/v1/indicators/br-ipca-12m/observations",
+      "latest": "http://benchmark.local/api/v1/indicators/br-ipca-12m/latest"
+    }
+  },
+  {
+    "id": "br-inpc-monthly",
+    "name": "INPC — monthly change",
+    "official_name": "INPC - Variação mensal",
+    "description": "Monthly change in the consumer price index focused on lower-income households.",
+    "country": "BR",
+    "geography": "Brazil",
+    "category": "inflation",
+    "category_name": "Inflation",
+    "frequency": "monthly",
+    "unit": "Percent",
+    "unit_symbol": "%",
+    "decimals": 2,
+    "seasonal_adjustment": false,
+    "date_semantics": "Normalized to the first calendar day of the official IBGE reference period; source_date preserves the original IBGE period key.",
+    "coverage_start": "1979-12-01",
+    "status": "active",
+    "provider": "ibge-aggregates",
+    "source_agency": "IBGE",
+    "upstream": {
+      "aggregate": 1736,
+      "variable": 44
+    },
+    "aliases": [
+      "INPC",
+      "consumer prices",
+      "inflação",
+      "44",
+      "1736"
+    ],
+    "notes": null,
+    "transformations": [],
+    "source_url": "https://servicodados.ibge.gov.br/api/v3/agregados/1736/metadados",
+    "license": "IBGE terms of use",
+    "license_url": "https://www.ibge.gov.br/termos-de-uso.html",
+    "links": {
+      "self": "http://benchmark.local/api/v1/indicators/br-inpc-monthly",
+      "observations": "http://benchmark.local/api/v1/indicators/br-inpc-monthly/observations",
+      "latest": "http://benchmark.local/api/v1/indicators/br-inpc-monthly/latest"
+    }
+  },
+  {
+    "id": "br-inpc-12m",
+    "name": "INPC — 12-month change",
+    "official_name": "INPC - Variação acumulada em 12 meses",
+    "description": "Change in the INPC over the trailing twelve months.",
+    "country": "BR",
+    "geography": "Brazil",
+    "category": "inflation",
+    "category_name": "Inflation",
+    "frequency": "monthly",
+    "unit": "Percent",
+    "unit_symbol": "%",
+    "decimals": 2,
+    "seasonal_adjustment": false,
+    "date_semantics": "Normalized to the first calendar day of the official IBGE reference period; source_date preserves the original IBGE period key.",
+    "coverage_start": "1980-11-01",
+    "status": "active",
+    "provider": "ibge-aggregates",
+    "source_agency": "IBGE",
+    "upstream": {
+      "aggregate": 1736,
+      "variable": 2292
+    },
+    "aliases": [
+      "INPC 12 months",
+      "INPC 12 meses",
+      "2292"
+    ],
+    "notes": null,
+    "transformations": [],
+    "source_url": "https://servicodados.ibge.gov.br/api/v3/agregados/1736/metadados",
+    "license": "IBGE terms of use",
+    "license_url": "https://www.ibge.gov.br/termos-de-uso.html",
+    "links": {
+      "self": "http://benchmark.local/api/v1/indicators/br-inpc-12m",
+      "observations": "http://benchmark.local/api/v1/indicators/br-inpc-12m/observations",
+      "latest": "http://benchmark.local/api/v1/indicators/br-inpc-12m/latest"
+    }
+  },
+  {
+    "id": "br-selic-target",
+    "name": "Selic target rate",
+    "official_name": "Taxa de juros - Meta Selic definida pelo Copom",
+    "description": "Policy interest-rate target set by the Monetary Policy Committee (Copom).",
+    "country": "BR",
+    "geography": "Brazil",
+    "category": "interest-rates",
+    "category_name": "Interest rates",
+    "frequency": "daily",
+    "unit": "Percent per year",
+    "unit_symbol": "% p.a.",
+    "decimals": 2,
+    "seasonal_adjustment": false,
+    "date_semantics": "Official BCB observation date.",
+    "coverage_start": "1999-03-05",
+    "status": "active",
+    "provider": "bcb-sgs",
+    "source_agency": "BCB",
+    "upstream": {
+      "seriesCode": 432
+    },
+    "aliases": [
+      "Selic",
+      "Copom",
+      "policy rate",
+      "taxa Selic",
+      "432"
+    ],
+    "notes": null,
+    "transformations": [],
+    "source_url": "https://dadosabertos.bcb.gov.br/dataset?q=432",
+    "license": "Open Data Commons Open Database License (ODbL)",
+    "license_url": "https://opendatacommons.org/licenses/odbl/1-0/",
+    "links": {
+      "self": "http://benchmark.local/api/v1/indicators/br-selic-target",
+      "observations": "http://benchmark.local/api/v1/indicators/br-selic-target/observations",
+      "latest": "http://benchmark.local/api/v1/indicators/br-selic-target/latest"
+    }
+  },
+  {
+    "id": "br-selic-effective",
+    "name": "Effective Selic rate",
+    "official_name": "Taxa de juros - Selic anualizada base 252",
+    "description": "Annualized effective overnight Selic rate on a 252-business-day basis.",
+    "country": "BR",
+    "geography": "Brazil",
+    "category": "interest-rates",
+    "category_name": "Interest rates",
+    "frequency": "daily",
+    "unit": "Percent per year",
+    "unit_symbol": "% p.a.",
+    "decimals": 2,
+    "seasonal_adjustment": false,
+    "date_semantics": "Official BCB observation date.",
+    "coverage_start": "1986-06-04",
+    "status": "active",
+    "provider": "bcb-sgs",
+    "source_agency": "BCB",
+    "upstream": {
+      "seriesCode": 1178
+    },
+    "aliases": [
+      "effective Selic",
+      "Selic efetiva",
+      "overnight rate",
+      "1178"
+    ],
+    "notes": null,
+    "transformations": [],
+    "source_url": "https://dadosabertos.bcb.gov.br/dataset?q=1178",
+    "license": "Open Data Commons Open Database License (ODbL)",
+    "license_url": "https://opendatacommons.org/licenses/odbl/1-0/",
+    "links": {
+      "self": "http://benchmark.local/api/v1/indicators/br-selic-effective",
+      "observations": "http://benchmark.local/api/v1/indicators/br-selic-effective/observations",
+      "latest": "http://benchmark.local/api/v1/indicators/br-selic-effective/latest"
+    }
+  },
+  {
+    "id": "br-selic-monthly",
+    "name": "Selic accumulated in month",
+    "official_name": "Taxa de juros - Selic acumulada no mês",
+    "description": "Cumulative effective Selic rate during each calendar month.",
+    "country": "BR",
+    "geography": "Brazil",
+    "category": "interest-rates",
+    "category_name": "Interest rates",
+    "frequency": "monthly",
+    "unit": "Percent per month",
+    "unit_symbol": "% p.m.",
+    "decimals": 2,
+    "seasonal_adjustment": false,
+    "date_semantics": "Normalized to the first calendar day of the BCB reference month; source_date preserves BCB's published date label.",
+    "coverage_start": "1986-07-01",
+    "status": "active",
+    "provider": "bcb-sgs",
+    "source_agency": "BCB",
+    "upstream": {
+      "seriesCode": 4390
+    },
+    "aliases": [
+      "Selic monthly",
+      "Selic mensal",
+      "4390"
+    ],
+    "notes": null,
+    "transformations": [],
+    "source_url": "https://dadosabertos.bcb.gov.br/dataset?q=4390",
+    "license": "Open Data Commons Open Database License (ODbL)",
+    "license_url": "https://opendatacommons.org/licenses/odbl/1-0/",
+    "links": {
+      "self": "http://benchmark.local/api/v1/indicators/br-selic-monthly",
+      "observations": "http://benchmark.local/api/v1/indicators/br-selic-monthly/observations",
+      "latest": "http://benchmark.local/api/v1/indicators/br-selic-monthly/latest"
+    }
+  },
+  {
+    "id": "br-usd-brl",
+    "name": "US dollar / Brazilian real",
+    "official_name": "Taxa de câmbio - Livre - Dólar americano (venda) - diário",
+    "description": "Daily Brazilian reais per US dollar selling exchange rate.",
+    "country": "BR",
+    "geography": "Brazil",
+    "category": "currencies",
+    "category_name": "Currencies",
+    "frequency": "daily",
+    "unit": "Brazilian reais per US dollar",
+    "unit_symbol": "BRL/USD",
+    "decimals": 4,
+    "seasonal_adjustment": false,
+    "date_semantics": "Official BCB observation date.",
+    "coverage_start": "1984-11-28",
+    "status": "active",
+    "provider": "bcb-sgs",
+    "source_agency": "BCB",
+    "upstream": {
+      "seriesCode": 1
+    },
+    "aliases": [
+      "USD BRL",
+      "dólar",
+      "dollar",
+      "PTAX",
+      "câmbio",
+      "1"
+    ],
+    "notes": null,
+    "transformations": [],
+    "source_url": "https://dadosabertos.bcb.gov.br/dataset?q=1",
+    "license": "Open Data Commons Open Database License (ODbL)",
+    "license_url": "https://opendatacommons.org/licenses/odbl/1-0/",
+    "links": {
+      "self": "http://benchmark.local/api/v1/indicators/br-usd-brl",
+      "observations": "http://benchmark.local/api/v1/indicators/br-usd-brl/observations",
+      "latest": "http://benchmark.local/api/v1/indicators/br-usd-brl/latest"
+    }
+  },
+  {
+    "id": "br-ibc-br",
+    "name": "IBC-Br economic activity index",
+    "official_name": "Índice de Atividade Econômica do Banco Central - IBC-Br",
+    "description": "Monthly coincident indicator of nationwide economic activity.",
+    "country": "BR",
+    "geography": "Brazil",
+    "category": "activity",
+    "category_name": "Economic activity",
+    "frequency": "monthly",
+    "unit": "Index",
+    "unit_symbol": "index",
+    "decimals": 2,
+    "seasonal_adjustment": false,
+    "date_semantics": "Normalized to the first calendar day of the BCB reference month; source_date preserves BCB's published date label.",
+    "coverage_start": "2003-01-01",
+    "status": "active",
+    "provider": "bcb-sgs",
+    "source_agency": "BCB",
+    "upstream": {
+      "seriesCode": 24363
+    },
+    "aliases": [
+      "IBC-Br",
+      "economic activity",
+      "atividade econômica",
+      "24363"
+    ],
+    "notes": null,
+    "transformations": [],
+    "source_url": "https://dadosabertos.bcb.gov.br/dataset?q=24363",
+    "license": "Open Data Commons Open Database License (ODbL)",
+    "license_url": "https://opendatacommons.org/licenses/odbl/1-0/",
+    "links": {
+      "self": "http://benchmark.local/api/v1/indicators/br-ibc-br",
+      "observations": "http://benchmark.local/api/v1/indicators/br-ibc-br/observations",
+      "latest": "http://benchmark.local/api/v1/indicators/br-ibc-br/latest"
+    }
+  },
+  {
+    "id": "br-ibc-br-sa",
+    "name": "IBC-Br — seasonally adjusted",
+    "official_name": "Índice de Atividade Econômica do Banco Central - IBC-Br com ajuste sazonal",
+    "description": "Seasonally adjusted monthly index of nationwide economic activity.",
+    "country": "BR",
+    "geography": "Brazil",
+    "category": "activity",
+    "category_name": "Economic activity",
+    "frequency": "monthly",
+    "unit": "Index",
+    "unit_symbol": "index",
+    "decimals": 2,
+    "seasonal_adjustment": true,
+    "date_semantics": "Normalized to the first calendar day of the BCB reference month; source_date preserves BCB's published date label.",
+    "coverage_start": "2003-01-01",
+    "status": "active",
+    "provider": "bcb-sgs",
+    "source_agency": "BCB",
+    "upstream": {
+      "seriesCode": 24364
+    },
+    "aliases": [
+      "IBC-Br SA",
+      "atividade econômica dessazonalizada",
+      "24364"
+    ],
+    "notes": null,
+    "transformations": [],
+    "source_url": "https://dadosabertos.bcb.gov.br/dataset?q=24364",
+    "license": "Open Data Commons Open Database License (ODbL)",
+    "license_url": "https://opendatacommons.org/licenses/odbl/1-0/",
+    "links": {
+      "self": "http://benchmark.local/api/v1/indicators/br-ibc-br-sa",
+      "observations": "http://benchmark.local/api/v1/indicators/br-ibc-br-sa/observations",
+      "latest": "http://benchmark.local/api/v1/indicators/br-ibc-br-sa/latest"
+    }
+  },
+  {
+    "id": "br-gdp-real-yoy",
+    "name": "Real GDP — year-on-year",
+    "official_name": "PIB a preços de mercado - Taxa acumulada em quatro trimestres",
+    "description": "Real gross domestic product growth relative to the same period of the prior year.",
+    "country": "BR",
+    "geography": "Brazil",
+    "category": "activity",
+    "category_name": "Economic activity",
+    "frequency": "quarterly",
+    "unit": "Percent",
+    "unit_symbol": "%",
+    "decimals": 1,
+    "seasonal_adjustment": false,
+    "date_semantics": "Normalized to the first calendar day of the official IBGE reference period; source_date preserves the original IBGE period key.",
+    "coverage_start": "1996-01-01",
+    "status": "active",
+    "provider": "ibge-aggregates",
+    "source_agency": "IBGE",
+    "upstream": {
+      "aggregate": 5932,
+      "variable": 6561,
+      "classification": "11255[90707]"
+    },
+    "aliases": [
+      "GDP",
+      "PIB",
+      "economic growth",
+      "crescimento",
+      "6561"
+    ],
+    "notes": null,
+    "transformations": [],
+    "source_url": "https://servicodados.ibge.gov.br/api/v3/agregados/5932/metadados",
+    "license": "IBGE terms of use",
+    "license_url": "https://www.ibge.gov.br/termos-de-uso.html",
+    "links": {
+      "self": "http://benchmark.local/api/v1/indicators/br-gdp-real-yoy",
+      "observations": "http://benchmark.local/api/v1/indicators/br-gdp-real-yoy/observations",
+      "latest": "http://benchmark.local/api/v1/indicators/br-gdp-real-yoy/latest"
+    }
+  },
+  {
+    "id": "br-gdp-real-qoq-sa",
+    "name": "Real GDP — quarter-on-quarter",
+    "official_name": "PIB a preços de mercado - Variação em relação ao trimestre anterior",
+    "description": "Seasonally adjusted real GDP change from the previous quarter.",
+    "country": "BR",
+    "geography": "Brazil",
+    "category": "activity",
+    "category_name": "Economic activity",
+    "frequency": "quarterly",
+    "unit": "Percent",
+    "unit_symbol": "%",
+    "decimals": 1,
+    "seasonal_adjustment": true,
+    "date_semantics": "Normalized to the first calendar day of the official IBGE reference period; source_date preserves the original IBGE period key.",
+    "coverage_start": "1996-01-01",
+    "status": "active",
+    "provider": "ibge-aggregates",
+    "source_agency": "IBGE",
+    "upstream": {
+      "aggregate": 5932,
+      "variable": 6564,
+      "classification": "11255[90707]"
+    },
+    "aliases": [
+      "GDP QoQ",
+      "PIB trimestral",
+      "quarterly GDP",
+      "6564"
+    ],
+    "notes": null,
+    "transformations": [],
+    "source_url": "https://servicodados.ibge.gov.br/api/v3/agregados/5932/metadados",
+    "license": "IBGE terms of use",
+    "license_url": "https://www.ibge.gov.br/termos-de-uso.html",
+    "links": {
+      "self": "http://benchmark.local/api/v1/indicators/br-gdp-real-qoq-sa",
+      "observations": "http://benchmark.local/api/v1/indicators/br-gdp-real-qoq-sa/observations",
+      "latest": "http://benchmark.local/api/v1/indicators/br-gdp-real-qoq-sa/latest"
+    }
+  },
+  {
+    "id": "br-industrial-production-sa",
+    "name": "Industrial production index",
+    "official_name": "Produção física industrial - Índice com ajuste sazonal",
+    "description": "Seasonally adjusted index of industrial physical production.",
+    "country": "BR",
+    "geography": "Brazil",
+    "category": "activity",
+    "category_name": "Economic activity",
+    "frequency": "monthly",
+    "unit": "Index",
+    "unit_symbol": "2022=100",
+    "decimals": 1,
+    "seasonal_adjustment": true,
+    "date_semantics": "Normalized to the first calendar day of the official IBGE reference period; source_date preserves the original IBGE period key.",
+    "coverage_start": "2002-01-01",
+    "status": "active",
+    "provider": "ibge-aggregates",
+    "source_agency": "IBGE",
+    "upstream": {
+      "aggregate": 8888,
+      "variable": 12607,
+      "classification": "544[129314]"
+    },
+    "aliases": [
+      "industrial production",
+      "produção industrial",
+      "PIM-PF",
+      "12607"
+    ],
+    "notes": null,
+    "transformations": [],
+    "source_url": "https://servicodados.ibge.gov.br/api/v3/agregados/8888/metadados",
+    "license": "IBGE terms of use",
+    "license_url": "https://www.ibge.gov.br/termos-de-uso.html",
+    "links": {
+      "self": "http://benchmark.local/api/v1/indicators/br-industrial-production-sa",
+      "observations": "http://benchmark.local/api/v1/indicators/br-industrial-production-sa/observations",
+      "latest": "http://benchmark.local/api/v1/indicators/br-industrial-production-sa/latest"
+    }
+  },
+  {
+    "id": "br-industrial-production-mom",
+    "name": "Industrial production — monthly change",
+    "official_name": "Produção física industrial - Variação mês/mês anterior com ajuste sazonal",
+    "description": "Seasonally adjusted monthly change in industrial production.",
+    "country": "BR",
+    "geography": "Brazil",
+    "category": "activity",
+    "category_name": "Economic activity",
+    "frequency": "monthly",
+    "unit": "Percent",
+    "unit_symbol": "%",
+    "decimals": 1,
+    "seasonal_adjustment": true,
+    "date_semantics": "Normalized to the first calendar day of the official IBGE reference period; source_date preserves the original IBGE period key.",
+    "coverage_start": "2002-02-01",
+    "status": "active",
+    "provider": "ibge-aggregates",
+    "source_agency": "IBGE",
+    "upstream": {
+      "aggregate": 8888,
+      "variable": 11601,
+      "classification": "544[129314]"
+    },
+    "aliases": [
+      "industry MoM",
+      "produção industrial mensal",
+      "11601"
+    ],
+    "notes": null,
+    "transformations": [],
+    "source_url": "https://servicodados.ibge.gov.br/api/v3/agregados/8888/metadados",
+    "license": "IBGE terms of use",
+    "license_url": "https://www.ibge.gov.br/termos-de-uso.html",
+    "links": {
+      "self": "http://benchmark.local/api/v1/indicators/br-industrial-production-mom",
+      "observations": "http://benchmark.local/api/v1/indicators/br-industrial-production-mom/observations",
+      "latest": "http://benchmark.local/api/v1/indicators/br-industrial-production-mom/latest"
+    }
+  },
+  {
+    "id": "br-retail-sales-sa",
+    "name": "Retail sales volume index",
+    "official_name": "Volume de vendas no comércio varejista - Índice com ajuste sazonal",
+    "description": "Seasonally adjusted volume index for core retail sales.",
+    "country": "BR",
+    "geography": "Brazil",
+    "category": "activity",
+    "category_name": "Economic activity",
+    "frequency": "monthly",
+    "unit": "Index",
+    "unit_symbol": "2022=100",
+    "decimals": 1,
+    "seasonal_adjustment": true,
+    "date_semantics": "Normalized to the first calendar day of the official IBGE reference period; source_date preserves the original IBGE period key.",
+    "coverage_start": "2000-01-01",
+    "status": "active",
+    "provider": "ibge-aggregates",
+    "source_agency": "IBGE",
+    "upstream": {
+      "aggregate": 8880,
+      "variable": 7170,
+      "classification": "11046[56734]"
+    },
+    "aliases": [
+      "retail sales",
+      "vendas varejo",
+      "PMC",
+      "7170"
+    ],
+    "notes": null,
+    "transformations": [],
+    "source_url": "https://servicodados.ibge.gov.br/api/v3/agregados/8880/metadados",
+    "license": "IBGE terms of use",
+    "license_url": "https://www.ibge.gov.br/termos-de-uso.html",
+    "links": {
+      "self": "http://benchmark.local/api/v1/indicators/br-retail-sales-sa",
+      "observations": "http://benchmark.local/api/v1/indicators/br-retail-sales-sa/observations",
+      "latest": "http://benchmark.local/api/v1/indicators/br-retail-sales-sa/latest"
+    }
+  },
+  {
+    "id": "br-retail-sales-mom",
+    "name": "Retail sales — monthly change",
+    "official_name": "Volume de vendas no comércio varejista - Variação mês/mês anterior",
+    "description": "Seasonally adjusted monthly change in core retail sales volume.",
+    "country": "BR",
+    "geography": "Brazil",
+    "category": "activity",
+    "category_name": "Economic activity",
+    "frequency": "monthly",
+    "unit": "Percent",
+    "unit_symbol": "%",
+    "decimals": 1,
+    "seasonal_adjustment": true,
+    "date_semantics": "Normalized to the first calendar day of the official IBGE reference period; source_date preserves the original IBGE period key.",
+    "coverage_start": "2000-02-01",
+    "status": "active",
+    "provider": "ibge-aggregates",
+    "source_agency": "IBGE",
+    "upstream": {
+      "aggregate": 8880,
+      "variable": 11708,
+      "classification": "11046[56734]"
+    },
+    "aliases": [
+      "retail MoM",
+      "varejo mensal",
+      "11708"
+    ],
+    "notes": null,
+    "transformations": [],
+    "source_url": "https://servicodados.ibge.gov.br/api/v3/agregados/8880/metadados",
+    "license": "IBGE terms of use",
+    "license_url": "https://www.ibge.gov.br/termos-de-uso.html",
+    "links": {
+      "self": "http://benchmark.local/api/v1/indicators/br-retail-sales-mom",
+      "observations": "http://benchmark.local/api/v1/indicators/br-retail-sales-mom/observations",
+      "latest": "http://benchmark.local/api/v1/indicators/br-retail-sales-mom/latest"
+    }
+  },
+  {
+    "id": "br-services-volume-sa",
+    "name": "Services volume index",
+    "official_name": "Volume de serviços - Índice com ajuste sazonal",
+    "description": "Seasonally adjusted index of service-sector volume.",
+    "country": "BR",
+    "geography": "Brazil",
+    "category": "activity",
+    "category_name": "Economic activity",
+    "frequency": "monthly",
+    "unit": "Index",
+    "unit_symbol": "2022=100",
+    "decimals": 1,
+    "seasonal_adjustment": true,
+    "date_semantics": "Normalized to the first calendar day of the official IBGE reference period; source_date preserves the original IBGE period key.",
+    "coverage_start": "2011-01-01",
+    "status": "active",
+    "provider": "ibge-aggregates",
+    "source_agency": "IBGE",
+    "upstream": {
+      "aggregate": 5906,
+      "variable": 7168,
+      "classification": "11046[56726]"
+    },
+    "aliases": [
+      "services index",
+      "volume de serviços",
+      "PMS",
+      "7168"
+    ],
+    "notes": null,
+    "transformations": [],
+    "source_url": "https://servicodados.ibge.gov.br/api/v3/agregados/5906/metadados",
+    "license": "IBGE terms of use",
+    "license_url": "https://www.ibge.gov.br/termos-de-uso.html",
+    "links": {
+      "self": "http://benchmark.local/api/v1/indicators/br-services-volume-sa",
+      "observations": "http://benchmark.local/api/v1/indicators/br-services-volume-sa/observations",
+      "latest": "http://benchmark.local/api/v1/indicators/br-services-volume-sa/latest"
+    }
+  },
+  {
+    "id": "br-unemployment-rate",
+    "name": "Unemployment rate",
+    "official_name": "Taxa de desocupação das pessoas de 14 anos ou mais de idade",
+    "description": "Unemployment rate for people aged 14 or older, measured over a moving quarter.",
+    "country": "BR",
+    "geography": "Brazil",
+    "category": "labor",
+    "category_name": "Labor",
+    "frequency": "monthly",
+    "unit": "Percent of labor force",
+    "unit_symbol": "%",
+    "decimals": 1,
+    "seasonal_adjustment": false,
+    "date_semantics": "Final month of the official three-month moving reference quarter.",
+    "coverage_start": "2012-03-01",
+    "status": "active",
+    "provider": "ibge-aggregates",
+    "source_agency": "IBGE",
+    "upstream": {
+      "aggregate": 6381,
+      "variable": 4099
+    },
+    "aliases": [
+      "unemployment",
+      "desemprego",
+      "desocupação",
+      "PNAD Contínua",
+      "4099"
+    ],
+    "notes": "Each observation describes a moving quarter ending in the displayed month.",
+    "transformations": [],
+    "source_url": "https://servicodados.ibge.gov.br/api/v3/agregados/6381/metadados",
+    "license": "IBGE terms of use",
+    "license_url": "https://www.ibge.gov.br/termos-de-uso.html",
+    "links": {
+      "self": "http://benchmark.local/api/v1/indicators/br-unemployment-rate",
+      "observations": "http://benchmark.local/api/v1/indicators/br-unemployment-rate/observations",
+      "latest": "http://benchmark.local/api/v1/indicators/br-unemployment-rate/latest"
+    }
+  },
+  {
+    "id": "br-real-earnings",
+    "name": "Real usual monthly earnings",
+    "official_name": "Rendimento médio real habitualmente recebido",
+    "description": "Average real usual monthly earnings of employed people aged 14 or older.",
+    "country": "BR",
+    "geography": "Brazil",
+    "category": "labor",
+    "category_name": "Labor",
+    "frequency": "monthly",
+    "unit": "Brazilian reais",
+    "unit_symbol": "R$",
+    "decimals": 0,
+    "seasonal_adjustment": false,
+    "date_semantics": "Final month of the official three-month moving reference quarter.",
+    "coverage_start": "2012-03-01",
+    "status": "active",
+    "provider": "ibge-aggregates",
+    "source_agency": "IBGE",
+    "upstream": {
+      "aggregate": 6390,
+      "variable": 5933
+    },
+    "aliases": [
+      "earnings",
+      "wages",
+      "rendimento real",
+      "salário",
+      "5933"
+    ],
+    "notes": null,
+    "transformations": [],
+    "source_url": "https://servicodados.ibge.gov.br/api/v3/agregados/6390/metadados",
+    "license": "IBGE terms of use",
+    "license_url": "https://www.ibge.gov.br/termos-de-uso.html",
+    "links": {
+      "self": "http://benchmark.local/api/v1/indicators/br-real-earnings",
+      "observations": "http://benchmark.local/api/v1/indicators/br-real-earnings/observations",
+      "latest": "http://benchmark.local/api/v1/indicators/br-real-earnings/latest"
+    }
+  },
+  {
+    "id": "br-informality-rate",
+    "name": "Informality rate",
+    "official_name": "Taxa de informalidade das pessoas ocupadas",
+    "description": "Share of employed people working in informal arrangements.",
+    "country": "BR",
+    "geography": "Brazil",
+    "category": "labor",
+    "category_name": "Labor",
+    "frequency": "monthly",
+    "unit": "Percent of employed population",
+    "unit_symbol": "%",
+    "decimals": 1,
+    "seasonal_adjustment": false,
+    "date_semantics": "Final month of the official three-month moving reference quarter.",
+    "coverage_start": "2015-12-01",
+    "status": "active",
+    "provider": "ibge-aggregates",
+    "source_agency": "IBGE",
+    "upstream": {
+      "aggregate": 8513,
+      "variable": 12466
+    },
+    "aliases": [
+      "informality",
+      "informal work",
+      "informalidade",
+      "12466"
+    ],
+    "notes": null,
+    "transformations": [],
+    "source_url": "https://servicodados.ibge.gov.br/api/v3/agregados/8513/metadados",
+    "license": "IBGE terms of use",
+    "license_url": "https://www.ibge.gov.br/termos-de-uso.html",
+    "links": {
+      "self": "http://benchmark.local/api/v1/indicators/br-informality-rate",
+      "observations": "http://benchmark.local/api/v1/indicators/br-informality-rate/observations",
+      "latest": "http://benchmark.local/api/v1/indicators/br-informality-rate/latest"
+    }
+  },
+  {
+    "id": "br-credit-gdp",
+    "name": "Credit portfolio to GDP",
+    "official_name": "Saldo da carteira de crédito em relação ao PIB",
+    "description": "Outstanding credit portfolio as a share of gross domestic product.",
+    "country": "BR",
+    "geography": "Brazil",
+    "category": "credit",
+    "category_name": "Credit",
+    "frequency": "monthly",
+    "unit": "Percent of GDP",
+    "unit_symbol": "% GDP",
+    "decimals": 2,
+    "seasonal_adjustment": false,
+    "date_semantics": "Normalized to the first calendar day of the BCB reference month; source_date preserves BCB's published date label.",
+    "coverage_start": "2011-03-01",
+    "status": "active",
+    "provider": "bcb-sgs",
+    "source_agency": "BCB",
+    "upstream": {
+      "seriesCode": 20622
+    },
+    "aliases": [
+      "credit GDP",
+      "crédito PIB",
+      "20622"
+    ],
+    "notes": null,
+    "transformations": [],
+    "source_url": "https://dadosabertos.bcb.gov.br/dataset?q=20622",
+    "license": "Open Data Commons Open Database License (ODbL)",
+    "license_url": "https://opendatacommons.org/licenses/odbl/1-0/",
+    "links": {
+      "self": "http://benchmark.local/api/v1/indicators/br-credit-gdp",
+      "observations": "http://benchmark.local/api/v1/indicators/br-credit-gdp/observations",
+      "latest": "http://benchmark.local/api/v1/indicators/br-credit-gdp/latest"
+    }
+  },
+  {
+    "id": "br-credit-interest-rate",
+    "name": "Average credit interest rate",
+    "official_name": "Taxa média de juros das operações de crédito - Total",
+    "description": "Average annual interest rate across credit operations in the financial system.",
+    "country": "BR",
+    "geography": "Brazil",
+    "category": "credit",
+    "category_name": "Credit",
+    "frequency": "monthly",
+    "unit": "Percent per year",
+    "unit_symbol": "% p.a.",
+    "decimals": 2,
+    "seasonal_adjustment": false,
+    "date_semantics": "Normalized to the first calendar day of the BCB reference month; source_date preserves BCB's published date label.",
+    "coverage_start": "2011-03-01",
+    "status": "active",
+    "provider": "bcb-sgs",
+    "source_agency": "BCB",
+    "upstream": {
+      "seriesCode": 20714
+    },
+    "aliases": [
+      "lending rate",
+      "juros crédito",
+      "20714"
+    ],
+    "notes": null,
+    "transformations": [],
+    "source_url": "https://dadosabertos.bcb.gov.br/dataset?q=20714",
+    "license": "Open Data Commons Open Database License (ODbL)",
+    "license_url": "https://opendatacommons.org/licenses/odbl/1-0/",
+    "links": {
+      "self": "http://benchmark.local/api/v1/indicators/br-credit-interest-rate",
+      "observations": "http://benchmark.local/api/v1/indicators/br-credit-interest-rate/observations",
+      "latest": "http://benchmark.local/api/v1/indicators/br-credit-interest-rate/latest"
+    }
+  },
+  {
+    "id": "br-credit-delinquency",
+    "name": "Credit delinquency rate",
+    "official_name": "Inadimplência da carteira de crédito - Total",
+    "description": "Share of the total credit portfolio with payments more than 90 days overdue.",
+    "country": "BR",
+    "geography": "Brazil",
+    "category": "credit",
+    "category_name": "Credit",
+    "frequency": "monthly",
+    "unit": "Percent",
+    "unit_symbol": "%",
+    "decimals": 2,
+    "seasonal_adjustment": false,
+    "date_semantics": "Normalized to the first calendar day of the BCB reference month; source_date preserves BCB's published date label.",
+    "coverage_start": "2011-03-01",
+    "status": "active",
+    "provider": "bcb-sgs",
+    "source_agency": "BCB",
+    "upstream": {
+      "seriesCode": 21082
+    },
+    "aliases": [
+      "delinquency",
+      "default rate",
+      "inadimplência",
+      "21082"
+    ],
+    "notes": null,
+    "transformations": [],
+    "source_url": "https://dadosabertos.bcb.gov.br/dataset?q=21082",
+    "license": "Open Data Commons Open Database License (ODbL)",
+    "license_url": "https://opendatacommons.org/licenses/odbl/1-0/",
+    "links": {
+      "self": "http://benchmark.local/api/v1/indicators/br-credit-delinquency",
+      "observations": "http://benchmark.local/api/v1/indicators/br-credit-delinquency/observations",
+      "latest": "http://benchmark.local/api/v1/indicators/br-credit-delinquency/latest"
+    }
+  },
+  {
+    "id": "br-net-public-debt-gdp",
+    "name": "Public-sector net debt",
+    "official_name": "Dívida Líquida do Setor Público (% PIB) - Total",
+    "description": "Net debt of Brazil's consolidated public sector as a share of GDP.",
+    "country": "BR",
+    "geography": "Brazil",
+    "category": "fiscal",
+    "category_name": "Fiscal",
+    "frequency": "monthly",
+    "unit": "Percent of GDP",
+    "unit_symbol": "% GDP",
+    "decimals": 2,
+    "seasonal_adjustment": false,
+    "date_semantics": "Normalized to the first calendar day of the BCB reference month; source_date preserves BCB's published date label.",
+    "coverage_start": "2001-12-01",
+    "status": "active",
+    "provider": "bcb-sgs",
+    "source_agency": "BCB",
+    "upstream": {
+      "seriesCode": 4513
+    },
+    "aliases": [
+      "net debt",
+      "DLSP",
+      "dívida líquida",
+      "4513"
+    ],
+    "notes": null,
+    "transformations": [],
+    "source_url": "https://dadosabertos.bcb.gov.br/dataset?q=4513",
+    "license": "Open Data Commons Open Database License (ODbL)",
+    "license_url": "https://opendatacommons.org/licenses/odbl/1-0/",
+    "links": {
+      "self": "http://benchmark.local/api/v1/indicators/br-net-public-debt-gdp",
+      "observations": "http://benchmark.local/api/v1/indicators/br-net-public-debt-gdp/observations",
+      "latest": "http://benchmark.local/api/v1/indicators/br-net-public-debt-gdp/latest"
+    }
+  },
+  {
+    "id": "br-gross-government-debt-gdp",
+    "name": "General-government gross debt",
+    "official_name": "Dívida bruta do governo geral (% PIB) - Metodologia utilizada a partir de 2008",
+    "description": "Gross debt of federal, state, and municipal governments under the post-2008 methodology.",
+    "country": "BR",
+    "geography": "Brazil",
+    "category": "fiscal",
+    "category_name": "Fiscal",
+    "frequency": "monthly",
+    "unit": "Percent of GDP",
+    "unit_symbol": "% GDP",
+    "decimals": 2,
+    "seasonal_adjustment": false,
+    "date_semantics": "Normalized to the first calendar day of the BCB reference month; source_date preserves BCB's published date label.",
+    "coverage_start": "2006-12-01",
+    "status": "active",
+    "provider": "bcb-sgs",
+    "source_agency": "BCB",
+    "upstream": {
+      "seriesCode": 13762
+    },
+    "aliases": [
+      "gross debt",
+      "DBGG",
+      "dívida bruta",
+      "13762"
+    ],
+    "notes": null,
+    "transformations": [],
+    "source_url": "https://dadosabertos.bcb.gov.br/dataset?q=13762",
+    "license": "Open Data Commons Open Database License (ODbL)",
+    "license_url": "https://opendatacommons.org/licenses/odbl/1-0/",
+    "links": {
+      "self": "http://benchmark.local/api/v1/indicators/br-gross-government-debt-gdp",
+      "observations": "http://benchmark.local/api/v1/indicators/br-gross-government-debt-gdp/observations",
+      "latest": "http://benchmark.local/api/v1/indicators/br-gross-government-debt-gdp/latest"
+    }
+  },
+  {
+    "id": "br-primary-balance-12m-gdp",
+    "name": "Public-sector primary balance",
+    "official_name": "NFSP sem desvalorização cambial (% PIB) - Resultado primário - Total",
+    "description": "Twelve-month accumulated primary borrowing requirement of the consolidated public sector.",
+    "country": "BR",
+    "geography": "Brazil",
+    "category": "fiscal",
+    "category_name": "Fiscal",
+    "frequency": "monthly",
+    "unit": "Percent of GDP",
+    "unit_symbol": "% GDP",
+    "decimals": 2,
+    "seasonal_adjustment": false,
+    "date_semantics": "Normalized to the first calendar day of the BCB reference month; source_date preserves BCB's published date label.",
+    "coverage_start": "2002-11-01",
+    "status": "active",
+    "provider": "bcb-sgs",
+    "source_agency": "BCB",
+    "upstream": {
+      "seriesCode": 5793
+    },
+    "aliases": [
+      "primary balance",
+      "resultado primário",
+      "NFSP",
+      "5793"
+    ],
+    "notes": "BCB's NFSP convention records borrowing requirements with their published sign. Values are not sign-inverted.",
+    "transformations": [],
+    "source_url": "https://dadosabertos.bcb.gov.br/dataset?q=5793",
+    "license": "Open Data Commons Open Database License (ODbL)",
+    "license_url": "https://opendatacommons.org/licenses/odbl/1-0/",
+    "links": {
+      "self": "http://benchmark.local/api/v1/indicators/br-primary-balance-12m-gdp",
+      "observations": "http://benchmark.local/api/v1/indicators/br-primary-balance-12m-gdp/observations",
+      "latest": "http://benchmark.local/api/v1/indicators/br-primary-balance-12m-gdp/latest"
+    }
+  },
+  {
+    "id": "br-nominal-balance-12m-gdp",
+    "name": "Public-sector nominal balance",
+    "official_name": "NFSP sem desvalorização cambial (% PIB) - Resultado nominal - Total",
+    "description": "Twelve-month accumulated nominal borrowing requirement of the consolidated public sector.",
+    "country": "BR",
+    "geography": "Brazil",
+    "category": "fiscal",
+    "category_name": "Fiscal",
+    "frequency": "monthly",
+    "unit": "Percent of GDP",
+    "unit_symbol": "% GDP",
+    "decimals": 2,
+    "seasonal_adjustment": false,
+    "date_semantics": "Normalized to the first calendar day of the BCB reference month; source_date preserves BCB's published date label.",
+    "coverage_start": "2002-11-01",
+    "status": "active",
+    "provider": "bcb-sgs",
+    "source_agency": "BCB",
+    "upstream": {
+      "seriesCode": 5727
+    },
+    "aliases": [
+      "nominal balance",
+      "resultado nominal",
+      "NFSP",
+      "5727"
+    ],
+    "notes": "BCB's NFSP convention records borrowing requirements with their published sign. Values are not sign-inverted.",
+    "transformations": [],
+    "source_url": "https://dadosabertos.bcb.gov.br/dataset?q=5727",
+    "license": "Open Data Commons Open Database License (ODbL)",
+    "license_url": "https://opendatacommons.org/licenses/odbl/1-0/",
+    "links": {
+      "self": "http://benchmark.local/api/v1/indicators/br-nominal-balance-12m-gdp",
+      "observations": "http://benchmark.local/api/v1/indicators/br-nominal-balance-12m-gdp/observations",
+      "latest": "http://benchmark.local/api/v1/indicators/br-nominal-balance-12m-gdp/latest"
+    }
+  },
+  {
+    "id": "br-current-account",
+    "name": "Current account balance",
+    "official_name": "Transações correntes - mensal - saldo",
+    "description": "Monthly balance on Brazil's current account in the balance of payments.",
+    "country": "BR",
+    "geography": "Brazil",
+    "category": "external",
+    "category_name": "External sector",
+    "frequency": "monthly",
+    "unit": "US dollars, millions",
+    "unit_symbol": "US$ mn",
+    "decimals": 1,
+    "seasonal_adjustment": false,
+    "date_semantics": "Normalized to the first calendar day of the BCB reference month; source_date preserves BCB's published date label.",
+    "coverage_start": "1995-01-01",
+    "status": "active",
+    "provider": "bcb-sgs",
+    "source_agency": "BCB",
+    "upstream": {
+      "seriesCode": 22701
+    },
+    "aliases": [
+      "current account",
+      "conta corrente",
+      "transações correntes",
+      "22701"
+    ],
+    "notes": null,
+    "transformations": [],
+    "source_url": "https://dadosabertos.bcb.gov.br/dataset?q=22701",
+    "license": "Open Data Commons Open Database License (ODbL)",
+    "license_url": "https://opendatacommons.org/licenses/odbl/1-0/",
+    "links": {
+      "self": "http://benchmark.local/api/v1/indicators/br-current-account",
+      "observations": "http://benchmark.local/api/v1/indicators/br-current-account/observations",
+      "latest": "http://benchmark.local/api/v1/indicators/br-current-account/latest"
+    }
+  },
+  {
+    "id": "br-goods-balance",
+    "name": "Balance-of-payments goods balance",
+    "official_name": "Balanço de pagamentos - Balança comercial - saldo",
+    "description": "Monthly goods balance recorded in Brazil's balance of payments.",
+    "country": "BR",
+    "geography": "Brazil",
+    "category": "external",
+    "category_name": "External sector",
+    "frequency": "monthly",
+    "unit": "US dollars, millions",
+    "unit_symbol": "US$ mn",
+    "decimals": 1,
+    "seasonal_adjustment": false,
+    "date_semantics": "Normalized to the first calendar day of the BCB reference month; source_date preserves BCB's published date label.",
+    "coverage_start": "1995-01-01",
+    "status": "active",
+    "provider": "bcb-sgs",
+    "source_agency": "BCB",
+    "upstream": {
+      "seriesCode": 22707
+    },
+    "aliases": [
+      "trade balance",
+      "goods balance",
+      "balança comercial",
+      "22707"
+    ],
+    "notes": null,
+    "transformations": [],
+    "source_url": "https://dadosabertos.bcb.gov.br/dataset?q=22707",
+    "license": "Open Data Commons Open Database License (ODbL)",
+    "license_url": "https://opendatacommons.org/licenses/odbl/1-0/",
+    "links": {
+      "self": "http://benchmark.local/api/v1/indicators/br-goods-balance",
+      "observations": "http://benchmark.local/api/v1/indicators/br-goods-balance/observations",
+      "latest": "http://benchmark.local/api/v1/indicators/br-goods-balance/latest"
+    }
+  },
+  {
+    "id": "br-fdi-net",
+    "name": "Direct investment in Brazil",
+    "official_name": "Investimento direto no país - líquido",
+    "description": "Monthly net direct investment flows into Brazil.",
+    "country": "BR",
+    "geography": "Brazil",
+    "category": "external",
+    "category_name": "External sector",
+    "frequency": "monthly",
+    "unit": "US dollars, millions",
+    "unit_symbol": "US$ mn",
+    "decimals": 1,
+    "seasonal_adjustment": false,
+    "date_semantics": "Normalized to the first calendar day of the BCB reference month; source_date preserves BCB's published date label.",
+    "coverage_start": "1995-01-01",
+    "status": "active",
+    "provider": "bcb-sgs",
+    "source_agency": "BCB",
+    "upstream": {
+      "seriesCode": 22885
+    },
+    "aliases": [
+      "FDI",
+      "investimento direto",
+      "IDP",
+      "22885"
+    ],
+    "notes": null,
+    "transformations": [],
+    "source_url": "https://dadosabertos.bcb.gov.br/dataset?q=22885",
+    "license": "Open Data Commons Open Database License (ODbL)",
+    "license_url": "https://opendatacommons.org/licenses/odbl/1-0/",
+    "links": {
+      "self": "http://benchmark.local/api/v1/indicators/br-fdi-net",
+      "observations": "http://benchmark.local/api/v1/indicators/br-fdi-net/observations",
+      "latest": "http://benchmark.local/api/v1/indicators/br-fdi-net/latest"
+    }
+  },
+  {
+    "id": "br-international-reserves",
+    "name": "International reserves",
+    "official_name": "Reservas internacionais - Conceito liquidez - Total - diária",
+    "description": "Brazil's total international reserves under the liquidity concept.",
+    "country": "BR",
+    "geography": "Brazil",
+    "category": "external",
+    "category_name": "External sector",
+    "frequency": "daily",
+    "unit": "US dollars, millions",
+    "unit_symbol": "US$ mn",
+    "decimals": 0,
+    "seasonal_adjustment": false,
+    "date_semantics": "Official BCB observation date.",
+    "coverage_start": "2000-01-03",
+    "status": "active",
+    "provider": "bcb-sgs",
+    "source_agency": "BCB",
+    "upstream": {
+      "seriesCode": 13982
+    },
+    "aliases": [
+      "reserves",
+      "reservas internacionais",
+      "foreign reserves",
+      "13982"
+    ],
+    "notes": null,
+    "transformations": [],
+    "source_url": "https://dadosabertos.bcb.gov.br/dataset?q=13982",
+    "license": "Open Data Commons Open Database License (ODbL)",
+    "license_url": "https://opendatacommons.org/licenses/odbl/1-0/",
+    "links": {
+      "self": "http://benchmark.local/api/v1/indicators/br-international-reserves",
+      "observations": "http://benchmark.local/api/v1/indicators/br-international-reserves/observations",
+      "latest": "http://benchmark.local/api/v1/indicators/br-international-reserves/latest"
+    }
+  },
+  {
+    "id": "br-icb-br",
+    "name": "Brazil commodity price index",
+    "official_name": "Índice de Commodities Brasil - IC-Br",
+    "description": "Commodity price index weighted to reflect their relevance to Brazilian inflation.",
+    "country": "BR",
+    "geography": "Brazil",
+    "category": "markets",
+    "category_name": "Markets",
+    "frequency": "monthly",
+    "unit": "Index",
+    "unit_symbol": "index",
+    "decimals": 2,
+    "seasonal_adjustment": false,
+    "date_semantics": "Normalized to the first calendar day of the BCB reference month; source_date preserves BCB's published date label.",
+    "coverage_start": "1998-01-01",
+    "status": "active",
+    "provider": "bcb-sgs",
+    "source_agency": "BCB",
+    "upstream": {
+      "seriesCode": 27574
+    },
+    "aliases": [
+      "IC-Br",
+      "commodities",
+      "commodity index",
+      "27574"
+    ],
+    "notes": null,
+    "transformations": [],
+    "source_url": "https://dadosabertos.bcb.gov.br/dataset?q=27574",
+    "license": "Open Data Commons Open Database License (ODbL)",
+    "license_url": "https://opendatacommons.org/licenses/odbl/1-0/",
+    "links": {
+      "self": "http://benchmark.local/api/v1/indicators/br-icb-br",
+      "observations": "http://benchmark.local/api/v1/indicators/br-icb-br/observations",
+      "latest": "http://benchmark.local/api/v1/indicators/br-icb-br/latest"
+    }
+  }
+]

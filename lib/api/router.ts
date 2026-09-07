@@ -1,12 +1,13 @@
 import { indicators, catalogSummary, categoryLabels } from "@/lib/catalog/indicators";
 import { sources } from "@/lib/catalog/sources";
 import { ApiError } from "@/lib/errors";
-import { createOpenApiDocument } from "@/lib/api/openapi";
+import { createOpenApiDocument, createV2OpenApiDocument } from "@/lib/api/openapi";
 import { parseCatalogQuery, parseObservationQuery } from "@/lib/api/query";
 import { publicIndicator, publicSource } from "@/lib/api/serialization";
 import { getSeries } from "@/lib/services/series-service";
 import type { IndicatorDefinition, Observation } from "@/lib/domain/types";
 import { recordApiRequest, recordApiSearch } from "@/lib/telemetry";
+import { routeV2Get } from "@/lib/api/v2";
 
 export interface ApiEnv {
   DB?: D1Database;
@@ -60,7 +61,12 @@ function problem(error: unknown, id: string, origin: string) {
   } else if (error instanceof Error && error.name === "AbortError") {
     apiError = new ApiError(504, "UPSTREAM_TIMEOUT", "The official source did not respond in time.");
   } else {
-    console.error(JSON.stringify({ request_id: id, error_code: "INTERNAL_ERROR" }));
+    console.error(JSON.stringify({
+      request_id: id,
+      error_code: "INTERNAL_ERROR",
+      error_name: error instanceof Error ? error.name : "UnknownError",
+      error_message: error instanceof Error ? error.message : "Non-error thrown",
+    }));
     apiError = new ApiError(500, "INTERNAL_ERROR", "An unexpected error occurred.");
   }
 
@@ -286,6 +292,13 @@ async function observationsResponse(
 async function routeGet(request: Request, env: ApiEnv, id: string, ctx: ApiExecutionContext) {
   const url = new URL(request.url);
   const path = url.pathname.replace(/\/+$/, "");
+
+  if (path === "/api/v2" || path.startsWith("/api/v2/")) {
+    if (path === "/api/v2/openapi.json") return json(createV2OpenApiDocument(url.origin), id, {}, "public, max-age=300, s-maxage=3600");
+    const result = await routeV2Get(request);
+    if (result) return json(result.body, id, { headers: result.headers }, result.cacheControl);
+    throw new ApiError(404, "ROUTE_NOT_FOUND", `API route not found: ${path}`);
+  }
 
   if (path === "/api/v1") {
     const base = apiBase(url);

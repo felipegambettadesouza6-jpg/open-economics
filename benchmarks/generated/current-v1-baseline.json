@@ -1,0 +1,33 @@
+{
+  "benchmark": "open-economics-real-demand-v1",
+  "current_catalog_indicators": 32,
+  "independent_demand_concepts": 96,
+  "mapped_current_concepts": 23,
+  "weighted_concept_coverage": 0.2882882882882883,
+  "engines": {
+    "current_literal_substring": {
+      "covered_tasks": 166,
+      "unsupported_tasks": 530,
+      "top1_on_covered": 0,
+      "top3_on_covered": 0,
+      "safe_miss_on_unsupported": 1,
+      "overall_top1": 0
+    },
+    "token_weighted": {
+      "covered_tasks": 166,
+      "unsupported_tasks": 530,
+      "top1_on_covered": 0.8531317494600432,
+      "top3_on_covered": 0.9265658747300216,
+      "safe_miss_on_unsupported": 0.2508741258741259,
+      "overall_top1": 0.24579962663347854
+    },
+    "token_plus_character_trigrams": {
+      "covered_tasks": 166,
+      "unsupported_tasks": 530,
+      "top1_on_covered": 0.8812095032397408,
+      "top3_on_covered": 0.9200863930885529,
+      "safe_miss_on_unsupported": 0.42744755244755245,
+      "overall_top1": 0.253889234598631
+    }
+  }
+}

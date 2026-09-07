@@ -1,0 +1,52 @@
+{
+  "benchmark": "open-economics-real-demand-v1",
+  "schema_version": "2026-09-03",
+  "tasks": 696,
+  "independent_concepts": 96,
+  "complex_cases": 24,
+  "discovery_holdouts": 96,
+  "languages": {
+    "pt-BR": 423,
+    "en": 273
+  },
+  "domains": {
+    "activity": 73,
+    "agriculture": 36,
+    "credit": 58,
+    "energy": 37,
+    "environment": 14,
+    "external": 64,
+    "fiscal-national": 59,
+    "fiscal-subnational": 43,
+    "housing": 22,
+    "labor": 73,
+    "markets": 44,
+    "monetary": 58,
+    "population-income": 51,
+    "prices": 64
+  },
+  "workflows": {
+    "boundary-causal": 1,
+    "boundary-no-original-forecast": 1,
+    "breakdown": 96,
+    "change": 96,
+    "comparison": 3,
+    "composition": 1,
+    "cross-source-comparison": 1,
+    "dimension-comparison": 1,
+    "discovery-holdout": 96,
+    "entity-comparison": 2,
+    "freshness": 96,
+    "geographic-comparison": 2,
+    "history": 96,
+    "history-with-semantics": 1,
+    "latest": 96,
+    "methodology": 96,
+    "multi-measure-analysis": 1,
+    "multidimensional-query": 4,
+    "projection-retrieval": 1,
+    "ranking": 2,
+    "share": 1,
+    "vintage-comparison": 2
+  }
+}

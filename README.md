@@ -1,33 +1,72 @@
 # Open Economics API
 
-A free, read-only API for authoritative Brazilian economic time series.
+A free, read-only semantic routing layer for authoritative Brazilian economic data.
 
-- **Live API:** https://open-economics-data.knbf982hkn.chatgpt.site/api/v1
+- **Semantic API:** https://open-economics-data.knbf982hkn.chatgpt.site/api/v2
+- **Stable series API:** https://open-economics-data.knbf982hkn.chatgpt.site/api/v1
+- **MCP:** https://open-economics-data.knbf982hkn.chatgpt.site/mcp
 - **Documentation:** https://open-economics-data.knbf982hkn.chatgpt.site/en/docs
 - **Runnable examples:** https://open-economics-data.knbf982hkn.chatgpt.site/en/guides
 - **Source and issue tracker:** https://github.com/felipegambettadesouza6-jpg/open-economics
 - **Reliability policy:** [RELIABILITY.md](./RELIABILITY.md)
+- **2.0 release evidence:** [benchmarks/RELEASE-READINESS.md](./benchmarks/RELEASE-READINESS.md)
 - **Contributing:** [CONTRIBUTING.md](./CONTRIBUTING.md)
 - **Security:** [SECURITY.md](./SECURITY.md)
 
 **[Try the API in the browser →](https://open-economics-data.knbf982hkn.chatgpt.site/en/playground?utm_source=github&utm_medium=repository&utm_campaign=github-repo)**
 
-Open Economics gives data from Banco Central do Brasil (BCB) and IBGE a single
-contract without obscuring where it came from. Every response includes a stable
-indicator ID, unit, frequency, original publisher value, source identifier,
-upstream request URL, license, and cache state.
+Open Economics 2.0 starts with a real economic-information need, resolves its
+meaning independently of current coverage, and then routes it to official data.
+Its synchronized catalog currently exposes 12,875 BCB SGS series and IBGE
+aggregates, plus direct SICONFI fiscal-report, MDIC Comex Stat, and ANP
+fuel-price access and versioned EPE electricity-consumption, MTE Novo Caged,
+CVM investment-fund, Tesouro RTN fiscal, and RMD Federal Public Debt data (12,886 official datasets in total). The 32 convenient v1
+series IDs remain compatible.
+
+Discovery, REST, the existing product, and MCP share one semantic core. A
+resolved concept is kept separate from availability, so an unsupported need is
+reported explicitly instead of being silently mapped to a nearby series. Units,
+dimensions, reference periods, source identifiers, raw values, methodology
+links, and retrieval provenance travel with the data.
+
+## Start with the economic need
+
+```bash
+curl --fail --silent \
+  "https://open-economics-data.knbf982hkn.chatgpt.site/api/v2/search?q=desemprego%20desde%202015"
+
+curl --fail --silent \
+  "https://open-economics-data.knbf982hkn.chatgpt.site/api/v2/datasets/ibge-aggregates%3A6381/schema"
+```
+
+For BCB, `/api/v2/datasets/bcb-sgs:{code}/observations` provides direct series
+access with authoritative frequency, unit, source, coverage, formula, and
+warning metadata. For IBGE, inspect `/schema`, then send explicit `variable`,
+`periods`, `locality`, and `classification` selections to `/observations`.
+SICONFI DCA, RREO, and RGF use the same dataset routes while retaining entity,
+reporting period, annex, account, column, and raw value. Official
+multidimensional structure is preserved instead of flattened away.
+Comex Stat preserves trade-flow dimensions and metrics. ANP fuel-price queries
+return period/geography/product aggregates calculated from official station
+observations, with source counts and the transformation disclosed while station
+identity and address fields are excluded. EPE and MTE serve compact, versioned
+snapshots of official workbooks: electricity retains geography/class/market,
+while adjusted Novo Caged stock and flows retain their separate national,
+region/state, or economic-activity breakdowns. CVM daily fund reports retain
+fund/class identity and quota values; classification aggregates sum only
+additive measures and identify incomplete filing dates. RTN retains its monthly
+account hierarchy and above-the-line cash/effective-payment conventions. RMD
+debt statistics keep composition, holder, maturity, and cost tables separate,
+with their official units, definitions, and publication vintage.
 
 ## When to use Open Economics
 
-If one official series solves your use case, call BCB or IBGE directly. That is
-the shortest and most trustworthy path.
+If you already know the exact official identifier and source contract, calling
+the publisher directly remains the shortest path. Open Economics is useful when
+the need starts in human language, spans publisher conventions, requires
+explicit dimensions, or must retain one consistent provenance and error model.
 
-Open Economics is useful when a product combines common BCB and IBGE series and
-would otherwise maintain separate discovery, date, unit, error, provenance, and
-CSV conventions. It provides one small curated catalog and one response
-contract; it is not a replacement for either publisher's complete catalog.
-
-## One contract across BCB and IBGE
+## One contract across official sources
 
 The same observation envelope can retrieve BCB IBC-Br (SGS 24363) and IBGE real
 GDP growth (SIDRA 5932/6561), without maintaining two date and response parsers:
@@ -157,6 +196,31 @@ change-management, and incident-reporting policy.
 - **BCB SGS**: rates, FX, activity, credit, fiscal, external-sector, and
   commodity series. Rows are normalized, sorted, and de-duplicated because
   upstream ordering is not guaranteed.
+- **Tesouro Nacional / SICONFI**: annual accounts, budget execution, fiscal
+  limits, personnel spending, debt, and the government-entity registry.
+- **Tesouro Nacional / RTN**: monthly current-value Government Central revenue,
+  transfers, expenditure, and fiscal-result accounts from 1997 onward, in the
+  official hierarchy and R$ million unit.
+- **Tesouro Nacional / RMD**: monthly Federal Public Debt composition, DPMFi
+  holders, average maturity, and cost. Each official table keeps its own unit,
+  coverage, definitions, footnotes, and publication vintage.
+- **MDIC / Comex Stat**: exports and imports by product, partner, state,
+  transport mode, customs office, and international classifications.
+- **ANP / Levantamento de Preços de Combustíveis**: rolling four-week or
+  monthly fuel and GLP station observations, aggregated by explicit period,
+  product, and geography with calculation provenance.
+- **EPE / Consumo Mensal de Energia Elétrica**: monthly consumption and
+  consumer counts from 2004 onward by UF, region, class, and captive/free
+  market, with the official workbook version attached.
+- **MTE / Novo Caged**: adjusted monthly employment stock, admissions,
+  dismissals, balance, and relative change from 2020 onward by national total,
+  region/state, or economic activity, with the exact official workbook vintage
+  attached and incompatible table dimensions kept separate.
+- **CVM / Informe Diário de Fundos**: daily portfolio value, net assets,
+  subscriptions, redemptions, quota values, and reported holders. Queries can
+  compare official classifications or resolve a latest fund/class report by
+  CNPJ or name; quota values are never aggregated and holder totals are not
+  represented as unique people.
 
 There are 32 curated indicators across inflation, interest rates, currencies,
 activity, labor, credit, fiscal, external, and markets. Values are never
@@ -177,6 +241,11 @@ npm install
 npm run dev
 npm run lint
 npm test
+npm run catalog:epe-sync
+npm run catalog:mte-sync
+npm run catalog:cvm-sync
+npm run catalog:rtn-sync
+npm run catalog:dpf-sync
 ```
 
 Examples are available in [examples/python.py](./examples/python.py),
