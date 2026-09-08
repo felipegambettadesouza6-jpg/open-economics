@@ -4,7 +4,7 @@ A free, read-only semantic routing layer for authoritative Brazilian economic da
 
 - **Semantic API:** https://open-economics-data.knbf982hkn.chatgpt.site/api/v2
 - **Stable series API:** https://open-economics-data.knbf982hkn.chatgpt.site/api/v1
-- **MCP:** https://open-economics-data.knbf982hkn.chatgpt.site/mcp
+- **MCP:** https://open-economics-data.knbf982hkn.chatgpt.site/api/mcp
 - **Documentation:** https://open-economics-data.knbf982hkn.chatgpt.site/en/docs
 - **Runnable examples:** https://open-economics-data.knbf982hkn.chatgpt.site/en/guides
 - **Source and issue tracker:** https://github.com/felipegambettadesouza6-jpg/open-economics

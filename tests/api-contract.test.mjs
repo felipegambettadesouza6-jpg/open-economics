@@ -431,7 +431,7 @@ test("MCP exposes a focused read-only tool surface backed by v2 discovery", { co
     "content-type": "application/json",
     "mcp-protocol-version": "2025-11-25",
   };
-  const listed = await request("/mcp", {
+  const listed = await request("/api/mcp", {
     method: "POST",
     headers,
     body: JSON.stringify({ jsonrpc: "2.0", id: 1, method: "tools/list", params: {} }),
@@ -454,7 +454,7 @@ test("MCP exposes a focused read-only tool surface backed by v2 discovery", { co
   assert.match(listedText, /get_tesouro_dpf/);
   assert.equal((listedText.match(/"name":/g) ?? []).length, 19);
 
-  const called = await request("/mcp", {
+  const called = await request("/api/mcp", {
     method: "POST",
     headers,
     body: JSON.stringify({ jsonrpc: "2.0", id: 2, method: "tools/call", params: { name: "search_official_data", arguments: { query: "taxa de desemprego desde 2015", limit: 3 } } }),
@@ -464,7 +464,7 @@ test("MCP exposes a focused read-only tool surface backed by v2 discovery", { co
   assert.match(calledText, /Resolved to unemployment/);
   assert.match(calledText, /br-unemployment-rate/);
 
-  const debtCalled = await request("/mcp", {
+  const debtCalled = await request("/api/mcp", {
     method: "POST",
     headers,
     body: JSON.stringify({ jsonrpc: "2.0", id: 3, method: "tools/call", params: { name: "get_tesouro_dpf", arguments: { dataset_id: "tesouro-dpf:debt-profile", table: "composition", from: "2026-07", to: "2026-07", categories: ["total"], limit: 10 } } }),

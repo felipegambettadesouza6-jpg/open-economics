@@ -71,7 +71,7 @@ const worker = {
       return handleTelemetry(request, env.DB);
     }
 
-    if (url.pathname === "/mcp") {
+    if (url.pathname === "/mcp" || url.pathname === "/api/mcp") {
       return handleMcp(request);
     }
 
