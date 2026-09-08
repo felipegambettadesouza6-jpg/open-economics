@@ -122,6 +122,7 @@ test("v2 resolves demand before availability and abstains instead of substitutin
   const rootBody = await root.json();
   assert.equal(rootBody.version, "v2");
   assert.equal(rootBody.status, "stable");
+  assert.equal(rootBody.links.mcp, "http://localhost:3000/api/mcp");
 
   const inflation = await request("/api/v2/search?q=Brazilian%20monthly%20inflation&limit=3");
   assert.equal(inflation.status, 200);

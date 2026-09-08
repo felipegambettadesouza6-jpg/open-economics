@@ -977,7 +977,7 @@ export async function routeV2Get(request: Request): Promise<V2RouteResult | null
         description: "Demand-first semantic routing over official Brazilian economic data.",
         guarantees: ["concepts are resolved before catalog availability", "unsupported needs are explicit", "units, dimensions, reference periods, and provenance are preserved"],
         catalog: officialCatalogSummary,
-        links: { self: url.toString(), search: `${url.origin}/api/v2/search?q=inflacao`, concepts: `${url.origin}/api/v2/concepts`, openapi: `${url.origin}/api/v2/openapi.json`, mcp: `${url.origin}/mcp` },
+        links: { self: url.toString(), search: `${url.origin}/api/v2/search?q=inflacao`, concepts: `${url.origin}/api/v2/concepts`, openapi: `${url.origin}/api/v2/openapi.json`, mcp: `${url.origin}/api/mcp` },
       },
     };
   }
