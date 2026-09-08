@@ -1,0 +1,18 @@
+{
+  "$schema": "https://static.modelcontextprotocol.io/schemas/2025-12-11/server.schema.json",
+  "name": "io.github.felipegambettadesouza6-jpg/open-economics",
+  "title": "Open Economics",
+  "description": "Discover, resolve, and query official Brazilian economic data with semantic search and provenance.",
+  "version": "2.0.0",
+  "websiteUrl": "https://open-economics-data.knbf982hkn.chatgpt.site/en/docs",
+  "repository": {
+    "url": "https://github.com/felipegambettadesouza6-jpg/open-economics",
+    "source": "github"
+  },
+  "remotes": [
+    {
+      "type": "streamable-http",
+      "url": "https://open-economics-data.knbf982hkn.chatgpt.site/api/mcp"
+    }
+  ]
+}

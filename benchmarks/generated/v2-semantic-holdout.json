@@ -1,0 +1,111 @@
+{
+  "benchmark": "open-economics-real-demand-v1",
+  "system": "open-economics-v2-semantic-router",
+  "tasks": 96,
+  "query_ready_demand": {
+    "tasks": 72,
+    "unweighted_rate": 0.75,
+    "demand_weighted_rate": 0.7873303167420814,
+    "concepts": 87,
+    "total_concepts": 96
+  },
+  "overall": {
+    "top1": 0.9773755656108597,
+    "top3": 1
+  },
+  "discovery_holdout": {
+    "tasks": 96,
+    "top1": 0.9773755656108597,
+    "top3": 1
+  },
+  "unsupported_sources": {
+    "tasks": 9,
+    "unweighted_rate": 0.09375,
+    "demand_weighted_rate": 0.05429864253393668,
+    "safe_non_substitution": 1
+  },
+  "resolution_counts": {
+    "resolved": 72,
+    "ambiguous": 17,
+    "unresolved": 7
+  },
+  "availability_counts": {
+    "official-dataset-ready": 56,
+    "source-not-integrated": 17,
+    "stable-series-ready": 16,
+    "unresolved": 7
+  },
+  "domains": {
+    "activity": {
+      "tasks": 10,
+      "top1": 1,
+      "top3": 1
+    },
+    "agriculture": {
+      "tasks": 5,
+      "top1": 1,
+      "top3": 1
+    },
+    "credit": {
+      "tasks": 8,
+      "top1": 1,
+      "top3": 1
+    },
+    "energy": {
+      "tasks": 5,
+      "top1": 1,
+      "top3": 1
+    },
+    "environment": {
+      "tasks": 2,
+      "top1": 1,
+      "top3": 1
+    },
+    "external": {
+      "tasks": 9,
+      "top1": 1,
+      "top3": 1
+    },
+    "fiscal-national": {
+      "tasks": 8,
+      "top1": 1,
+      "top3": 1
+    },
+    "fiscal-subnational": {
+      "tasks": 6,
+      "top1": 0.7857142857142857,
+      "top3": 1
+    },
+    "housing": {
+      "tasks": 3,
+      "top1": 1,
+      "top3": 1
+    },
+    "labor": {
+      "tasks": 10,
+      "top1": 1,
+      "top3": 1
+    },
+    "markets": {
+      "tasks": 6,
+      "top1": 1,
+      "top3": 1
+    },
+    "monetary": {
+      "tasks": 8,
+      "top1": 1,
+      "top3": 1
+    },
+    "population-income": {
+      "tasks": 7,
+      "top1": 0.8666666666666667,
+      "top3": 1
+    },
+    "prices": {
+      "tasks": 9,
+      "top1": 1,
+      "top3": 1
+    }
+  },
+  "failures": []
+}

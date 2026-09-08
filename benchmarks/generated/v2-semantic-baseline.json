@@ -1,0 +1,130 @@
+{
+  "benchmark": "open-economics-real-demand-v1",
+  "system": "open-economics-v2-semantic-router",
+  "tasks": 696,
+  "query_ready_demand": {
+    "tasks": 533,
+    "unweighted_rate": 0.7658045977011494,
+    "demand_weighted_rate": 0.8170504044803982,
+    "concepts": 53,
+    "total_concepts": 96
+  },
+  "overall": {
+    "top1": 0.9956440572495333,
+    "top3": 1
+  },
+  "discovery_holdout": {
+    "tasks": 96,
+    "top1": 0.9773755656108597,
+    "top3": 1
+  },
+  "unsupported_sources": {
+    "tasks": 65,
+    "unweighted_rate": 0.09339080459770115,
+    "demand_weighted_rate": 0.05476042314872431,
+    "safe_non_substitution": 1
+  },
+  "unserved_demand": {
+    "tasks": 163,
+    "unweighted_rate": 0.23419540229885058,
+    "demand_weighted_rate": 0.18294959551960177
+  },
+  "resolution_counts": {
+    "resolved": 664,
+    "ambiguous": 25,
+    "unresolved": 7
+  },
+  "availability_counts": {
+    "official-dataset-ready": 386,
+    "source-not-integrated": 155,
+    "stable-series-ready": 148,
+    "unresolved": 7
+  },
+  "domains": {
+    "activity": {
+      "tasks": 73,
+      "query_ready": 0.9898477157360406,
+      "top1": 0.9898477157360406,
+      "top3": 1
+    },
+    "agriculture": {
+      "tasks": 36,
+      "query_ready": 0.5694444444444444,
+      "top1": 1,
+      "top3": 1
+    },
+    "credit": {
+      "tasks": 58,
+      "query_ready": 0.958904109589041,
+      "top1": 1,
+      "top3": 1
+    },
+    "energy": {
+      "tasks": 37,
+      "query_ready": 0.4594594594594595,
+      "top1": 1,
+      "top3": 1
+    },
+    "environment": {
+      "tasks": 14,
+      "query_ready": 0,
+      "top1": 1,
+      "top3": 1
+    },
+    "external": {
+      "tasks": 64,
+      "query_ready": 0.8841463414634146,
+      "top1": 1,
+      "top3": 1
+    },
+    "fiscal-national": {
+      "tasks": 59,
+      "query_ready": 0.9805194805194806,
+      "top1": 1,
+      "top3": 1
+    },
+    "fiscal-subnational": {
+      "tasks": 43,
+      "query_ready": 0.97,
+      "top1": 0.97,
+      "top3": 1
+    },
+    "housing": {
+      "tasks": 22,
+      "query_ready": 0.6756756756756757,
+      "top1": 1,
+      "top3": 1
+    },
+    "labor": {
+      "tasks": 73,
+      "query_ready": 0.9456521739130435,
+      "top1": 1,
+      "top3": 1
+    },
+    "markets": {
+      "tasks": 44,
+      "query_ready": 0.3783783783783784,
+      "top1": 1,
+      "top3": 1
+    },
+    "monetary": {
+      "tasks": 58,
+      "query_ready": 0.6474820143884892,
+      "top1": 1,
+      "top3": 1
+    },
+    "population-income": {
+      "tasks": 51,
+      "query_ready": 0.6880733944954128,
+      "top1": 0.981651376146789,
+      "top3": 1
+    },
+    "prices": {
+      "tasks": 64,
+      "query_ready": 0.8251748251748252,
+      "top1": 1,
+      "top3": 1
+    }
+  },
+  "failures": []
+}

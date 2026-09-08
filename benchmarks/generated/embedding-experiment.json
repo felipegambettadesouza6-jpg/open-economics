@@ -1,0 +1,57 @@
+{
+  "model": "intfloat/multilingual-e5-small",
+  "calibration_tasks": 140,
+  "holdout_tasks": 556,
+  "engines": {
+    "multilingual_embedding": {
+      "selected_threshold": 0.8475119347842235,
+      "calibration_objective": 0.7565450753456313,
+      "calibration": {
+        "top1_on_covered": 0.7551020408163265,
+        "top3_on_covered": 0.7551020408163265,
+        "safe_miss_on_unsupported": 0.7579908675799086
+      },
+      "holdout": {
+        "top1_on_covered": 0.6027397260273972,
+        "top3_on_covered": 0.6109589041095891,
+        "safe_miss_on_unsupported": 0.867027027027027
+      }
+    },
+    "hybrid_embedding_lexical": {
+      "selected_threshold": 0.8877848274302933,
+      "calibration_objective": 0.7700962135833286,
+      "calibration": {
+        "top1_on_covered": 0.7551020408163265,
+        "top3_on_covered": 0.7551020408163265,
+        "safe_miss_on_unsupported": 0.7853881278538812
+      },
+      "holdout": {
+        "top1_on_covered": 0.6904109589041096,
+        "top3_on_covered": 0.6904109589041096,
+        "safe_miss_on_unsupported": 0.8821621621621621
+      }
+    }
+  },
+  "concept_router": {
+    "multilingual_embedding": {
+      "all_tasks": {
+        "top1": 0.8979464841319228,
+        "top3": 0.940883634100809
+      },
+      "manual_discovery_holdout": {
+        "top1": 0.5972850678733032,
+        "top3": 0.7194570135746606
+      }
+    },
+    "hybrid_embedding_lexical": {
+      "all_tasks": {
+        "top1": 0.8904791537025514,
+        "top3": 0.9271935283136279
+      },
+      "manual_discovery_holdout": {
+        "top1": 0.4253393665158371,
+        "top3": 0.5656108597285068
+      }
+    }
+  }
+}

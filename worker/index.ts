@@ -3,6 +3,7 @@ import { handleImageOptimization, DEFAULT_DEVICE_SIZES, DEFAULT_IMAGE_SIZES } fr
 import handler from "vinext/server/app-router-entry";
 import { handleApi } from "../lib/api/router";
 import { handleTelemetry } from "../lib/telemetry";
+import { handleMcp } from "../lib/mcp/server";
 
 interface Env {
   ASSETS: Fetcher;
@@ -68,6 +69,10 @@ const worker = {
 
     if (url.pathname === "/_events") {
       return handleTelemetry(request, env.DB);
+    }
+
+    if (url.pathname === "/mcp" || url.pathname === "/api/mcp") {
+      return handleMcp(request);
     }
 
     if (url.pathname === "/api" || url.pathname.startsWith("/api/")) {

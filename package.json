@@ -1,6 +1,6 @@
 {
   "name": "open-economics-api",
-  "version": "0.1.0",
+  "version": "2.0.0",
   "private": true,
   "license": "MIT",
   "engines": {
@@ -11,13 +11,27 @@
     "build": "vinext build",
     "start": "vinext start",
     "test": "npm run build && node --test tests/*.test.mjs",
-    "lint": "eslint . --ignore-pattern dist --ignore-pattern .next",
+    "lint": "eslint . --ignore-pattern dist --ignore-pattern .next --ignore-pattern benchmarks/generated",
+    "benchmark:generate": "node scripts/generate-demand-benchmark.mjs",
+    "benchmark:baseline": "npm run benchmark:generate && npm run build && node scripts/evaluate-current-discovery.mjs",
+    "benchmark:embeddings": "python scripts/evaluate-embedding-discovery.py",
+    "benchmark:v2": "npm run benchmark:generate && npm run build && node scripts/evaluate-v2-discovery.mjs",
+    "benchmark:priorities": "node scripts/report-coverage-priorities.mjs",
+    "benchmark:datasets": "node scripts/evaluate-dataset-resolution.mjs",
+    "catalog:sync": "node scripts/sync-official-catalogs.mjs",
+    "catalog:epe-sync": "python scripts/sync-epe-electricity.py",
+    "catalog:mte-sync": "python scripts/sync-mte-formal-employment.py",
+    "catalog:cvm-sync": "python scripts/sync-cvm-investment-funds.py",
+    "catalog:rtn-sync": "python scripts/sync-tesouro-rtn.py",
+    "catalog:dpf-sync": "python scripts/sync-tesouro-dpf.py",
     "db:generate": "drizzle-kit generate"
   },
   "dependencies": {
+    "@modelcontextprotocol/server": "^2.0.0",
     "drizzle-orm": "0.45.2",
     "react": "19.2.6",
-    "react-dom": "19.2.6"
+    "react-dom": "19.2.6",
+    "zod": "^4.2.0"
   },
   "devDependencies": {
     "@cloudflare/vite-plugin": "1.37.1",
