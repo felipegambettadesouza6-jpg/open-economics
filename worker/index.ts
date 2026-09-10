@@ -2,7 +2,7 @@
 import { handleImageOptimization, DEFAULT_DEVICE_SIZES, DEFAULT_IMAGE_SIZES } from "vinext/server/image-optimization";
 import handler from "vinext/server/app-router-entry";
 import { handleApi } from "../lib/api/router";
-import { handleTelemetry } from "../lib/telemetry";
+import { handleTelemetry, recordMcpRequest } from "../lib/telemetry";
 import { handleMcp } from "../lib/mcp/server";
 
 interface Env {
@@ -72,7 +72,10 @@ const worker = {
     }
 
     if (url.pathname === "/mcp" || url.pathname === "/api/mcp") {
-      return handleMcp(request);
+      const telemetryRequest = request.clone();
+      const response = await handleMcp(request);
+      ctx.waitUntil(recordMcpRequest(env.DB, telemetryRequest, response.clone()));
+      return response;
     }
 
     if (url.pathname === "/api" || url.pathname.startsWith("/api/")) {

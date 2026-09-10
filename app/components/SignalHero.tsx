@@ -7,13 +7,13 @@ import type { IndicatorDefinition } from "@/lib/domain/types";
 import { localized, type Locale } from "@/lib/i18n";
 
 type Point = { date: string; period: string; value: number | null };
-type SeriesState = Record<string, { status: "loading" | "ready" | "error"; data?: Point[] }>;
+type SeriesState = Record<string, { status: "loading" | "ready" | "error"; data?: Point[]; stale?: boolean }>;
 
 const featured = [
-  { id: "br-ipca-12m", short: "IPCA", source: "IBGE", fallback: 4.44, unit: "%", tone: "coral" },
-  { id: "br-selic-target", short: "Selic", source: "BCB", fallback: 10.5, unit: "%", tone: "blue" },
-  { id: "br-unemployment-rate", short: "Unemployment", source: "IBGE", fallback: 6.2, unit: "%", tone: "sand" },
-  { id: "br-ibc-br", short: "IBC-Br", source: "BCB", fallback: 148.7, unit: "", tone: "clay" },
+  { id: "br-ipca-12m", short: "IPCA", source: "IBGE", unit: "%", tone: "coral" },
+  { id: "br-selic-target", short: "Selic", source: "BCB", unit: "%", tone: "blue" },
+  { id: "br-unemployment-rate", short: "Unemployment", source: "IBGE", unit: "%", tone: "sand" },
+  { id: "br-ibc-br", short: "IBC-Br", source: "BCB", unit: "", tone: "clay" },
 ] as const;
 
 const rasterColors = {
@@ -70,8 +70,8 @@ export function SignalHero({ indicators, locale }: { indicators: IndicatorDefini
     const controller = new AbortController();
     featured.forEach((item) => {
       fetch(`/api/v1/indicators/${item.id}/observations?start=${startDate(item.id === "br-ibc-br" ? 5 : 3)}&order=asc`, { signal: controller.signal })
-        .then(async (response) => { if (!response.ok) throw new Error(); return response.json() as Promise<{ data: Point[] }>; })
-        .then(({ data }) => setSeries((current) => ({ ...current, [item.id]: { status: "ready", data } })))
+        .then(async (response) => { if (!response.ok) throw new Error(); return response.json() as Promise<{ data: Point[]; meta?: { stale?: boolean } }>; })
+        .then(({ data, meta }) => setSeries((current) => ({ ...current, [item.id]: { status: "ready", data, stale: meta?.stale === true } })))
         .catch((error: Error) => { if (error.name !== "AbortError") setSeries((current) => ({ ...current, [item.id]: { status: "error" } })); });
     });
     return () => controller.abort();
@@ -98,15 +98,10 @@ export function SignalHero({ indicators, locale }: { indicators: IndicatorDefini
 
   const current = featured[active];
   const currentPoints = useMemo(() => numericValues(series[current.id]?.data), [current.id, series]);
-  const fallbackPoints = useMemo(() => Array.from({ length: 42 }, (_, index) => ({
-    date: `${2023 + Math.floor(index / 12)}-${String((index % 12) + 1).padStart(2, "0")}-01`,
-    period: `${2023 + Math.floor(index / 12)}-${String((index % 12) + 1).padStart(2, "0")}`,
-    value: current.fallback + Math.sin(index * .46 + active) * (active === 3 ? 2.8 : .55) + index * .012,
-  })), [active, current.fallback]);
-  const plotted = useMemo(() => currentPoints.length > 1 ? currentPoints : fallbackPoints, [currentPoints, fallbackPoints]);
+  const plotted = currentPoints;
   const values = plotted.map((point) => point.value);
-  const low = Math.min(...values);
-  const high = Math.max(...values);
+  const low = values.length ? Math.min(...values) : 0;
+  const high = values.length ? Math.max(...values) : 0;
   const span = high - low || 1;
 
   useEffect(() => {
@@ -128,6 +123,7 @@ export function SignalHero({ indicators, locale }: { indicators: IndicatorDefini
       const height = bounds.height;
       context.setTransform(ratio, 0, 0, ratio, 0, 0);
       context.clearRect(0, 0, width, height);
+      if (plotted.length < 2) return;
       const [red, green, blue] = rasterColors[current.tone];
       const cell = width < 620 ? 7 : 8;
       const chartTop = height * .17;
@@ -197,14 +193,14 @@ export function SignalHero({ indicators, locale }: { indicators: IndicatorDefini
 
   const latest = currentPoints.at(-1);
   const previous = currentPoints.at(-2);
-  const value = latest?.value ?? current.fallback;
+  const value = latest?.value;
   const movement = latest && previous ? latest.value - previous.value : 0;
   const tickTop = high.toLocaleString(locale, { maximumFractionDigits: 2 });
   const tickMiddle = ((high + low) / 2).toLocaleString(locale, { maximumFractionDigits: 2 });
   const tickBottom = low.toLocaleString(locale, { maximumFractionDigits: 2 });
-  const firstPeriod = plotted[0]?.period ?? "2023-01";
-  const middlePeriod = plotted[Math.floor(plotted.length / 2)]?.period ?? "2024-07";
-  const lastPeriod = plotted.at(-1)?.period ?? "2026-07";
+  const firstPeriod = plotted[0]?.period ?? "—";
+  const middlePeriod = plotted[Math.floor(plotted.length / 2)]?.period ?? "—";
+  const lastPeriod = plotted.at(-1)?.period ?? "—";
 
   const moveField = (event: ReactPointerEvent<HTMLDivElement>) => {
     const bounds = event.currentTarget.getBoundingClientRect();
@@ -219,19 +215,19 @@ export function SignalHero({ indicators, locale }: { indicators: IndicatorDefini
       <p className="signal-eyebrow">{pt ? "A CAMADA ABERTA PARA DADOS OFICIAIS" : "THE OPEN LAYER FOR OFFICIAL DATA"}</p>
       <h1>{pt ? <>Dados oficiais,<br />feitos para <span>fluir.</span></> : <>Official data,<br />made to <span>flow.</span></>}</h1>
       <div className="signal-hero-intro">
-        <p>{pt ? "Uma interface consistente para produtos que combinam séries do Banco Central e do IBGE." : "One consistent interface for products that combine Central Bank and IBGE series."}</p>
-        <div className="signal-hero-actions"><a className="signal-button dark" href={localized(locale, "/catalog")}>{pt ? "Explorar dados" : "Explore data"}<span>↗</span></a><a className="signal-text-link" href={localized(locale, "/docs")}>{pt ? "Começar a construir" : "Start building"}<span>→</span></a></div>
+        <p>{pt ? "Consulte dados oficiais do Brasil por tema, veja a origem e reutilize a consulta na sua aplicação ou no seu assistente de IA." : "Find official Brazilian data by topic, inspect the source, and reuse the query in your application or AI assistant."}</p>
+        <div className="signal-hero-actions"><a className="signal-button dark" href={localized(locale, "/ask")}>{pt ? "Perguntar aos dados" : "Ask the data"}<span>↗</span></a><a className="signal-text-link" href={localized(locale, "/mcp")}>{pt ? "Conectar à IA" : "Connect to AI"}<span>→</span></a></div>
       </div>
     </div>
 
     <div className={`economic-field field-phase-${fieldPhase} ${autoPlaying ? "is-playing" : "is-paused"}`} onPointerMove={moveField} style={{ "--field-x": "0", "--field-y": "0" } as CSSProperties}>
       <canvas ref={canvasRef} aria-label={`${current.short} historical series`} />
-      <div className="field-axis-y" aria-hidden="true"><span>{tickTop}</span><span>{tickMiddle}</span><span>{tickBottom}</span></div>
+      <div className="field-axis-y" aria-hidden="true"><span>{latest ? tickTop : "—"}</span><span>{latest ? tickMiddle : "—"}</span><span>{latest ? tickBottom : "—"}</span></div>
       <div className="field-axis-x" aria-hidden="true"><span>{firstPeriod}</span><span>{middlePeriod}</span><span>{lastPeriod}</span></div>
       <div className="field-value" key={current.id}>
         <span>{current.short} · {current.source}</span>
-        <strong>{value.toLocaleString(locale, { maximumFractionDigits: 2 })}<i>{current.unit}</i></strong>
-        <small>{latest?.period ?? (pt ? "última observação" : "latest observation")} · {movement > 0 ? "+" : ""}{movement.toFixed(2)}</small>
+        <strong>{value?.toLocaleString(locale, { maximumFractionDigits: 2 }) ?? "—"}<i>{current.unit}</i></strong>
+        <small>{latest ? `${latest.period} · ${movement > 0 ? "+" : ""}${movement.toFixed(2)}` : series[current.id]?.status === "loading" ? (pt ? "Consultando fonte…" : "Loading source…") : (pt ? "Dados indisponíveis" : "Data unavailable")}{series[current.id]?.stale ? (pt ? " · snapshot anterior" : " · stale snapshot") : ""}</small>
       </div>
       <div className="field-series-id"><span>{pt ? "ID ESTÁVEL" : "STABLE SERIES ID"}</span><code>{current.id}</code></div>
       <div className="field-provenance"><span>{pt ? "FONTE OFICIAL" : "OFFICIAL SOURCE"}</span><b>{current.source}</b><small>{pt ? "unidade e período preservados" : "unit and period preserved"}</small></div>

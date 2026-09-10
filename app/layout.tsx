@@ -19,7 +19,7 @@ const dataMono = DM_Mono({
 export async function generateMetadata(): Promise<Metadata> {
   const title = "Open Economics — Official data, made to flow";
   const description =
-    "Discover, understand, and use official economic and financial data through one consistent API.";
+    "Find and query official Brazilian economic data through one free API and a public MCP server with 19 read-only tools.";
 
   return {
     metadataBase: new URL(SITE_ORIGIN),

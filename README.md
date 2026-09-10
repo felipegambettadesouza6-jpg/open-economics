@@ -5,6 +5,8 @@ A free, read-only semantic routing layer for authoritative Brazilian economic da
 - **Semantic API:** https://open-economics-data.knbf982hkn.chatgpt.site/api/v2
 - **Stable series API:** https://open-economics-data.knbf982hkn.chatgpt.site/api/v1
 - **MCP:** https://open-economics-data.knbf982hkn.chatgpt.site/api/mcp
+- **Ask the data:** https://open-economics-data.knbf982hkn.chatgpt.site/en/ask
+- **MCP setup:** https://open-economics-data.knbf982hkn.chatgpt.site/en/mcp
 - **Documentation:** https://open-economics-data.knbf982hkn.chatgpt.site/en/docs
 - **Runnable examples:** https://open-economics-data.knbf982hkn.chatgpt.site/en/guides
 - **Source and issue tracker:** https://github.com/felipegambettadesouza6-jpg/open-economics
@@ -13,7 +15,7 @@ A free, read-only semantic routing layer for authoritative Brazilian economic da
 - **Contributing:** [CONTRIBUTING.md](./CONTRIBUTING.md)
 - **Security:** [SECURITY.md](./SECURITY.md)
 
-**[Try the API in the browser →](https://open-economics-data.knbf982hkn.chatgpt.site/en/playground?utm_source=github&utm_medium=repository&utm_campaign=github-repo)**
+**[Run a real economic question →](https://open-economics-data.knbf982hkn.chatgpt.site/en/ask?utm_source=github&utm_medium=repository&utm_campaign=github-repo)** · **[Connect the MCP server →](https://open-economics-data.knbf982hkn.chatgpt.site/en/mcp?utm_source=github&utm_medium=repository&utm_campaign=github-repo)**
 
 Open Economics 2.0 starts with a real economic-information need, resolves its
 meaning independently of current coverage, and then routes it to official data.

@@ -13,9 +13,12 @@ export type ActivationAction =
   | "api_url_copy"
   | "code_copy"
   | "csv_download"
+  | "mcp_config_copy"
   | "playground_run"
   | "raw_response_open"
-  | "response_copy";
+  | "recipe_run"
+  | "response_copy"
+  | "share_link_copy";
 
 function telemetryDisabled() {
   try {

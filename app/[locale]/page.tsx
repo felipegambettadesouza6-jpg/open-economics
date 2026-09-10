@@ -45,7 +45,7 @@ export default async function LocalizedHome({ params }: { params: Promise<{ loca
 
     <section className="oe-sources" aria-label={pt ? "Fontes de dados" : "Data sources"}>
       <p>{pt ? "UMA INTERFACE ABERTA SOBRE" : "ONE OPEN INTERFACE OVER"}</p>
-      <div><span>Banco Central do Brasil</span><i /> <span>IBGE</span><i /> <span>SIDRA</span><i /> <span>SGS</span></div>
+      <div><span>Banco Central do Brasil</span><i /> <span>IBGE</span><i /> <span>Tesouro</span><i /> <span>MTE</span><i /> <span>ANP</span></div>
       <small>{pt ? "Com origem, unidade e metodologia preservadas" : "With provenance, units, and methodology preserved"}</small>
     </section>
 
@@ -59,7 +59,7 @@ export default async function LocalizedHome({ params }: { params: Promise<{ loca
       <div className="oe-confluence-copy">
         <p className="oe-label">{pt ? "UMA CAMADA CONSISTENTE" : "ONE CONSISTENT LAYER"}</p>
         <h2>{pt ? "Muitas fontes. Uma forma de trabalhar." : "Many sources. One way to work."}</h2>
-        <p>{pt ? "Se uma única série resolve o seu caso, use a fonte oficial diretamente. A Open Economics vale a pena quando seu produto combina BCB e IBGE: um contrato para IDs, datas, unidades, erros e proveniência." : "If one series solves your use case, use the official source directly. Open Economics earns its place when your product combines BCB and IBGE: one contract for IDs, dates, units, errors, and provenance."}</p>
+        <p>{pt ? "Comece pela pergunta econômica. Encontre conjuntos do BCB, IBGE, Tesouro, MDIC, ANP, EPE, MTE e CVM, com unidades, períodos, dimensões e links oficiais preservados." : "Start with the economic question. Find datasets from BCB, IBGE, Tesouro, MDIC, ANP, EPE, MTE, and CVM, with their units, periods, dimensions, and official links preserved."}</p>
         <a href={localized(locale, "/sources")}>{pt ? "Ver fontes e licenças" : "See sources and licenses"}<span>→</span></a>
       </div>
       <div className="oe-stream"><NormalizationScene locale={locale} /></div>
@@ -85,10 +85,10 @@ export default async function LocalizedHome({ params }: { params: Promise<{ loca
       <div className="oe-code-window">
         <div><span>REQUEST</span><span>JSON</span></div>
         <pre><code><i>GET</i> /api/v1/indicators/br-ipca-12m/observations<br /><br /><em>{`{`}</em><br />  <b>&quot;data&quot;</b>: [<br />    {`{`} <b>&quot;period&quot;</b>: <q>2026-07</q>, <b>&quot;value&quot;</b>: 4.44 {`}`},<br />  ],<br />  <b>&quot;meta&quot;</b>: {`{`} <b>&quot;indicator&quot;</b>: {`{`} <b>&quot;id&quot;</b>: <q>br-ipca-12m</q> {`}`},<br />    <b>&quot;source&quot;</b>: {`{`} <b>&quot;id&quot;</b>: <q>ibge</q> {`}`} {`}`}<br /><em>{`}`}</em></code></pre>
-        <footer><span>200 OK</span><span>182 ms</span><span>PROVENANCE INCLUDED</span></footer>
+        <footer><span>200 OK</span><span>{pt ? "EXEMPLO DE RESPOSTA" : "EXAMPLE RESPONSE"}</span><span>PROVENANCE INCLUDED</span></footer>
       </div>
       <div className="oe-code-tape" aria-hidden="true"><span>REST / JSON / OPENAPI 3.1 / NO AUTHENTICATION / STABLE IDS / SOURCE LINKS / REVISION AWARE /</span><span>REST / JSON / OPENAPI 3.1 / NO AUTHENTICATION / STABLE IDS / SOURCE LINKS / REVISION AWARE /</span></div>
-      <div className="oe-api-actions"><p>{pt ? "Sem chave e sem cadastro. Troque integrações separadas do BCB e IBGE por uma interface comum — mantendo os links oficiais em cada resposta." : "No key and no signup. Replace separate BCB and IBGE integrations with one common interface—while retaining official links in every response."}</p><div><a className="signal-button light" href={localized(locale, "/playground")}>{pt ? "Testar a API" : "Try the API"}<span>↗</span></a><a href={localized(locale, "/docs")}>{pt ? "Ler documentação" : "Read documentation"}<span>→</span></a></div></div>
+      <div className="oe-api-actions"><p>{pt ? "Sem chave e sem cadastro. Use REST, CSV ou as 19 ferramentas MCP para encontrar e consultar dados oficiais, com cobertura e limitações explícitas." : "No key and no signup. Use REST, CSV, or 19 MCP tools to discover and query official data, with explicit coverage and limitations."}</p><div><a className="signal-button light" href={localized(locale, "/playground")}>{pt ? "Testar a API" : "Try the API"}<span>↗</span></a><a href={localized(locale, "/docs")}>{pt ? "Ler documentação" : "Read documentation"}<span>→</span></a></div></div>
     </section>
 
     <SiteFooter locale={locale} dramatic />

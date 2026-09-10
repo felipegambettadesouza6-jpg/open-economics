@@ -83,7 +83,7 @@ export const bcbSgsProvider: ProviderAdapter = {
     const code = definition.upstream.seriesCode;
     if (!code) throw new ApiError(500, "CATALOG_ERROR", "The indicator is missing its SGS code.");
 
-    const suffix = context.latestOnly ? "/ultimos/400" : "";
+    const suffix = context.latestOnly ? "/ultimos/20" : "";
     const url = new URL(`https://api.bcb.gov.br/dados/serie/bcdata.sgs.${code}/dados${suffix}`);
     url.searchParams.set("formato", "json");
     if (!context.latestOnly) {

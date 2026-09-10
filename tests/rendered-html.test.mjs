@@ -46,7 +46,7 @@ test("redirects legacy links and server-renders the bilingual Open Economics hom
   assert.match(html, /Open Economics/i);
   assert.match(html, /Official data,/i);
   assert.match(html, /made to/i);
-  assert.match(html, /Explore data/i);
+  assert.match(html, /Ask the data/i);
   assert.match(html, /Search indicators/i);
   assert.doesNotMatch(html, /Your site is taking shape|Building your site|react-loading-skeleton|codex-preview/i);
 
@@ -55,11 +55,13 @@ test("redirects legacy links and server-renders the bilingual Open Economics hom
   const portugueseHtml = await portugueseResponse.text();
   assert.match(portugueseHtml, /lang="pt-BR"/i);
   assert.match(portugueseHtml, /Dados oficiais,/i);
-  assert.match(portugueseHtml, /Explorar dados/i);
+  assert.match(portugueseHtml, /Perguntar aos dados/i);
 });
 
 test("server-renders the major localized product experiences", async () => {
   const routes = [
+    ["/en/ask", /Choose a question/i],
+    ["/en/mcp", /ready for agents/i],
     ["/en/catalog", /Economic data catalog/i],
     ["/en/indicators/br-ipca-12m", /IPCA — 12-month change/i],
     ["/en/playground", /Build it\. Run it\. Understand it\./i],

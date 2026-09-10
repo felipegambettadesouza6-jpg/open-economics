@@ -47,6 +47,7 @@ export function HomeDiscovery({ items, locale }: { items: DiscoveryItem[]; local
   const activeSelection = userEdited ? selectedId : scenarios[scenarioIndex].id;
   const selected = results.find((item) => item.id === activeSelection) ?? results[0] ?? items[0];
   const [data, setData] = useState<Point[] | null>(null);
+  const [stale, setStale] = useState(false);
 
   useEffect(() => {
     const root = rootRef.current;
@@ -96,8 +97,8 @@ export function HomeDiscovery({ items, locale }: { items: DiscoveryItem[]; local
     const controller = new AbortController();
     queueMicrotask(() => setData(null));
     fetch(`/api/v1/indicators/${selected.id}/observations?order=desc&limit=36`, { signal: controller.signal })
-      .then(async (response) => response.ok ? response.json() as Promise<{ data: Point[] }> : Promise.reject(new Error()))
-      .then(({ data: observations }) => setData([...observations].reverse()))
+      .then(async (response) => response.ok ? response.json() as Promise<{ data: Point[]; meta?: { stale?: boolean } }> : Promise.reject(new Error()))
+      .then(({ data: observations, meta }) => { setData([...observations].reverse()); setStale(meta?.stale === true); })
       .catch((error: Error) => { if (error.name !== "AbortError") setData([]); });
     return () => controller.abort();
   }, [selected]);
@@ -107,7 +108,7 @@ export function HomeDiscovery({ items, locale }: { items: DiscoveryItem[]; local
     <div className="home-discovery-search"><span className="data-search-mark" aria-hidden="true" /><input aria-label={pt ? "Buscar o catálogo" : "Search the catalog"} value={query} onFocus={() => setUserEdited(true)} onChange={(event) => { setUserEdited(true); setQuery(event.target.value); }} /><kbd>/</kbd><small aria-live="polite"><i />{userEdited ? `${results.length} ${pt ? "resultados" : "results"}` : scenarios[scenarioIndex].state}</small></div>
     <div className="home-discovery-body">
       <div className="home-discovery-results">{results.map((item, index) => <button className={selected?.id === item.id ? "active" : ""} type="button" onClick={() => { setUserEdited(true); setSelectedId(item.id); }} aria-pressed={selected?.id === item.id} key={item.id}><span>0{index + 1}</span><b>{item.name}</b><small>{item.sourceAgency}</small><i>→</i></button>)}{!results.length && <p>{pt ? "Tente um conceito, sigla ou código oficial." : "Try a concept, acronym, or official code."}</p>}</div>
-      {selected && <div className="home-discovery-preview"><div><span>{selected.sourceAgency} · {selected.id}</span><strong>{latest?.value?.toLocaleString(locale, { maximumFractionDigits: 2 }) ?? "—"}<i>{selected.unitSymbol}</i></strong><small>{latest?.period ?? (pt ? "Buscando observação oficial" : "Fetching official observation")}</small></div>{data && data.length > 1 ? <DataChart data={data} unit={selected.unitSymbol} decimals={2} compact locale={locale} /> : <div className="discovery-loading">{pt ? "Carregando histórico…" : "Loading history…"}</div>}<a href={localized(locale, `/indicators/${selected.id}`)}>{pt ? "Abrir ficha da série" : "Open data sheet"}<span>↗</span></a></div>}
+      {selected && <div className="home-discovery-preview"><div><span>{selected.sourceAgency} · {selected.id}</span><strong>{latest?.value?.toLocaleString(locale, { maximumFractionDigits: 2 }) ?? "—"}<i>{selected.unitSymbol}</i></strong><small>{latest?.period ?? (data === null ? (pt ? "Buscando observação oficial" : "Fetching official observation") : (pt ? "Observações indisponíveis" : "Observations unavailable"))}{latest && stale ? (pt ? " · snapshot anterior" : " · stale snapshot") : ""}</small></div>{data && data.length > 1 ? <DataChart data={data} unit={selected.unitSymbol} decimals={2} compact locale={locale} /> : <div className="discovery-loading">{data === null ? (pt ? "Carregando histórico…" : "Loading history…") : (pt ? "Histórico indisponível" : "History unavailable")}</div>}<a href={localized(locale, `/indicators/${selected.id}`)}>{pt ? "Abrir ficha da série" : "Open data sheet"}<span>↗</span></a></div>}
     </div>
   </div>;
 }

@@ -46,10 +46,12 @@ const ACTIVATION_ACTIONS = new Set([
   "api_url_copy",
   "code_copy",
   "csv_download",
-  "indicator_view",
+  "mcp_config_copy",
   "playground_run",
   "raw_response_open",
+  "recipe_run",
   "response_copy",
+  "share_link_copy",
 ]);
 const SEARCH_ENGINES = ["google.", "bing.", "duckduckgo.", "search.yahoo.", "ecosia.", "brave."];
 const SOCIAL_SITES = ["linkedin.", "x.com", "twitter.", "facebook.", "instagram.", "reddit.", "youtube."];
@@ -198,9 +200,7 @@ export async function handleTelemetry(request: Request, db: D1Database | undefin
       const campaign = cleanCampaign(payload.campaign);
       const source = cleanCampaign(payload.source);
       const medium = cleanCampaign(payload.medium);
-      const indicatorId = /^\/(?:en|pt-br)\/indicators\/([^/]+)$/.exec(path)?.[1];
-      const activation = indicatorId && indicators.some((item) => item.id === indicatorId) ? "indicator_view" : null;
-      await recordActor(db, payload.actor, activation, {
+      await recordActor(db, payload.actor, null, {
         campaign,
         channel: source ? medium || "campaign" : referring.channel,
         referrer: source || referring.referrer,
@@ -213,7 +213,6 @@ export async function handleTelemetry(request: Request, db: D1Database | undefin
         ...(medium ? { medium } : {}),
         ...(campaign ? { campaign } : {}),
       });
-      if (activation) await increment(db, "activation", { action: activation, path, locale: localeFromPath(path) });
     } else if (payload.event === "search") {
       const query = cleanQuery(payload.query);
       const surface = typeof payload.surface === "string" && SEARCH_SURFACES.has(payload.surface) ? payload.surface : "unknown";
@@ -290,5 +289,20 @@ export async function recordApiSearch(db: D1Database | undefined, request: Reque
     await increment(db, "search", { surface: "api", locale: "unknown", query, results });
   } catch (error) {
     console.error(JSON.stringify({ telemetry: "search_write_failed", error: error instanceof Error ? error.name : "unknown" }));
+  }
+}
+
+export async function recordMcpRequest(db: D1Database | undefined, request: Request, response: Response) {
+  if (!db || request.method !== "POST" || request.headers.get("x-open-economics-internal") === "1") return;
+  try {
+    const length = Number(request.headers.get("content-length") ?? 0);
+    if (length > 65536) return;
+    const payload = await request.json() as { method?: unknown; params?: { name?: unknown } };
+    if (payload.method !== "tools/call") return;
+    const rawTool = payload.params?.name;
+    const tool = typeof rawTool === "string" && /^[a-z0-9_]{2,80}$/.test(rawTool) ? rawTool : "unknown";
+    await increment(db, "mcp_tool_call", { tool, status: response.ok ? "ok" : "http_error" });
+  } catch (error) {
+    console.error(JSON.stringify({ telemetry: "mcp_write_failed", error: error instanceof Error ? error.name : "unknown" }));
   }
 }

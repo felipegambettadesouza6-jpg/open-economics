@@ -6,9 +6,9 @@ import { localized, type Locale } from "@/lib/i18n";
 type Point = { date: string; period: string; value: number | null };
 
 const chapters = [
-  { id: "br-ipca-12m", code: "IPCA", source: "IBGE", unit: "%", fallback: 4.44, tone: "coral" },
-  { id: "br-selic-target", code: "SELIC", source: "BCB", unit: "%", fallback: 10.5, tone: "blue" },
-  { id: "br-unemployment-rate", code: "PNAD", source: "IBGE", unit: "%", fallback: 6.2, tone: "lime" },
+  { id: "br-ipca-12m", code: "IPCA", source: "IBGE", unit: "%", tone: "coral" },
+  { id: "br-selic-target", code: "SELIC", source: "BCB", unit: "%", tone: "blue" },
+  { id: "br-unemployment-rate", code: "PNAD", source: "IBGE", unit: "%", tone: "lime" },
 ] as const;
 
 const rasterColors = {
@@ -27,6 +27,7 @@ export function DataAtlas({ locale }: { locale: Locale }) {
   const [phase, setPhase] = useState<"settled" | "leaving" | "arriving">("settled");
   const [data, setData] = useState<Record<string, Point[]>>({});
   const [visible, setVisible] = useState(false);
+  const [stale, setStale] = useState<Record<string, boolean>>({});
   const chapter = chapters[active];
 
   const changeChapter = useCallback((next: number) => {
@@ -60,8 +61,8 @@ export function DataAtlas({ locale }: { locale: Locale }) {
     const controller = new AbortController();
     chapters.forEach((item) => {
       fetch(`/api/v1/indicators/${item.id}/observations?start=2023-01-01&order=asc`, { signal: controller.signal })
-        .then(async (response) => response.ok ? response.json() as Promise<{ data: Point[] }> : Promise.reject(new Error()))
-        .then((result) => setData((current) => ({ ...current, [item.id]: result.data })))
+        .then(async (response) => response.ok ? response.json() as Promise<{ data: Point[]; meta?: { stale?: boolean } }> : Promise.reject(new Error()))
+        .then((result) => { setData((current) => ({ ...current, [item.id]: result.data })); setStale((current) => ({ ...current, [item.id]: result.meta?.stale === true })); })
         .catch((error: Error) => { if (error.name !== "AbortError") setData((current) => ({ ...current, [item.id]: [] })); });
     });
     return () => controller.abort();
@@ -74,7 +75,7 @@ export function DataAtlas({ locale }: { locale: Locale }) {
     const context = canvas.getContext("2d");
     if (!context) return;
     const source = (data[chapter.id] ?? []).filter((point): point is Point & { value: number } => point.value !== null).slice(-72);
-    const values = source.length > 1 ? source.map((point) => point.value) : Array.from({ length: 48 }, (_, index) => Math.sin(index * .24 + active) * 6 + index * .12 + 30);
+    const values = source.map((point) => point.value);
     let progress = 0;
     let frame = 0;
 
@@ -89,6 +90,7 @@ export function DataAtlas({ locale }: { locale: Locale }) {
       const height = bounds.height;
       context.setTransform(ratio, 0, 0, ratio, 0, 0);
       context.clearRect(0, 0, width, height);
+      if (values.length < 2) return;
       const low = Math.min(...values);
       const high = Math.max(...values);
       const span = high - low || 1;
@@ -153,11 +155,11 @@ export function DataAtlas({ locale }: { locale: Locale }) {
   return <div className={`oe-atlas tone-${chapter.tone} atlas-phase-${phase}`} ref={rootRef}>
     <div className="oe-atlas-top">
       <div><span>{pt ? "SÉRIE EM FOCO" : "SERIES IN FOCUS"}</span><b>{chapter.code}</b></div>
-      <strong key={chapter.id}>{(latest?.value ?? chapter.fallback).toLocaleString(locale, { maximumFractionDigits: 2 })}<small>{chapter.unit}</small></strong>
-      <div><span>{pt ? "OBSERVAÇÃO" : "OBSERVATION"}</span><b>{latest?.period ?? (pt ? "Mais recente" : "Latest")}</b></div>
+      <strong key={chapter.id}>{latest?.value?.toLocaleString(locale, { maximumFractionDigits: 2 }) ?? "—"}<small>{chapter.unit}</small></strong>
+      <div><span>{pt ? "OBSERVAÇÃO" : "OBSERVATION"}</span><b>{latest?.period ?? (data[chapter.id] ? (pt ? "Indisponível" : "Unavailable") : (pt ? "Consultando…" : "Loading…"))}{stale[chapter.id] ? (pt ? " · snapshot anterior" : " · stale snapshot") : ""}</b></div>
     </div>
     <div className="oe-atlas-canvas"><canvas ref={canvasRef} aria-label={pt ? `Histórico da série ${chapter.code}` : `${chapter.code} series history`} /></div>
-    <div className="oe-atlas-axis" aria-hidden="true"><span>{first?.period ?? "2023-01"}</span><span>{chapter.source} · {chapter.id}</span><span>{latest?.period ?? "2026-07"}</span></div>
+    <div className="oe-atlas-axis" aria-hidden="true"><span>{first?.period ?? "—"}</span><span>{chapter.source} · {chapter.id}</span><span>{latest?.period ?? "—"}</span></div>
     <div className="oe-atlas-bottom">
       <div className="oe-atlas-tabs">{chapters.map((item, index) => <button className={index === active ? "active" : ""} onClick={() => changeChapter(index)} aria-pressed={index === active} key={item.id}><span>0{index + 1}</span>{item.code}<i>{item.source}</i></button>)}</div>
       <a href={localized(locale, `/indicators/${chapter.id}`)}>{pt ? "Abrir série e metodologia" : "Open series and methodology"}<span>↗</span></a>

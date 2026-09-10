@@ -2,7 +2,7 @@ import { indicators } from "@/lib/catalog/indicators";
 import { locales, localized } from "@/lib/i18n";
 import { SITE_ORIGIN } from "@/lib/metadata";
 
-const pages = ["", "/catalog", "/playground", "/docs", "/guides", "/guides/spreadsheets", "/guides/selic-api", "/guides/ipca-api", "/docs/api-reference", "/docs/errors", "/docs/attribution", "/sources", "/status"] as const;
+const pages = ["", "/ask", "/mcp", "/catalog", "/playground", "/docs", "/guides", "/guides/spreadsheets", "/guides/selic-api", "/guides/ipca-api", "/docs/api-reference", "/docs/errors", "/docs/attribution", "/sources", "/status"] as const;
 
 function entry(path: string, priority: number, frequency: "weekly" | "monthly") {
   const alternates = locales.map((locale) => `    <xhtml:link rel="alternate" hreflang="${locale === "pt-br" ? "pt-BR" : "en"}" href="${SITE_ORIGIN}${localized(locale, path)}" />`).join("\n");
@@ -11,7 +11,7 @@ function entry(path: string, priority: number, frequency: "weekly" | "monthly") 
 
 export function GET() {
   const urls = [
-    ...pages.map((path) => entry(path, path === "" ? 1 : path === "/catalog" || path === "/docs" ? .8 : .6, path === "" ? "weekly" : "monthly")),
+    ...pages.map((path) => entry(path, path === "" ? 1 : path === "/ask" || path === "/mcp" || path === "/catalog" || path === "/docs" ? .8 : .6, path === "" || path === "/ask" ? "weekly" : "monthly")),
     ...indicators.map((indicator) => entry(`/indicators/${indicator.id}`, .7, "weekly")),
   ].join("\n");
   const xml = `<?xml version="1.0" encoding="UTF-8"?>\n<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9" xmlns:xhtml="http://www.w3.org/1999/xhtml">\n${urls}\n</urlset>\n`;

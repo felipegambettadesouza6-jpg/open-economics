@@ -968,3 +968,112 @@ pre, code { font-family: var(--font-data), monospace; }
 /* Keep indicator breadcrumbs below the fixed navigation without lengthening the hero. */
 .atlas-indicator-hero { padding-top: 92px; }
 .atlas-breadcrumb { padding: 12px 0 38px; }
+
+/* Question studio — a compact path from economic intent to reusable data. */
+.query-page { background: #f6f6f2; }
+.query-intro { padding: 126px 0 24px; display: flex; align-items: end; justify-content: space-between; gap: 40px; }
+.query-intro > p:last-child { max-width: 610px; margin: 0; color: #66655f; font-size: 16px; line-height: 1.6; }
+.query-studio { padding: 14px 0 120px; }
+.query-questions { display: grid; grid-template-columns: repeat(3,minmax(0,1fr)); border: 1px solid var(--line); border-radius: 22px 22px 0 0; background: #fff; overflow: hidden; }
+.query-questions button { min-height: 164px; padding: 24px; border: 0; border-right: 1px solid var(--line); background: transparent; color: var(--ink); text-align: left; cursor: pointer; transition: background .2s ease, color .2s ease; }
+.query-questions button:last-child { border-right: 0; }
+.query-questions button:hover { background: #f4f4ef; }
+.query-questions button.active { background: var(--ink); color: #fff; }
+.query-questions span,.query-recipes > div > span,.mcp-hero aside > span { display: block; margin-bottom: 22px; color: #88867f; font: 500 10px/1.3 var(--font-data),monospace; letter-spacing: .1em; }
+.query-questions b { display: block; max-width: 340px; font-size: 18px; line-height: 1.3; letter-spacing: -.025em; }
+.query-questions small { display: block; max-width: 340px; margin-top: 13px; color: #85837d; font-size: 13px; line-height: 1.5; }
+.query-questions button.active small { color: rgba(255,255,255,.58); }
+.query-result { border: 1px solid var(--line); border-top: 0; background: #fff; }
+.query-result > header { min-height: 155px; padding: 32px 36px; display: flex; align-items: start; justify-content: space-between; gap: 28px; border-bottom: 1px solid var(--line); }
+.query-result > header span { color: #77756f; font: 500 10px var(--font-data),monospace; text-transform: uppercase; letter-spacing: .08em; }
+.query-result h1 { max-width: 820px; margin: 16px 0 0; font-size: clamp(34px,4.2vw,62px); font-weight: 520; line-height: 1; letter-spacing: -.06em; }
+.query-state { flex: 0 0 auto; display: flex; align-items: center; gap: 8px; padding: 10px 13px; border: 1px solid var(--line); border-radius: 999px; color: #65645f; font: 500 10px var(--font-data),monospace; text-transform: uppercase; }
+.query-state i { width: 7px; height: 7px; border-radius: 50%; background: #d49d35; }
+.query-state.ready i { background: #2f8d56; }
+.query-state.error i { background: #b54438; }
+.query-loading,.query-error { min-height: 290px; padding: 48px 36px; display: grid; align-content: center; justify-items: start; color: #77756f; font: 500 12px/1.6 var(--font-data),monospace; }
+.query-error b { color: var(--ink); font: 650 22px/1.2 var(--font-interface),sans-serif; }
+.query-error p { max-width: 700px; }
+.query-error button,.query-recipes button { padding: 11px 15px; border: 1px solid currentColor; border-radius: 999px; background: transparent; color: inherit; cursor: pointer; font-size: 12px; font-weight: 700; }
+.query-latest { min-height: 310px; padding: 44px 36px; display: grid; grid-template-columns: minmax(0,1fr) minmax(360px,.8fr); align-items: end; gap: 60px; }
+.query-latest > strong { font: 500 clamp(84px,13vw,190px)/.78 var(--font-data),monospace; letter-spacing: -.1em; }
+.query-latest > strong small { margin-left: 15px; font-size: .22em; letter-spacing: -.03em; }
+.query-latest dl { margin: 0; display: grid; grid-template-columns: repeat(3,minmax(0,1fr)); border-top: 1px solid var(--line); }
+.query-latest dl div { padding: 18px 8px 0 0; }
+.query-latest dt { color: #87857e; font: 500 9px var(--font-data),monospace; text-transform: uppercase; }
+.query-latest dd { margin: 10px 0 0; font-size: 13px; line-height: 1.4; }
+.query-table-wrap { max-height: 470px; overflow: auto; }
+.query-table-wrap table { width: 100%; border-collapse: collapse; font: 500 13px var(--font-data),monospace; }
+.query-table-wrap th,.query-table-wrap td { padding: 17px 36px; border-bottom: 1px solid var(--line); text-align: left; }
+.query-table-wrap th { position: sticky; top: 0; z-index: 1; background: #f5f5f1; color: #76746e; font-size: 10px; text-transform: uppercase; letter-spacing: .08em; }
+.query-result > footer { min-height: 68px; padding: 16px 36px; display: flex; align-items: center; justify-content: space-between; gap: 18px; background: #f5f5f1; color: #74726b; font: 500 10px var(--font-data),monospace; }
+.query-result > footer button { border: 0; border-bottom: 1px solid currentColor; background: transparent; color: var(--ink); cursor: pointer; font: 700 11px var(--font-interface),sans-serif; }
+.query-recipes { display: grid; grid-template-columns: 1fr 1fr; }
+.query-recipes > div { min-width: 0; padding: 36px; border: 1px solid var(--line); border-top: 0; background: #fff; }
+.query-recipes > div:first-child { border-right: 0; }
+.query-recipes h2 { max-width: 510px; margin: 0 0 25px; font-size: 28px; font-weight: 560; letter-spacing: -.045em; }
+.query-recipes pre { min-height: 130px; overflow: auto; margin: 0 0 22px; padding: 20px; border-radius: 12px; background: #f2f2ed; font-size: 11px; line-height: 1.65; }
+.query-recipes .query-mcp-card { background: var(--ink); color: #fff; }
+.query-recipes .query-mcp-card pre { background: rgba(255,255,255,.07); color: rgba(255,255,255,.76); }
+
+/* MCP connection surface */
+.mcp-page { background: #f6f6f2; }
+.mcp-hero { min-height: 680px; padding: 150px 0 72px; display: grid; grid-template-columns: minmax(0,1.15fr) minmax(330px,.55fr); align-items: end; gap: 90px; }
+.mcp-hero h1 { margin: 22px 0 32px; font-size: clamp(58px,7vw,108px); font-weight: 520; line-height: .91; letter-spacing: -.072em; }
+.mcp-hero h1 em { color: #4a745c; font-family: Georgia,serif; font-weight: 400; }
+.mcp-hero > div > p:last-child { max-width: 650px; margin: 0; color: #65645f; font-size: 17px; line-height: 1.65; }
+.mcp-hero aside { min-width: 0; padding: 28px; border-radius: 22px; background: var(--ink); color: #fff; }
+.mcp-hero aside code { display: block; overflow-wrap: anywhere; color: var(--acid); font-size: 13px; line-height: 1.6; }
+.mcp-hero aside .copy-button { width: 100%; margin: 26px 0 16px; padding: 13px; border: 1px solid rgba(255,255,255,.3); border-radius: 999px; background: transparent; color: #fff; cursor: pointer; }
+.mcp-hero aside small { color: rgba(255,255,255,.48); font: 500 10px var(--font-data),monospace; }
+.mcp-connect { padding: 92px 0; display: grid; grid-template-columns: .78fr 1.22fr; gap: 80px; border-top: 1px solid var(--line); }
+.mcp-connect h2,.mcp-workflow h2,.mcp-prompts h2 { margin: 22px 0; font-size: clamp(40px,5vw,72px); font-weight: 520; line-height: .98; letter-spacing: -.06em; }
+.mcp-connect > div:first-child > p:last-child { max-width: 500px; color: #686762; font-size: 15px; line-height: 1.7; }
+.mcp-code { min-width: 0; align-self: start; border-radius: 20px; background: var(--ink); color: #fff; overflow: hidden; }
+.mcp-code header { padding: 17px 20px; display: flex; justify-content: space-between; border-bottom: 1px solid rgba(255,255,255,.12); color: rgba(255,255,255,.55); font: 500 10px var(--font-data),monospace; }
+.mcp-code .copy-button { border: 0; background: transparent; color: var(--acid); cursor: pointer; font: inherit; }
+.mcp-code pre { overflow: auto; margin: 0; padding: 28px; color: rgba(255,255,255,.76); font-size: 12px; line-height: 1.8; }
+.mcp-workflow { padding: 90px 0 120px; }
+.mcp-workflow > div { margin-top: 35px; display: grid; grid-template-columns: repeat(3,1fr); border: 1px solid var(--line); }
+.mcp-workflow article { min-height: 270px; padding: 30px; border-right: 1px solid var(--line); background: #fff; }
+.mcp-workflow article:last-child { border-right: 0; }
+.mcp-workflow article > span { color: #8b8982; font: 500 10px var(--font-data),monospace; }
+.mcp-workflow h3 { margin: 60px 0 18px; font-size: 21px; letter-spacing: -.035em; }
+.mcp-workflow article p { color: #74726c; font-size: 14px; line-height: 1.65; }
+.mcp-prompts { margin-bottom: 120px; padding: 70px; display: grid; grid-template-columns: .85fr 1.15fr; gap: 80px; border-radius: 30px; background: var(--ink); color: #fff; }
+.mcp-prompts .atlas-kicker { color: rgba(255,255,255,.42); }
+.mcp-prompts a { display: inline-flex; gap: 45px; margin-top: 12px; padding-bottom: 6px; border-bottom: 1px solid rgba(255,255,255,.6); text-decoration: none; font-size: 12px; font-weight: 700; }
+.mcp-prompts ul { margin: 0; padding: 0; list-style: none; }
+.mcp-prompts li { padding: 22px 0; border-bottom: 1px solid rgba(255,255,255,.14); color: rgba(255,255,255,.75); font-size: 17px; line-height: 1.5; }
+
+@media (max-width: 900px) {
+  .query-intro { align-items: start; flex-direction: column; }
+  .query-questions { grid-template-columns: 1fr; }
+  .query-questions button { min-height: 0; border-right: 0; border-bottom: 1px solid var(--line); }
+  .query-questions button:last-child { border-bottom: 0; }
+  .query-latest,.query-recipes,.mcp-hero,.mcp-connect,.mcp-prompts { grid-template-columns: 1fr; }
+  .query-latest { gap: 46px; }
+  .query-recipes > div:first-child { border-right: 1px solid var(--line); }
+  .mcp-hero { gap: 55px; }
+  .mcp-workflow > div { grid-template-columns: 1fr; }
+  .mcp-workflow article { min-height: 0; border-right: 0; border-bottom: 1px solid var(--line); }
+  .mcp-workflow article:last-child { border-bottom: 0; }
+}
+
+@media (max-width: 720px) {
+  .query-intro { padding-top: 96px; }
+  .query-result > header { padding: 24px 20px; flex-direction: column; }
+  .query-result h1 { font-size: 40px; }
+  .query-latest { min-height: 260px; padding: 32px 20px; }
+  .query-latest > strong { font-size: 84px; }
+  .query-latest dl { grid-template-columns: 1fr; }
+  .query-table-wrap th,.query-table-wrap td { padding: 15px 20px; }
+  .query-result > footer { align-items: start; flex-direction: column; padding: 18px 20px; }
+  .query-recipes > div { padding: 28px 20px; }
+  .mcp-hero { min-height: 0; padding-top: 112px; }
+  .mcp-hero h1 { font-size: 56px; }
+  .mcp-connect { padding: 68px 0; }
+  .mcp-workflow { padding: 68px 0 85px; }
+  .mcp-workflow h3 { margin-top: 38px; }
+  .mcp-prompts { padding: 36px 24px; gap: 32px; border-radius: 22px; }
+}

@@ -579,7 +579,7 @@ test("latest endpoints reuse a stable stale snapshot when BCB is unavailable", {
     assert.equal(response.status, 200);
     const body = await response.json();
     assert.equal(body.meta.cache, "miss");
-    assert.match(body.meta.provenance.upstream_url, /\/dados\/ultimos\/400\?formato=json/);
+    assert.match(body.meta.provenance.upstream_url, /\/dados\/ultimos\/20\?formato=json/);
   });
 
   const snapshot = snapshots.get("v2:br-selic-target:latest");

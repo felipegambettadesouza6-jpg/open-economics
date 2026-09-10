@@ -5,7 +5,7 @@ export function SiteFooter({ locale = "en", dramatic = false }: { locale?: Local
 
   if (dramatic) return (
     <footer className="signal-footer signal-footer-dramatic" data-nav-theme="dark">
-      <a className="footer-build" href={localized(locale, "/playground")}>
+      <a className="footer-build" href={localized(locale, "/ask")}>
         <span className="footer-build-copy"><small>{pt ? "PRONTO PARA USAR" : "READY TO USE"}</small><b>{pt ? "Construa com Open Economics" : "Build with Open Economics"}</b></span><span className="footer-build-arrow">→</span>
       </a>
       <div className="footer-directory">
@@ -25,6 +25,8 @@ export function SiteFooter({ locale = "en", dramatic = false }: { locale?: Local
         </div>
         <div>
           <span>{pt ? "Construa" : "Build"}</span>
+          <a href={localized(locale, "/ask")}>{pt ? "Perguntar aos dados" : "Ask the data"}</a>
+          <a href={localized(locale, "/mcp")}>MCP</a>
           <a href={localized(locale, "/playground")}>Playground</a>
           <a href={localized(locale, "/docs")}>Quickstart</a>
           <a href={localized(locale, "/guides")}>{pt ? "Exemplos práticos" : "Practical examples"}</a>
@@ -74,7 +76,9 @@ export function SiteFooter({ locale = "en", dramatic = false }: { locale?: Local
         <nav>
           <div>
             <span>{pt ? "Produto" : "Product"}</span>
+            <a href={localized(locale, "/ask")}>{pt ? "Perguntar aos dados" : "Ask the data"}</a>
             <a href={localized(locale, "/catalog")}>{pt ? "Explorar dados" : "Explore data"}</a>
+            <a href={localized(locale, "/mcp")}>MCP</a>
             <a href={localized(locale, "/playground")}>Playground</a>
             <a href={localized(locale, "/status")}>Status</a>
           </div>
