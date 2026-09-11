@@ -55,6 +55,17 @@ async function request(path, init = {}, runtimeEnv = env()) {
   );
 }
 
+function mcpPayload(text) {
+  return JSON.parse(text.match(/^data: (.+)$/m)?.[1] ?? "{}");
+}
+
+function mcpText(payload) {
+  return (payload.result?.content ?? [])
+    .filter((item) => item.type === "text")
+    .map((item) => item.text)
+    .join("\n");
+}
+
 async function withFetchMock(mock, run) {
   const originalFetch = globalThis.fetch;
   globalThis.fetch = mock;
@@ -439,7 +450,7 @@ test("MCP exposes a focused read-only tool surface backed by v2 discovery", { co
   });
   assert.equal(listed.status, 200);
   const listedText = await listed.text();
-  const listedPayload = JSON.parse(listedText.match(/^data: (.+)$/m)?.[1] ?? "{}");
+  const listedPayload = mcpPayload(listedText);
   assert.equal(listedPayload.result.tools.length, 19);
   assert.equal(listedPayload.result.tools.filter((tool) => tool.outputSchema?.type === "object").length, 19);
   assert.ok(listedPayload.result.tools.every((tool) => Object.values(tool.inputSchema.properties ?? {}).every((property) => typeof property.description === "string" && property.description.length > 0)));
@@ -465,7 +476,7 @@ test("MCP exposes a focused read-only tool surface backed by v2 discovery", { co
     body: JSON.stringify({ jsonrpc: "2.0", id: 4, method: "initialize", params: { protocolVersion: "2025-11-25", capabilities: {}, clientInfo: { name: "contract-test", version: "1.0.0" } } }),
   });
   assert.equal(initialized.status, 200);
-  const initializedPayload = JSON.parse((await initialized.text()).match(/^data: (.+)$/m)?.[1] ?? "{}");
+  const initializedPayload = mcpPayload(await initialized.text());
   assert.equal(initializedPayload.result.serverInfo.description, "Free, read-only access to official Brazilian economic data through semantic discovery, REST-aligned MCP tools, and source-preserving results.");
   assert.equal(initializedPayload.result.serverInfo.websiteUrl, "https://open-economics-data.knbf982hkn.chatgpt.site/en");
   assert.equal(initializedPayload.result.serverInfo.icons[0].mimeType, "image/png");
@@ -476,9 +487,23 @@ test("MCP exposes a focused read-only tool surface backed by v2 discovery", { co
     body: JSON.stringify({ jsonrpc: "2.0", id: 2, method: "tools/call", params: { name: "search_official_data", arguments: { query: "taxa de desemprego desde 2015", limit: 3 } } }),
   });
   assert.equal(called.status, 200);
-  const calledText = await called.text();
+  const calledPayload = mcpPayload(await called.text());
+  const calledText = mcpText(calledPayload);
+  assert.equal(calledPayload.result.structuredContent.resolution.status, "resolved");
   assert.match(calledText, /Resolved to unemployment/);
   assert.match(calledText, /br-unemployment-rate/);
+
+  const described = await request("/api/mcp", {
+    method: "POST",
+    headers,
+    body: JSON.stringify({ jsonrpc: "2.0", id: 5, method: "tools/call", params: { name: "describe_official_dataset", arguments: { dataset_id: "tesouro-dpf:debt-profile" } } }),
+  });
+  const describedPayload = mcpPayload(await described.text());
+  const describedText = mcpText(describedPayload);
+  assert.equal(describedPayload.result.structuredContent.id, "tesouro-dpf:debt-profile");
+  assert.match(describedText, /Dívida Pública Federal/);
+  assert.match(describedText, /Tesouro Nacional/);
+  assert.match(describedText, /tesourotransparente\.gov\.br/);
 
   const debtCalled = await request("/api/mcp", {
     method: "POST",
@@ -486,10 +511,92 @@ test("MCP exposes a focused read-only tool surface backed by v2 discovery", { co
     body: JSON.stringify({ jsonrpc: "2.0", id: 3, method: "tools/call", params: { name: "get_tesouro_dpf", arguments: { dataset_id: "tesouro-dpf:debt-profile", table: "composition", from: "2026-07", to: "2026-07", categories: ["total"], limit: 10 } } }),
   });
   assert.equal(debtCalled.status, 200);
-  const debtCalledText = await debtCalled.text();
+  const debtPayload = mcpPayload(await debtCalled.text());
+  const debtCalledText = mcpText(debtPayload);
+  assert.equal(debtPayload.result.structuredContent.data[0].value, 9288.7802713778);
   assert.match(debtCalledText, /9288\.7802713778/);
+  assert.match(debtCalledText, /2026-07/);
+  assert.match(debtCalledText, /BRL billion/);
   assert.match(debtCalledText, /Relatório Mensal da Dívida Pública Federal/);
   assert.match(debtCalledText, /publicacao-anexo\/29025/);
+  assert.ok(debtCalledText.length < 15_000);
+
+  const employmentCalled = await request("/api/mcp", {
+    method: "POST",
+    headers,
+    body: JSON.stringify({ jsonrpc: "2.0", id: 6, method: "tools/call", params: { name: "get_mte_formal_employment", arguments: { dataset_id: "mte:formal-employment", from: "2026-07", to: "2026-07", breakdown: "state", states: ["SP"], limit: 5 } } }),
+  });
+  const employmentPayload = mcpPayload(await employmentCalled.text());
+  const employmentText = mcpText(employmentPayload);
+  assert.equal(employmentPayload.result.structuredContent.data[0].stock, 14706436);
+  assert.match(employmentText, /2026-07/);
+  assert.match(employmentText, /14706436/);
+  assert.match(employmentText, /17814/);
+  assert.match(employmentText, /gov\.br\/trabalho-e-emprego/);
+  assert.ok(employmentText.length < 15_000);
+
+  const fundSchemaCalled = await request("/api/mcp", {
+    method: "POST",
+    headers,
+    body: JSON.stringify({ jsonrpc: "2.0", id: 7, method: "tools/call", params: { name: "get_cvm_investment_funds_schema", arguments: { dataset_id: "cvm:investment-funds" } } }),
+  });
+  const fundSchemaPayload = mcpPayload(await fundSchemaCalled.text());
+  const fundSchemaText = mcpText(fundSchemaPayload);
+  assert.ok(fundSchemaPayload.result.structuredContent.data.measures);
+  assert.match(fundSchemaText, /classifications/);
+  assert.match(fundSchemaText, /measures/);
+  assert.match(fundSchemaText, /dados\.cvm\.gov\.br/);
+  assert.ok(fundSchemaText.length < 15_000);
+});
+
+test("MCP text alone answers the current Selic target with date, unit, and official source", { concurrency: false }, async () => {
+  const headers = {
+    accept: "application/json, text/event-stream",
+    "content-type": "application/json",
+    "mcp-protocol-version": "2025-11-25",
+  };
+  const observations = Array.from({ length: 15 }, (_, index) => {
+    const date = new Date(Date.UTC(2026, 8, 11 - index));
+    const sourceDate = new Intl.DateTimeFormat("en-GB", { timeZone: "UTC", day: "2-digit", month: "2-digit", year: "numeric" }).format(date);
+    return { data: sourceDate, valor: index === 0 ? "14.00" : "14.00" };
+  });
+
+  await withFetchMock(async (input) => {
+    const upstream = String(input);
+    if (upstream.includes("consultarMetadadosSeriesInternet")) return new Response("", { headers: { "set-cookie": "JSESSIONID=test-session; Path=/sgspub" } });
+    if (upstream.includes("cmiDadosBasicos.jsp")) return new Response(`
+      <td><span><b>Full name</b></span></td><td><span>Interest rate - Selic target</span></td>
+      <td><span><b>Periodicity</b></span></td><td><span>Daily</span></td>
+      <td><span><b>Unit</b></span></td><td><span>% p.y.</span></td>
+      <td><span><b>Source</b></span></td><td><span>Copom</span></td>
+    `);
+    assert.match(upstream, /bcdata\.sgs\.432\/dados/);
+    return new Response(JSON.stringify(observations), { headers: { "content-type": "application/json" } });
+  }, async () => {
+    const response = await request("/api/mcp", {
+      method: "POST",
+      headers,
+      body: JSON.stringify({ jsonrpc: "2.0", id: 8, method: "tools/call", params: { name: "get_bcb_series", arguments: { dataset_id: "bcb-sgs:432", start: "2026-08-01", end: "2026-09-11", order: "desc", limit: 15 } } }),
+    });
+    assert.equal(response.status, 200);
+    const payload = mcpPayload(await response.text());
+    const text = mcpText(payload);
+
+    assert.equal(payload.result.structuredContent.data.length, 15);
+    assert.equal(payload.result.structuredContent.data[0].date, "2026-09-11");
+    assert.equal(payload.result.structuredContent.data[0].value, 14);
+    assert.equal(payload.result.structuredContent.meta.schema.unit, "% p.y.");
+    assert.match(payload.result.structuredContent.meta.provenance.source_url, /dadosabertos\.bcb\.gov\.br/);
+
+    assert.match(text, /2026-09-11/);
+    assert.match(text, /"value": 14/);
+    assert.match(text, /% p\.y\./);
+    assert.match(text, /dadosabertos\.bcb\.gov\.br/);
+    assert.match(text, /Data shown in text: 12 of 15 returned row/);
+    assert.match(text, /result\.structuredContent contains all 15 returned row/);
+    assert.doesNotMatch(text, /2026-08-28/);
+    assert.ok(text.length < 15_000);
+  });
 });
 
 test("requests only the IBGE periods needed and retains source-specific data status", { concurrency: false }, async () => {

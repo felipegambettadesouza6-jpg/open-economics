@@ -4,9 +4,111 @@ import { getOfficialDataset } from "@/lib/catalog/official-datasets";
 import { routeV2Get } from "@/lib/api/v2";
 import { semanticSearch } from "@/lib/semantic/search";
 
+type UnknownRecord = Record<string, unknown>;
+
+const MODEL_TEXT_ROW_LIMIT = 12;
+
+function isRecord(value: unknown): value is UnknownRecord {
+  return typeof value === "object" && value !== null && !Array.isArray(value);
+}
+
+function compactForText(
+  value: unknown,
+  limits: { array: number; fields: number; depth: number; string: number },
+  depth = 0,
+): unknown {
+  if (typeof value === "string") {
+    return value.length <= limits.string ? value : `${value.slice(0, limits.string)}… [${value.length - limits.string} characters omitted]`;
+  }
+  if (value === null || typeof value === "number" || typeof value === "boolean") return value;
+  if (depth >= limits.depth) {
+    if (Array.isArray(value)) return `[${value.length} items; nested values omitted from text]`;
+    if (isRecord(value)) return `{${Object.keys(value).length} fields; nested values omitted from text}`;
+    return String(value);
+  }
+  if (Array.isArray(value)) {
+    const visible = value.slice(0, limits.array).map((item) => compactForText(item, limits, depth + 1));
+    if (value.length > limits.array) visible.push({ omittedItems: value.length - limits.array });
+    return visible;
+  }
+  if (isRecord(value)) {
+    const entries = Object.entries(value);
+    const compact: UnknownRecord = {};
+    for (const [key, item] of entries.slice(0, limits.fields)) compact[key] = compactForText(item, limits, depth + 1);
+    if (entries.length > limits.fields) compact.omittedFields = entries.length - limits.fields;
+    return compact;
+  }
+  return String(value);
+}
+
+function stringifyForText(value: unknown, budget: number) {
+  const candidates = [
+    { array: 12, fields: 24, depth: 5, string: 800 },
+    { array: 6, fields: 16, depth: 4, string: 400 },
+    { array: 3, fields: 10, depth: 3, string: 240 },
+    { array: 1, fields: 6, depth: 2, string: 160 },
+  ];
+  for (const limits of candidates) {
+    const text = JSON.stringify(compactForText(value, limits), null, 2);
+    if (text.length <= budget) return text;
+  }
+  return JSON.stringify({ note: "Additional nested fields are available in result.structuredContent." }, null, 2);
+}
+
+function modelVisibleResult(value: unknown, summary: string) {
+  if (!isRecord(value)) return `${summary}\n\nResult:\n${stringifyForText(value, 8_000)}`;
+
+  const meta = isRecord(value.meta) ? value.meta : undefined;
+  const dataset = meta && isRecord(meta.dataset)
+    ? meta.dataset
+    : typeof value.id === "string" && (typeof value.sourceAgency === "string" || typeof value.sourceUrl === "string")
+      ? value
+      : undefined;
+  const provenance = meta && isRecord(meta.provenance) ? meta.provenance : undefined;
+  const sourceUrl = dataset && typeof dataset.sourceUrl === "string"
+    ? dataset.sourceUrl
+    : provenance && typeof provenance.source_url === "string"
+      ? provenance.source_url
+      : provenance && typeof provenance.publication_url === "string"
+        ? provenance.publication_url
+        : undefined;
+
+  const lines = [summary];
+  if (dataset) {
+    const identity = [dataset.id, dataset.title].filter((item): item is string => typeof item === "string");
+    const agency = typeof dataset.sourceAgency === "string" ? ` (${dataset.sourceAgency})` : "";
+    if (identity.length > 0) lines.push(`Dataset: ${identity.join(" — ")}${agency}`);
+  }
+  if (sourceUrl) lines.push(`Official source: ${sourceUrl}`);
+
+  if (Array.isArray(value.data)) {
+    const visibleData = value.data.slice(0, MODEL_TEXT_ROW_LIMIT);
+    const available = meta && typeof meta.available === "number" ? `; ${meta.available} available from the selected source/query` : "";
+    const queryTruncated = meta && typeof meta.truncated === "boolean" ? `; query truncated: ${meta.truncated}` : "";
+    lines.push(`Data shown in text: ${visibleData.length} of ${value.data.length} returned row(s)${available}${queryTruncated}.`);
+    lines.push(`Data:\n${stringifyForText(visibleData, 8_000)}`);
+    if (meta) {
+      const textMeta: UnknownRecord = {};
+      for (const key of ["selection", "schema", "table", "source_snapshot", "provenance", "date_semantics", "value_semantics", "returned", "available", "truncated"]) {
+        if (key in meta) textMeta[key] = meta[key];
+      }
+      lines.push(`Metadata:\n${stringifyForText(textMeta, 5_000)}`);
+    }
+    lines.push(`Full machine-readable result: result.structuredContent contains all ${value.data.length} returned row(s).`);
+  } else if ("data" in value) {
+    lines.push(`Data and metadata:\n${stringifyForText(value, 11_000)}`);
+    lines.push("Full machine-readable result: result.structuredContent contains the complete result.");
+  } else {
+    lines.push(`Result:\n${stringifyForText(value, 11_000)}`);
+    lines.push("Full machine-readable result: result.structuredContent contains the complete result.");
+  }
+
+  return lines.join("\n\n");
+}
+
 function result(value: unknown, summary: string) {
   return {
-    content: [{ type: "text" as const, text: summary }],
+    content: [{ type: "text" as const, text: modelVisibleResult(value, summary) }],
     structuredContent: value as Record<string, unknown>,
   };
 }
@@ -76,7 +178,7 @@ function buildServer() {
     {
       name: "open-economics",
       title: "Open Economics",
-      version: "2.0.1",
+      version: "2.0.2",
       description: "Free, read-only access to official Brazilian economic data through semantic discovery, REST-aligned MCP tools, and source-preserving results.",
       websiteUrl: "https://open-economics-data.knbf982hkn.chatgpt.site/en",
       icons: [{ src: "https://raw.githubusercontent.com/felipegambettadesouza6-jpg/open-economics/main/public/open-economics-icon-400.png", mimeType: "image/png", sizes: ["400x400"] }],
