@@ -7,6 +7,7 @@ A free, read-only semantic routing layer for authoritative Brazilian economic da
 - **MCP:** https://open-economics-data.knbf982hkn.chatgpt.site/api/mcp
 - **Ask the data:** https://open-economics-data.knbf982hkn.chatgpt.site/en/ask
 - **MCP setup:** https://open-economics-data.knbf982hkn.chatgpt.site/en/mcp
+- **Agent installer:** [llms-install.md](./llms-install.md)
 - **Documentation:** https://open-economics-data.knbf982hkn.chatgpt.site/en/docs
 - **Runnable examples:** https://open-economics-data.knbf982hkn.chatgpt.site/en/guides
 - **Source and issue tracker:** https://github.com/felipegambettadesouza6-jpg/open-economics
