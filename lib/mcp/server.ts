@@ -76,7 +76,7 @@ function buildServer() {
     {
       name: "open-economics",
       title: "Open Economics",
-      version: "2.0.0",
+      version: "2.0.1",
       description: "Free, read-only access to official Brazilian economic data through semantic discovery, REST-aligned MCP tools, and source-preserving results.",
       websiteUrl: "https://open-economics-data.knbf982hkn.chatgpt.site/en",
       icons: [{ src: "https://raw.githubusercontent.com/felipegambettadesouza6-jpg/open-economics/main/public/open-economics-icon-400.png", mimeType: "image/png", sizes: ["400x400"] }],
