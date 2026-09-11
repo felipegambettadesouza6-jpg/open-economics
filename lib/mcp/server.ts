@@ -11,12 +11,57 @@ function result(value: unknown, summary: string) {
   };
 }
 
-// Every Open Economics MCP result is a JSON object whose top-level shape is
-// intentionally aligned with the REST v2 response for that dataset. The
-// dataset-specific fields are dynamic (and source-defined), so this open
-// object schema describes the stable wire type without inventing or
-// constraining fields that are part of the upstream official responses.
-const outputSchema = z.looseObject({}).describe("Structured Open Economics response object. The fields preserve the REST v2 data, metadata, links, and source provenance for this tool.");
+// The payloads intentionally retain source-defined fields, but their stable
+// envelopes are explicit so MCP clients can render and validate useful output
+// without changing the REST-aligned response contracts.
+const searchOutputSchema = z.looseObject({
+  query: z.string().describe("The original natural-language economic need."),
+  normalizedQuery: z.string().describe("Normalized form used for semantic resolution."),
+  resolution: z.looseObject({
+    status: z.string().describe("Resolution state for the requested concept."),
+    confidence: z.number().optional().describe("Resolution confidence from 0 to 1."),
+    explanation: z.string().describe("Why the concept was or was not resolved."),
+  }).describe("Concept-resolution result."),
+  concepts: z.array(z.looseObject({ id: z.string().describe("Stable Open Economics concept ID.") })).describe("Ranked economic concepts matched to the request."),
+  datasets: z.array(z.looseObject({
+    id: z.string().describe("Stable official dataset ID."),
+    provider: z.string().describe("Open Economics provider identifier."),
+    sourceAgency: z.string().describe("Official publishing agency."),
+    title: z.string().describe("Official dataset title."),
+    sourceUrl: z.string().describe("Official source URL."),
+    metadataUrl: z.string().describe("Official metadata URL."),
+  })).describe("Ranked official datasets and their source identity."),
+  availability: z.looseObject({
+    status: z.string().describe("Availability state in the current Open Economics coverage."),
+    complete: z.boolean().describe("Whether the requested need is completely covered."),
+    explanation: z.string().describe("Coverage explanation."),
+    missingSources: z.array(z.string()).describe("Required source integrations that are not present."),
+  }).describe("Coverage assessment."),
+}).describe("Semantic discovery result with ranked concepts, official datasets, and coverage state.");
+
+const datasetOutputSchema = z.looseObject({
+  id: z.string().describe("Stable official dataset ID."),
+  provider: z.string().describe("Open Economics provider identifier."),
+  sourceAgency: z.string().describe("Official publishing agency."),
+  title: z.string().describe("Official dataset title."),
+  collection: z.string().nullable().optional().describe("Official collection identifier, when supplied by the publisher."),
+  collectionName: z.string().nullable().optional().describe("Official collection name, when supplied by the publisher."),
+  sourceUrl: z.string().describe("Official source URL."),
+  metadataUrl: z.string().describe("Official metadata URL."),
+  queryCapability: z.string().describe("Supported query capability."),
+}).describe("Official dataset identity, source, provenance, and query capability.");
+
+const v2OutputSchema = z.looseObject({
+  data: z.unknown().describe("Source-preserving data or schema payload for the selected official dataset."),
+  meta: z.looseObject({
+    dataset: z.unknown().optional().describe("Open Economics dataset identity when supplied."),
+    provenance: z.unknown().optional().describe("Upstream source URLs, versions, timestamps, and methodology details."),
+  }).describe("Response metadata and source provenance."),
+  links: z.looseObject({
+    self: z.string().optional().describe("Canonical URL for this response."),
+    observations: z.string().optional().describe("Canonical observations endpoint for this dataset."),
+  }).optional().describe("Related API links."),
+}).describe("REST-aligned Open Economics response with data, metadata, links, and source provenance.");
 
 async function v2(path: string, parameters: Record<string, string | number | undefined> = {}) {
   const url = new URL(path, "https://open-economics.local");
@@ -48,7 +93,7 @@ function buildServer() {
         query: z.string().min(2).max(300).describe("The user's complete economic-data need, including measure, geography, period, and breakdown when known."),
         limit: z.number().int().min(1).max(25).default(10).describe("Maximum official dataset candidates to return."),
       }),
-      outputSchema,
+      outputSchema: searchOutputSchema,
       annotations: { readOnlyHint: true, destructiveHint: false, idempotentHint: true, openWorldHint: true },
     },
     async ({ query, limit }) => {
@@ -66,7 +111,7 @@ function buildServer() {
       title: "Describe an official dataset",
       description: "Get identity, publisher, collection, provenance links, query capability, and any stable Open Economics series shortcuts for an exact dataset ID returned by search_official_data. This does not fetch observations.",
       inputSchema: z.object({ dataset_id: z.string().regex(/^(?:(?:bcb-sgs|ibge-aggregates):\d+|siconfi:(?:rreo|rgf|dca|entes)|tesouro-rtn:government-central|tesouro-dpf:debt-profile|comexstat:general|anp:fuel-prices|epe:electricity-consumption|mte:formal-employment|cvm:investment-funds)$/).describe("Exact ID returned by search_official_data, such as bcb-sgs:432, ibge-aggregates:5932, siconfi:dca, tesouro-rtn:government-central, tesouro-dpf:debt-profile, comexstat:general, anp:fuel-prices, epe:electricity-consumption, mte:formal-employment, or cvm:investment-funds.") }),
-      outputSchema,
+      outputSchema: datasetOutputSchema,
       annotations: { readOnlyHint: true, destructiveHint: false, idempotentHint: true, openWorldHint: false },
     },
     async ({ dataset_id }) => {
@@ -88,7 +133,7 @@ function buildServer() {
         order: z.enum(["asc", "desc"]).default("asc").describe("Observation order by date."),
         limit: z.number().int().min(1).max(5000).default(5000).describe("Maximum number of observations to return."),
       }),
-      outputSchema,
+      outputSchema: v2OutputSchema,
       annotations: { readOnlyHint: true, destructiveHint: false, idempotentHint: true, openWorldHint: true },
     },
     async ({ dataset_id, start, end, order, limit }) => {
@@ -103,7 +148,7 @@ function buildServer() {
       title: "Inspect BCB series meaning and units",
       description: "Fetch authoritative metadata for an exact BCB SGS series, including full name, subject hierarchy, periodicity, unit, source, coverage dates, decimals, formula, and warnings. Use when interpreting a BCB series without retrieving observations.",
       inputSchema: z.object({ dataset_id: z.string().regex(/^bcb-sgs:\d+$/).describe("Exact BCB dataset ID returned by search_official_data.") }),
-      outputSchema,
+      outputSchema: v2OutputSchema,
       annotations: { readOnlyHint: true, destructiveHint: false, idempotentHint: true, openWorldHint: true },
     },
     async ({ dataset_id }) => {
@@ -118,7 +163,7 @@ function buildServer() {
       title: "Inspect an IBGE aggregate's measures and dimensions",
       description: "Fetch official metadata for an IBGE aggregate selected by search_official_data. Always use this before get_ibge_data unless the official variable, locality, and classification IDs are already known. It prevents guessing a measure or dimensional slice.",
       inputSchema: z.object({ dataset_id: z.string().regex(/^ibge-aggregates:\d+$/).describe("Exact IBGE aggregate ID returned by search_official_data.") }),
-      outputSchema,
+      outputSchema: v2OutputSchema,
       annotations: { readOnlyHint: true, destructiveHint: false, idempotentHint: true, openWorldHint: true },
     },
     async ({ dataset_id }) => {
@@ -139,7 +184,7 @@ function buildServer() {
         locality: z.string().regex(/^(?:BR|N\d{1,2}\[(?:all|\d+(?:,\d+)*)\])$/).default("BR").describe("BR or an explicit IBGE geography selection such as N3[35]."),
         classification: z.string().regex(/^\d+\[(?:all|\d+(?:,\d+)*)\](?:\|\d+\[(?:all|\d+(?:,\d+)*)\])*$/).optional().describe("Explicit classification selections from the schema, such as 11255[90707]."),
       }),
-      outputSchema,
+      outputSchema: v2OutputSchema,
       annotations: { readOnlyHint: true, destructiveHint: false, idempotentHint: true, openWorldHint: true },
     },
     async ({ dataset_id, variable, periods, locality, classification }) => {
@@ -154,7 +199,7 @@ function buildServer() {
       title: "Inspect a SICONFI fiscal report",
       description: "Get the meaning and required selection fields for an exact SICONFI dataset returned by search_official_data. Use this before get_siconfi_data so entity, reporting period, report type, government branch, and annex are explicit rather than guessed.",
       inputSchema: z.object({ dataset_id: z.string().regex(/^siconfi:(?:rreo|rgf|dca|entes)$/).describe("Exact SICONFI dataset ID returned by search_official_data.") }),
-      outputSchema,
+      outputSchema: v2OutputSchema,
       annotations: { readOnlyHint: true, destructiveHint: false, idempotentHint: true, openWorldHint: false },
     },
     async ({ dataset_id }) => {
@@ -179,7 +224,7 @@ function buildServer() {
         sphere: z.enum(["M", "E", "U", "C"]).optional().describe("Government sphere: municipal, state, federal, or consortium."),
         annex: z.string().min(1).max(100).optional().describe("Exact official annex name from the SICONFI documentation."),
       }),
-      outputSchema,
+      outputSchema: v2OutputSchema,
       annotations: { readOnlyHint: true, destructiveHint: false, idempotentHint: true, openWorldHint: true },
     },
     async ({ dataset_id, ...parameters }) => {
@@ -204,7 +249,7 @@ function buildServer() {
         filters: z.array(z.object({ filter: z.enum(["country", "economicBlock", "state", "via", "urf", "ncm", "subHeading", "heading", "chapter", "section", "BECLevel3", "BECLevel2", "BECLevel1", "SITCBasicHeading", "SITCSubGroup", "SITCGroup", "SITCDivision", "SITCSection", "ISICClass", "ISICGroup", "ISICDivision", "ISICSection"]).describe("Official dimension code to filter."), values: z.array(z.union([z.string().max(30), z.number()])).min(1).max(50).describe("One or more official filter values.") })).max(6).default([]).describe("Optional official dimension filters."),
         language: z.enum(["pt", "en", "es"]).default("pt").describe("Language for labels in the upstream response."),
       }),
-      outputSchema,
+      outputSchema: v2OutputSchema,
       annotations: { readOnlyHint: true, destructiveHint: false, idempotentHint: true, openWorldHint: true },
     },
     async ({ dataset_id, flow, from, to, month_detail, details, metrics, filters, language }) => {
@@ -230,7 +275,7 @@ function buildServer() {
         product: z.string().min(1).max(100).optional().describe("Exact ANP product label, for example GASOLINA or ETANOL."),
         limit: z.number().int().min(1).max(5000).default(1000).describe("Maximum aggregate rows to return."),
       }),
-      outputSchema,
+      outputSchema: v2OutputSchema,
       annotations: { readOnlyHint: true, destructiveHint: false, idempotentHint: true, openWorldHint: true },
     },
     async ({ dataset_id, fuel_group, year, month, geography, period, state, municipality, product, limit }) => {
@@ -255,7 +300,7 @@ function buildServer() {
         markets: z.array(z.enum(["Cativo", "Livre"])).max(2).default(["Cativo", "Livre"]).describe("Electricity-market segments to include."),
         limit: z.number().int().min(1).max(5000).default(1000).describe("Maximum rows to return."),
       }),
-      outputSchema,
+      outputSchema: v2OutputSchema,
       annotations: { readOnlyHint: true, destructiveHint: false, idempotentHint: true, openWorldHint: false },
     },
     async ({ dataset_id, from, to, geography, states, regions, classes, markets, limit }) => {
@@ -270,7 +315,7 @@ function buildServer() {
       title: "Inspect Novo Caged dimensions and measures",
       description: "Inspect the official adjusted Novo Caged selection contract, source vintage, measure meanings, available industry IDs, and the constraint that geography and industry come from separate official tables. Use before an industry query.",
       inputSchema: z.object({ dataset_id: z.literal("mte:formal-employment").describe("The official MTE Novo Caged dataset identifier.") }),
-      outputSchema,
+      outputSchema: v2OutputSchema,
       annotations: { readOnlyHint: true, destructiveHint: false, idempotentHint: true, openWorldHint: false },
     },
     async ({ dataset_id }) => {
@@ -294,7 +339,7 @@ function buildServer() {
         industries: z.array(z.string().regex(/^[a-z0-9]+(?:-[a-z0-9]+)*$/)).max(26).default([]).describe("Exact official activity IDs returned by get_mte_formal_employment_schema; empty means all activities."),
         limit: z.number().int().min(1).max(5000).default(1000).describe("Maximum rows to return."),
       }),
-      outputSchema,
+      outputSchema: v2OutputSchema,
       annotations: { readOnlyHint: true, destructiveHint: false, idempotentHint: true, openWorldHint: false },
     },
     async ({ dataset_id, from, to, breakdown, states, regions, industries, limit }) => {
@@ -309,7 +354,7 @@ function buildServer() {
       title: "Inspect CVM investment-fund measures and dimensions",
       description: "Inspect the synchronized CVM daily-report window, official classifications, fund-search contract, measure meanings, and aggregation constraints. Use before querying a fund by name or comparing classes.",
       inputSchema: z.object({ dataset_id: z.literal("cvm:investment-funds").describe("The official CVM investment-funds dataset identifier.") }),
-      outputSchema,
+      outputSchema: v2OutputSchema,
       annotations: { readOnlyHint: true, destructiveHint: false, idempotentHint: true, openWorldHint: false },
     },
     async ({ dataset_id }) => {
@@ -324,7 +369,7 @@ function buildServer() {
       title: "Inspect Government Central fiscal accounts",
       description: "Inspect RTN table 1.2 account IDs, hierarchy, current-value unit, coverage, source vintage, and above/below-the-line constraints. Use before selecting revenue or expenditure categories.",
       inputSchema: z.object({ dataset_id: z.literal("tesouro-rtn:government-central").describe("The official Tesouro Nacional RTN dataset identifier.") }),
-      outputSchema,
+      outputSchema: v2OutputSchema,
       annotations: { readOnlyHint: true, destructiveHint: false, idempotentHint: true, openWorldHint: false },
     },
     async ({ dataset_id }) => {
@@ -346,7 +391,7 @@ function buildServer() {
         query: z.string().min(2).max(120).optional().describe("Account-label search; omit accounts to search the full tree."),
         limit: z.number().int().min(1).max(5000).default(1000).describe("Maximum account rows to return."),
       }),
-      outputSchema,
+      outputSchema: v2OutputSchema,
       annotations: { readOnlyHint: true, destructiveHint: false, idempotentHint: true, openWorldHint: false },
     },
     async ({ dataset_id, from, to, accounts, query, limit }) => {
@@ -361,7 +406,7 @@ function buildServer() {
       title: "Inspect Federal Public Debt statistics",
       description: "Inspect the six versioned RMD annex tables, their distinct units and coverage, category IDs, holder definitions, source publication, and methodological constraints before selecting data.",
       inputSchema: z.object({ dataset_id: z.literal("tesouro-dpf:debt-profile").describe("The official Tesouro Nacional DPF debt-profile dataset identifier.") }),
-      outputSchema,
+      outputSchema: v2OutputSchema,
       annotations: { readOnlyHint: true, destructiveHint: false, idempotentHint: true, openWorldHint: false },
     },
     async ({ dataset_id }) => {
@@ -384,7 +429,7 @@ function buildServer() {
         query: z.string().min(2).max(120).optional().describe("Category-label search; useful when category IDs are unknown."),
         limit: z.number().int().min(1).max(5000).default(1000).describe("Maximum debt-statistics rows to return."),
       }),
-      outputSchema,
+      outputSchema: v2OutputSchema,
       annotations: { readOnlyHint: true, destructiveHint: false, idempotentHint: true, openWorldHint: false },
     },
     async ({ dataset_id, table, from, to, categories, query, limit }) => {
@@ -408,7 +453,7 @@ function buildServer() {
         query: z.string().min(2).max(120).optional().describe("Fund-name search; use only with breakdown=fund."),
         limit: z.number().int().min(1).max(100).default(25).describe("Maximum fund or classification rows to return."),
       }),
-      outputSchema,
+      outputSchema: v2OutputSchema,
       annotations: { readOnlyHint: true, destructiveHint: false, idempotentHint: true, openWorldHint: false },
     },
     async ({ dataset_id, from, to, breakdown, classifications, funds, query, limit }) => {

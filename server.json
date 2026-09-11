@@ -4,7 +4,16 @@
   "title": "Open Economics",
   "description": "Discover, resolve, and query official Brazilian economic data with semantic search and provenance.",
   "version": "2.0.0",
-  "websiteUrl": "https://open-economics-data.knbf982hkn.chatgpt.site/en/docs",
+  "websiteUrl": "https://open-economics-data.knbf982hkn.chatgpt.site/en",
+  "icons": [
+    {
+      "src": "https://raw.githubusercontent.com/felipegambettadesouza6-jpg/open-economics/main/public/open-economics-icon-400.png",
+      "mimeType": "image/png",
+      "sizes": [
+        "400x400"
+      ]
+    }
+  ],
   "repository": {
     "url": "https://github.com/felipegambettadesouza6-jpg/open-economics",
     "source": "github"
