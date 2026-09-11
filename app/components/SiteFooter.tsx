@@ -47,6 +47,9 @@ export function SiteFooter({ locale = "en", dramatic = false }: { locale?: Local
           <span>{pt ? "Projeto" : "Project"}</span>
           <a href={localized(locale, "/docs")}>Documentation</a>
           <a href={localized(locale, "/docs/attribution")}>{pt ? "Atribuição" : "Attribution"}</a>
+          <a href={localized(locale, "/privacy")}>{pt ? "Privacidade" : "Privacy"}</a>
+          <a href={localized(locale, "/terms")}>{pt ? "Termos" : "Terms"}</a>
+          <a href="https://github.com/felipegambettadesouza6-jpg/open-economics/issues">Support</a>
           <a href={localized("pt-br")}>Português</a>
         </div>
         <div>
@@ -88,6 +91,9 @@ export function SiteFooter({ locale = "en", dramatic = false }: { locale?: Local
             <a href={localized(locale, "/guides")}>{pt ? "Exemplos práticos" : "Practical examples"}</a>
             <a href={localized(locale, "/guides/spreadsheets")}>{pt ? "IPCA e Selic em planilhas" : "IPCA & Selic in spreadsheets"}</a>
             <a href={localized(locale, "/sources")}>{pt ? "Fontes e licenças" : "Sources & licenses"}</a>
+            <a href={localized(locale, "/privacy")}>{pt ? "Privacidade" : "Privacy"}</a>
+            <a href={localized(locale, "/terms")}>{pt ? "Termos" : "Terms"}</a>
+            <a href="https://github.com/felipegambettadesouza6-jpg/open-economics/issues">Support</a>
             <a href="/api/v1/openapi.json">OpenAPI 3.1</a>
             <a href="/open-economics.postman_collection.json" download>Postman</a>
           </div>

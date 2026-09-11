@@ -8,6 +8,7 @@ import { handleMcp } from "../lib/mcp/server";
 interface Env {
   ASSETS: Fetcher;
   DB: D1Database;
+  OPENAI_APPS_CHALLENGE?: string;
   IMAGES: {
     input(stream: ReadableStream): {
       transform(options: Record<string, unknown>): {
@@ -55,6 +56,13 @@ function productionResponse(request: Request, response: Response) {
 const worker = {
   async fetch(request: Request, env: Env, ctx: ExecutionContext): Promise<Response> {
     const url = new URL(request.url);
+
+    if (url.pathname === "/.well-known/openai-apps-challenge") {
+      const token = env.OPENAI_APPS_CHALLENGE?.trim();
+      return token
+        ? new Response(token, { headers: { "Cache-Control": "no-store", "Content-Type": "text/plain; charset=utf-8" } })
+        : new Response(null, { status: 404, headers: { "Cache-Control": "no-store" } });
+    }
 
     if (url.pathname === "/_vinext/image") {
       const allowedWidths = [...DEFAULT_DEVICE_SIZES, ...DEFAULT_IMAGE_SIZES];
