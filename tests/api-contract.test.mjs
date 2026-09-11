@@ -439,6 +439,10 @@ test("MCP exposes a focused read-only tool surface backed by v2 discovery", { co
   });
   assert.equal(listed.status, 200);
   const listedText = await listed.text();
+  const listedPayload = JSON.parse(listedText.match(/^data: (.+)$/m)?.[1] ?? "{}");
+  assert.equal(listedPayload.result.tools.length, 19);
+  assert.equal(listedPayload.result.tools.filter((tool) => tool.outputSchema?.type === "object").length, 19);
+  assert.ok(listedPayload.result.tools.every((tool) => Object.values(tool.inputSchema.properties ?? {}).every((property) => typeof property.description === "string" && property.description.length > 0)));
   assert.match(listedText, /search_official_data/);
   assert.match(listedText, /get_ibge_schema/);
   assert.match(listedText, /get_siconfi_data/);
@@ -454,6 +458,17 @@ test("MCP exposes a focused read-only tool surface backed by v2 discovery", { co
   assert.match(listedText, /get_tesouro_dpf_schema/);
   assert.match(listedText, /get_tesouro_dpf/);
   assert.equal((listedText.match(/"name":/g) ?? []).length, 19);
+
+  const initialized = await request("/api/mcp", {
+    method: "POST",
+    headers,
+    body: JSON.stringify({ jsonrpc: "2.0", id: 4, method: "initialize", params: { protocolVersion: "2025-11-25", capabilities: {}, clientInfo: { name: "contract-test", version: "1.0.0" } } }),
+  });
+  assert.equal(initialized.status, 200);
+  const initializedPayload = JSON.parse((await initialized.text()).match(/^data: (.+)$/m)?.[1] ?? "{}");
+  assert.equal(initializedPayload.result.serverInfo.description, "Free, read-only access to official Brazilian economic data through semantic discovery, REST-aligned MCP tools, and source-preserving results.");
+  assert.equal(initializedPayload.result.serverInfo.websiteUrl, "https://open-economics-data.knbf982hkn.chatgpt.site/en");
+  assert.equal(initializedPayload.result.serverInfo.icons[0].mimeType, "image/png");
 
   const called = await request("/api/mcp", {
     method: "POST",
