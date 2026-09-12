@@ -66,6 +66,10 @@ function mcpText(payload) {
     .join("\n");
 }
 
+function assertNoLocalUrl(text) {
+  assert.doesNotMatch(text, /https?:\/\/[^"\s]*\.local(?:\/|$)/i);
+}
+
 async function withFetchMock(mock, run) {
   const originalFetch = globalThis.fetch;
   globalThis.fetch = mock;
@@ -498,7 +502,9 @@ test("MCP exposes a focused read-only tool surface backed by v2 discovery", { co
     headers,
     body: JSON.stringify({ jsonrpc: "2.0", id: 5, method: "tools/call", params: { name: "describe_official_dataset", arguments: { dataset_id: "tesouro-dpf:debt-profile" } } }),
   });
-  const describedPayload = mcpPayload(await described.text());
+  const describedRaw = await described.text();
+  assertNoLocalUrl(describedRaw);
+  const describedPayload = mcpPayload(describedRaw);
   const describedText = mcpText(describedPayload);
   assert.equal(describedPayload.result.structuredContent.id, "tesouro-dpf:debt-profile");
   assert.match(describedText, /Dívida Pública Federal/);
@@ -511,9 +517,12 @@ test("MCP exposes a focused read-only tool surface backed by v2 discovery", { co
     body: JSON.stringify({ jsonrpc: "2.0", id: 3, method: "tools/call", params: { name: "get_tesouro_dpf", arguments: { dataset_id: "tesouro-dpf:debt-profile", table: "composition", from: "2026-07", to: "2026-07", categories: ["total"], limit: 10 } } }),
   });
   assert.equal(debtCalled.status, 200);
-  const debtPayload = mcpPayload(await debtCalled.text());
+  const debtRaw = await debtCalled.text();
+  assertNoLocalUrl(debtRaw);
+  const debtPayload = mcpPayload(debtRaw);
   const debtCalledText = mcpText(debtPayload);
   assert.equal(debtPayload.result.structuredContent.data[0].value, 9288.7802713778);
+  assert.equal(debtPayload.result.structuredContent.links.self, "https://open-economics-data.knbf982hkn.chatgpt.site/api/v2/datasets/tesouro-dpf%3Adebt-profile/observations?table=composition&from=2026-07&to=2026-07&categories=total&limit=10");
   assert.match(debtCalledText, /9288\.7802713778/);
   assert.match(debtCalledText, /2026-07/);
   assert.match(debtCalledText, /BRL billion/);
@@ -526,7 +535,9 @@ test("MCP exposes a focused read-only tool surface backed by v2 discovery", { co
     headers,
     body: JSON.stringify({ jsonrpc: "2.0", id: 6, method: "tools/call", params: { name: "get_mte_formal_employment", arguments: { dataset_id: "mte:formal-employment", from: "2026-07", to: "2026-07", breakdown: "state", states: ["SP"], limit: 5 } } }),
   });
-  const employmentPayload = mcpPayload(await employmentCalled.text());
+  const employmentRaw = await employmentCalled.text();
+  assertNoLocalUrl(employmentRaw);
+  const employmentPayload = mcpPayload(employmentRaw);
   const employmentText = mcpText(employmentPayload);
   assert.equal(employmentPayload.result.structuredContent.data[0].stock, 14706436);
   assert.match(employmentText, /2026-07/);
@@ -540,7 +551,9 @@ test("MCP exposes a focused read-only tool surface backed by v2 discovery", { co
     headers,
     body: JSON.stringify({ jsonrpc: "2.0", id: 7, method: "tools/call", params: { name: "get_cvm_investment_funds_schema", arguments: { dataset_id: "cvm:investment-funds" } } }),
   });
-  const fundSchemaPayload = mcpPayload(await fundSchemaCalled.text());
+  const fundSchemaRaw = await fundSchemaCalled.text();
+  assertNoLocalUrl(fundSchemaRaw);
+  const fundSchemaPayload = mcpPayload(fundSchemaRaw);
   const fundSchemaText = mcpText(fundSchemaPayload);
   assert.ok(fundSchemaPayload.result.structuredContent.data.measures);
   assert.match(fundSchemaText, /classifications/);
@@ -579,7 +592,9 @@ test("MCP text alone answers the current Selic target with date, unit, and offic
       body: JSON.stringify({ jsonrpc: "2.0", id: 8, method: "tools/call", params: { name: "get_bcb_series", arguments: { dataset_id: "bcb-sgs:432", start: "2026-08-01", end: "2026-09-11", order: "desc", limit: 15 } } }),
     });
     assert.equal(response.status, 200);
-    const payload = mcpPayload(await response.text());
+    const raw = await response.text();
+    assertNoLocalUrl(raw);
+    const payload = mcpPayload(raw);
     const text = mcpText(payload);
 
     assert.equal(payload.result.structuredContent.data.length, 15);
@@ -596,6 +611,19 @@ test("MCP text alone answers the current Selic target with date, unit, and offic
     assert.match(text, /result\.structuredContent contains all 15 returned row/);
     assert.doesNotMatch(text, /2026-08-28/);
     assert.ok(text.length < 15_000);
+
+    const schemaResponse = await request("/api/mcp", {
+      method: "POST",
+      headers,
+      body: JSON.stringify({ jsonrpc: "2.0", id: 9, method: "tools/call", params: { name: "get_bcb_schema", arguments: { dataset_id: "bcb-sgs:432" } } }),
+    });
+    assert.equal(schemaResponse.status, 200);
+    const schemaRaw = await schemaResponse.text();
+    assertNoLocalUrl(schemaRaw);
+    const schemaPayload = mcpPayload(schemaRaw);
+    assert.equal(schemaPayload.result.structuredContent.links.self, "https://open-economics-data.knbf982hkn.chatgpt.site/api/v2/datasets/bcb-sgs%3A432/schema");
+    assert.equal(schemaPayload.result.structuredContent.links.observations, "https://open-economics-data.knbf982hkn.chatgpt.site/api/v2/datasets/bcb-sgs%3A432/observations");
+    assert.match(mcpText(schemaPayload), /https:\/\/open-economics-data\.knbf982hkn\.chatgpt\.site\/api\/v2\/datasets\/bcb-sgs%3A432\/schema/);
   });
 });
 

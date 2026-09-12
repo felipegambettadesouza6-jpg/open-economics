@@ -2,6 +2,7 @@ import { createMcpHandler, McpServer } from "@modelcontextprotocol/server";
 import { z } from "zod";
 import { getOfficialDataset } from "@/lib/catalog/official-datasets";
 import { routeV2Get } from "@/lib/api/v2";
+import { SITE_ORIGIN } from "@/lib/metadata";
 import { semanticSearch } from "@/lib/semantic/search";
 
 type UnknownRecord = Record<string, unknown>;
@@ -166,7 +167,7 @@ const v2OutputSchema = z.looseObject({
 }).describe("REST-aligned Open Economics response with data, metadata, links, and source provenance.");
 
 async function v2(path: string, parameters: Record<string, string | number | undefined> = {}) {
-  const url = new URL(path, "https://open-economics.local");
+  const url = new URL(path, SITE_ORIGIN);
   for (const [key, value] of Object.entries(parameters)) if (value !== undefined) url.searchParams.set(key, String(value));
   const response = await routeV2Get(new Request(url));
   if (!response) throw new Error(`Unknown Open Economics route: ${url.pathname}`);
